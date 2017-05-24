@@ -19,7 +19,8 @@ uniform vec3 camPos;
 
 void main()
 {
-	vec2 tiledTexCoords = TexCoords * 40;
+	//vec2 tiledTexCoords = TexCoords * 40;
+	vec2 tiledTexCoords = TexCoords;
 
 	vec3 unitNormal = normalize(Normal);
 	vec3 finalColour = vec3(0.0);

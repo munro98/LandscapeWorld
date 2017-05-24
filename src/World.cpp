@@ -37,7 +37,7 @@ void World::update(float playerX, float playerZ)
 
 	//std::cout << x << ", " << z << std::endl;
 
-	//updateChunk(x, z);
+	updateChunk(x, z);
 	/*
 	int di = 1;
 	int dj = 0;
@@ -90,7 +90,6 @@ void World::update(float playerX, float playerZ)
 
 	if (!m_chunksToGenerate.empty())
 	{
-		//long long int terrainPos = m_chunksToGenerate.front();
 		TerrainPosition terrainPos = m_chunksToGenerate.front();
 		m_chunksToGenerate.pop();
 		int unpacked[2];
@@ -149,7 +148,6 @@ void World::update(float playerX, float playerZ)
 }
 
 void World::updateChunk(int x, int z) {
-	//long long int terrainPos = TerrainPosition::pack(x, z);
 	TerrainPosition terrainPos(x, z);
 	auto chunkIt = m_terrains.find(terrainPos);
 	auto chunkSetIt = m_chunksToAddToMap.find(terrainPos);
@@ -171,6 +169,9 @@ void World::render(float playerX, float playerZ)
 
 		Terrain *terrain = it->second;
 		Mesh *mesh = terrain->getMesh();
+		Texture *texture = terrain->getBlendMapTexture();
+
+		texture->bind();
 		
 		glBindVertexArray(mesh->getVaoID());
 
@@ -188,6 +189,8 @@ void World::render(float playerX, float playerZ)
 	}
 }
 
+//TODO
+//
 void World::rayCastTerrain(glm::vec3& start, glm::vec3& forward)
 {
 	int x = (int)std::floor(start.x / SIZE);
@@ -196,9 +199,10 @@ void World::rayCastTerrain(glm::vec3& start, glm::vec3& forward)
 
 }
 
-Terrain* World::findTerrainAt(int x , int z)
+Terrain* World::findTerrainAt(float worldX, float worldZ)
 {
-	//long long int terrainPos = TerrainPosition::pack(x, z);
+	int x = (int)std::floor(worldX / SIZE);
+	int z = (int)std::floor(worldZ / SIZE);
 	TerrainPosition terrainPos(x, z);
 	auto chunkIt = m_terrains.find(terrainPos);
 	if (chunkIt == m_terrains.end())
@@ -206,4 +210,36 @@ Terrain* World::findTerrainAt(int x , int z)
 		return nullptr;
 	}
 	return chunkIt->second;
+}
+
+Terrain* World::findTerrainAt(int x , int z)
+{
+	TerrainPosition terrainPos(x, z);
+	auto chunkIt = m_terrains.find(terrainPos);
+	if (chunkIt == m_terrains.end())
+	{
+		return nullptr;
+	}
+	return chunkIt->second;
+}
+
+float World::heightAt(float worldX, float worldZ)
+{
+	int x = (int)std::floor(worldX / SIZE);
+	int z = (int)std::floor(worldZ / SIZE);
+
+	TerrainPosition terrainPos(x, z);
+	auto chunkIt = m_terrains.find(terrainPos);
+	if (chunkIt == m_terrains.end())
+	{
+		return 0;
+	}
+
+	float terrainX = worldX - (x * SIZE);
+	float terrainZ = worldZ - (z * SIZE);
+	//float height = chunkIt->second->lookUpHeight(terrainX*0.125, terrainZ*0.125);
+	//float height = chunkIt->second->getInterpHeight(worldX, worldZ);
+	float height = chunkIt->second->getInterpHeight(terrainX, terrainZ);
+	std::cout << terrainX << " " << terrainZ << " " << height << "\n";
+	return height;
 }

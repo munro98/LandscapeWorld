@@ -21,6 +21,7 @@ SET(headers
 	"SkydomeShader.hpp"
 	"World.hpp"
 	"TerrainPosition.hpp"
+	"BlendMapTexture.hpp"
 )
 
 
@@ -47,6 +48,7 @@ SET(sources
 	"SkydomeShader.cpp"
 	"World.cpp"
 	"TerrainPosition.cpp"
+	"BlendMapTexture.cpp"
 )
 
 #Add executable target
