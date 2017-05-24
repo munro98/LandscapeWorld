@@ -47,7 +47,7 @@ void World::update(float playerX, float playerZ)
 	int i = 0;
 	int j = 0;
 	int segmentPassed = 0;
-	for (int k = 0; k < MAP_UPDATE_RADIUS * MAP_UPDATE_RADIUS; ++k) {
+	for (int k = 0; k < WORLD_UPDATE_RADIUS * WORLD_UPDATE_RADIUS; ++k) {
 		// make a step, add 'direction' vector (di, dj) to current position (i, j)
 		i += di;
 		j += dj;
@@ -75,7 +75,7 @@ void World::update(float playerX, float playerZ)
 	//Remove far chunks
 	for (auto it = m_terrains.begin(); it != m_terrains.end();) {
 		auto terrain = it->second;
-		if (abs(terrain->getX() - x) > MAP_DELETE_RADIUS || abs(terrain->getZ() - z) > MAP_DELETE_RADIUS) {
+		if (abs(terrain->getX() - x) > WORLD_DELETE_RADIUS || abs(terrain->getZ() - z) > WORLD_DELETE_RADIUS) {
 			delete terrain;
 			auto toErase = it;
 			++it;

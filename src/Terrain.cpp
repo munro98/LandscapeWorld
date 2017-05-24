@@ -1,7 +1,7 @@
 #include "Terrain.hpp"
 
 
-Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(VERTEX_COUNT + 2) * (VERTEX_COUNT + 2)])
+Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(VERTEX_COUNT + 3) * (VERTEX_COUNT + 3)])
 {
 	std::cout << "terrain: " << tileX << " " << tileZ << "\n";
 	m_mesh = generateTerrain();
@@ -26,7 +26,7 @@ Mesh * Terrain::generateTerrain()
 
 	//std::vector<float> heights();
 
-	int count = VERTEX_COUNT * VERTEX_COUNT;
+	int count = (VERTEX_COUNT+1) * (VERTEX_COUNT + 1);
 
 	std::vector<float> vertices = { -0.5f,-0.5f,0.0f,
 		0.5f,-0.5f,0.0f,
@@ -47,12 +47,12 @@ Mesh * Terrain::generateTerrain()
 	textureCoords.resize(count * 2);
 
 
-	indices.resize(6 * (VERTEX_COUNT -1)*(VERTEX_COUNT -1));
+	indices.resize(6 * (VERTEX_COUNT)*(VERTEX_COUNT));
 
-	for (int x = 0; x < (VERTEX_COUNT + 2); x++) {
+	for (int x = 0; x < (VERTEX_COUNT + 3); x++) {
 
-		for (int z = 0; z < (VERTEX_COUNT + 2); z++) {
-			int i = x + z * (VERTEX_COUNT + 2);
+		for (int z = 0; z < (VERTEX_COUNT + 3); z++) {
+			int i = x + z * (VERTEX_COUNT + 3);
 			int height = getHeight(x-1, z-1);
 			m_heightMap[i] = height;
 			//heightMap[i] = 0.0f;
@@ -62,37 +62,37 @@ Mesh * Terrain::generateTerrain()
 	//Erode
 
 	
-	for (int x = 0; x < VERTEX_COUNT; x++) {
+	for (int x = 0; x < VERTEX_COUNT+1; x++) {
 
-		for (int z = 0; z < VERTEX_COUNT; z++) {
+		for (int z = 0; z < VERTEX_COUNT+1; z++) {
 			int i = x + z * VERTEX_COUNT;
 
-			int i2 = (x+1) + ((z+1) * (VERTEX_COUNT + 2));
+			//int i2 = (x+1) + ((z+1) * (VERTEX_COUNT + 2));
 			//assert(i2 < ((VERTEX_COUNT + 2) * (VERTEX_COUNT + 2)));
 
-			vertices[vertexIndex * 3] = (float)(m_tileX * SIZE) + ((float)x / ((float)VERTEX_COUNT - 1.0f) * SIZE);
-			vertices[vertexIndex * 3 + 1] = m_heightMap[i2];
-			vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * SIZE) + ((float)z / ((float)VERTEX_COUNT - 1.0f) * SIZE);
+			vertices[vertexIndex * 3] = (float)(m_tileX * SIZE) + ((float)x / ((float)VERTEX_COUNT) * SIZE);
+			vertices[vertexIndex * 3 + 1] = lookUpHeight(x, z);// m_heightMap[i2];
+			vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * SIZE) + ((float)z / ((float)VERTEX_COUNT) * SIZE);
 
 			//vertices[vertexIndex * 3] = (float)(m_tileX * VERTEX_COUNT) + (float)x - ((float)m_tileX * 1.0f);
 			//vertices[vertexIndex * 3 + 1] = heightMap[i];
 			//vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * VERTEX_COUNT) + (float)z;
 
-			
+			///*
 			glm::vec3 normal = calculateNormal(x, z);
-
 			normals[vertexIndex * 3] = normal.x;
 			normals[vertexIndex * 3 + 1] = normal.y;
 			normals[vertexIndex * 3 + 2] = normal.z;
+			//*/
 
-			
-			//normals[vertexIndex * 3] = 0.0f;
-			//normals[vertexIndex * 3 + 1] = 1.0f;
-			//normals[vertexIndex * 3 + 2] = 0.0f;
+			/*
+			normals[vertexIndex * 3] = 0.0f;
+			normals[vertexIndex * 3 + 1] = 1.0f;
+			normals[vertexIndex * 3 + 2] = 0.0f;
+			*/
 
-
-			textureCoords[vertexIndex * 2] = (float)x / ((float)VERTEX_COUNT - 1.0f);
-			textureCoords[vertexIndex * 2 + 1] = (float)z / ((float)VERTEX_COUNT - 1.0f);
+			textureCoords[vertexIndex * 2] = (float)x / ((float)VERTEX_COUNT);
+			textureCoords[vertexIndex * 2 + 1] = (float)z / ((float)VERTEX_COUNT);
 
 			vertexIndex++;
 		}
@@ -100,12 +100,12 @@ Mesh * Terrain::generateTerrain()
 	}
 
 	vertexIndex = 0;
-	for (int z = 0; z < VERTEX_COUNT -1; z++) {
-		for (int x = 0; x < VERTEX_COUNT - 1; x++) {
-			int topLeft = (z * VERTEX_COUNT) + x;
+	for (int z = 0; z < VERTEX_COUNT; z++) {
+		for (int x = 0; x < VERTEX_COUNT; x++) {
+			int topLeft = (z * (VERTEX_COUNT+1)) + x;
 			int topRight = topLeft + 1;
 
-			int bottomLeft = ((z + 1) * VERTEX_COUNT) + x;
+			int bottomLeft = ((z + 1) * (VERTEX_COUNT+1)) + x;
 			int bottomRight = bottomLeft + 1;
 
 			indices[vertexIndex++] = topLeft;
@@ -143,7 +143,7 @@ float Terrain::getHeight(int x, int z) {
 }
 
 float Terrain::lookUpHeight(int x, int z) {
-	int i = (x + 1) + ((z + 1) * (VERTEX_COUNT + 2));
+	int i = (x + 1) + ((z + 1) * (VERTEX_COUNT + 3));
 	return m_heightMap[i];
 }
 
