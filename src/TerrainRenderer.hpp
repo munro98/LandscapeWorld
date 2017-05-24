@@ -18,7 +18,12 @@ public:
 
 private:
 	TerrainShader m_shader;
-	Texture *m_texture;
+	Texture *m_grass;
+	Texture *m_rock;
+	Texture *m_stones;
+	Texture *m_snow;
+	
+	
 	World &m_world;
 
 	//Terrain m_terrain;

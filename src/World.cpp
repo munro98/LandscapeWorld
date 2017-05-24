@@ -72,7 +72,7 @@ void World::update(float playerX, float playerZ)
 	}
 	*/
 	///*
-	//Remove far chunks
+	//Remove far terrains
 	for (auto it = m_terrains.begin(); it != m_terrains.end();) {
 		auto terrain = it->second;
 		if (abs(terrain->getX() - x) > WORLD_DELETE_RADIUS || abs(terrain->getZ() - z) > WORLD_DELETE_RADIUS) {
@@ -100,13 +100,12 @@ void World::update(float playerX, float playerZ)
 		m_terrains.insert({ terrainPos,  terrain });
 	}
 
-	/*
+	/* Implement if terrain deformation is added
 	if(!m_chunksGenerated.empty())
 	{
 		Terrain* terrain = m_chunksGenerated.front();
 		m_chunksGenerated.pop();
 		//TerrainPosition chunkPos(terrain->getX(), terrain->getZ());
-		long long int terrainPos = TerrainPosition::pack(terrain->getX(), terrain->getZ());
 		auto chunkIt = m_terrains.find(terrainPos);
 
 		
@@ -163,14 +162,13 @@ void World::updateChunk(int x, int z) {
 void World::render(float playerX, float playerZ)
 {
 	for (auto it = m_terrains.begin(); it != m_terrains.end(); ++it) {
-		//std::cout << "rendering" << "\n";
-		//int chunkX = it->second->getChunkX();
-		//int chunkZ = it->second->getChunkZ();
+		//int terrainX = it->second->getX();
+		//int terrainZ = it->second->getZ();
 
 		Terrain *terrain = it->second;
 		Mesh *mesh = terrain->getMesh();
 		Texture *texture = terrain->getBlendMapTexture();
-
+		glActiveTexture(GL_TEXTURE0);
 		texture->bind();
 		
 		glBindVertexArray(mesh->getVaoID());
@@ -184,17 +182,18 @@ void World::render(float playerX, float playerZ)
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
-		//it->second->render();
-
 	}
 }
 
-//TODO
+//TODO Implement this function
 //
 void World::rayCastTerrain(glm::vec3& start, glm::vec3& forward)
 {
+	static float step = 0.1f;
+
 	int x = (int)std::floor(start.x / TERRAIN_SIZE);
 	int z = (int)std::floor(start.z / TERRAIN_SIZE);
+
 
 
 }

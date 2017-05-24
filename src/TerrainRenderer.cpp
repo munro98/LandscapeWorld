@@ -7,7 +7,6 @@
 #include "BlendMapTexture.hpp"
 
 TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix, World &world) : m_shader(TerrainShader("terrainShader")), m_world(world)
-//TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix) : m_shader(TerrainShader("terrainShader"))
 {
 
 	m_shader.use();
@@ -17,17 +16,19 @@ TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix, World &world) : m_s
 
 	m_shader.stop();
 
-	//Generate BlendMapTexture for each Terrain
-	//BlendMapTexture blendMapTexture(2048, 2048);
-	//BlendMapTexture blendMapTexture(2048, 2048, );
-	//m_texture = Loader::loadTexture(2048, 2048, blendMapTexture.m_pixels);
-
-	//m_texture = Loader::loadTexture("ground2048");
+	//m_grass = Loader::loadTexture("ground2048");
+	//m_rock = Loader::loadTexture("rock");
+	//m_stones = Loader::loadTexture("rock");
+	//m_snow = Loader::loadTexture("rock");
 
 }
 
 TerrainRenderer::~TerrainRenderer()
 {
+	//delete m_grass;
+	//delete m_rock;
+	//delete m_stones;
+	//delete m_snow;
 }
 
 void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos)
@@ -40,19 +41,17 @@ void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projecti
 
 	m_shader.loadCamPos(camPos);
 
-	//Bind texture
+	//Bind textures
 
-	glActiveTexture(GL_TEXTURE0);
-	//m_texture->bind();
+	//glActiveTexture(GL_TEXTURE1);
+	//m_grass->bind();
+	//glActiveTexture(GL_TEXTURE2);
+	//m_rock->bind();
+	//glActiveTexture(GL_TEXTURE3);
+	//m_stones->bind();
+	//glActiveTexture(GL_TEXTURE4);
+	//m_snow->bind();
 
-	/*
-	for (int i = 0; i < terrains.size(); i++) {
-		//glBindVertexArray(m_terrain.getMesh()->getVaoID());
-		glBindVertexArray(terrains[i]->getMesh()->getVaoID());
-		//glDrawElements(GL_TRIANGLES, m_terrain.getMesh()->getVertexCount(), GL_UNSIGNED_INT, 0);
-		glDrawElements(GL_TRIANGLES, terrains[i]->getMesh()->getVertexCount(), GL_UNSIGNED_INT, 0);
-	}
-	*/
 	m_world.render(0,0);
 	Texture::unbind();
 
