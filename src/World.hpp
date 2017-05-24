@@ -1,7 +1,7 @@
 #pragma once
 
-#define MAP_UPDATE_RADIUS 4
-#define MAP_DELETE_RADIUS 8
+#define WORLD_UPDATE_RADIUS 4
+#define WORLD_DELETE_RADIUS 8
 
 #include <queue>
 #include <unordered_set>
