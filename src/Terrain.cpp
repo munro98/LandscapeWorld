@@ -1,7 +1,7 @@
 #include "Terrain.hpp"
 
 
-Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(VERTEX_COUNT + 3) * (VERTEX_COUNT + 3)])
+Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(TERRAIN_GRID_SIZE + 3) * (TERRAIN_GRID_SIZE + 3)])
 {
 	std::cout << "terrain: " << tileX << " " << tileZ << "\n";
 	m_mesh = generateTerrain();
@@ -26,7 +26,7 @@ Mesh * Terrain::generateTerrain()
 
 	//std::vector<float> heights();
 
-	int count = (VERTEX_COUNT+1) * (VERTEX_COUNT + 1);
+	int count = (TERRAIN_GRID_SIZE+1) * (TERRAIN_GRID_SIZE + 1);
 
 	std::vector<float> vertices = { -0.5f,-0.5f,0.0f,
 		0.5f,-0.5f,0.0f,
@@ -47,12 +47,12 @@ Mesh * Terrain::generateTerrain()
 	textureCoords.resize(count * 2);
 
 
-	indices.resize(6 * (VERTEX_COUNT)*(VERTEX_COUNT));
+	indices.resize(6 * (TERRAIN_GRID_SIZE)*(TERRAIN_GRID_SIZE));
 
-	for (int x = 0; x < (VERTEX_COUNT + 3); x++) {
+	for (int x = 0; x < (TERRAIN_GRID_SIZE + 3); x++) {
 
-		for (int z = 0; z < (VERTEX_COUNT + 3); z++) {
-			int i = x + z * (VERTEX_COUNT + 3);
+		for (int z = 0; z < (TERRAIN_GRID_SIZE + 3); z++) {
+			int i = x + z * (TERRAIN_GRID_SIZE + 3);
 			int height = getHeight(x-1, z-1);
 			m_heightMap[i] = height;
 			//heightMap[i] = 0.0f;
@@ -62,21 +62,21 @@ Mesh * Terrain::generateTerrain()
 	//Erode
 
 	
-	for (int x = 0; x < VERTEX_COUNT+1; x++) {
+	for (int x = 0; x < TERRAIN_GRID_SIZE+1; x++) {
 
-		for (int z = 0; z < VERTEX_COUNT+1; z++) {
-			int i = x + z * VERTEX_COUNT;
+		for (int z = 0; z < TERRAIN_GRID_SIZE+1; z++) {
+			int i = x + z * TERRAIN_GRID_SIZE;
 
-			//int i2 = (x+1) + ((z+1) * (VERTEX_COUNT + 2));
-			//assert(i2 < ((VERTEX_COUNT + 2) * (VERTEX_COUNT + 2)));
+			//int i2 = (x+1) + ((z+1) * (TERRAIN_GRID_SIZE + 2));
+			//assert(i2 < ((TERRAIN_GRID_SIZE + 2) * (TERRAIN_GRID_SIZE + 2)));
 
-			vertices[vertexIndex * 3] = (float)(m_tileX * SIZE) + ((float)x / ((float)VERTEX_COUNT) * SIZE);
+			vertices[vertexIndex * 3] = (float)(m_tileX * TERRAIN_SIZE) + ((float)x / ((float)TERRAIN_GRID_SIZE) * TERRAIN_SIZE);
 			vertices[vertexIndex * 3 + 1] = lookUpHeight(x, z);// m_heightMap[i2];
-			vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * SIZE) + ((float)z / ((float)VERTEX_COUNT) * SIZE);
+			vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * TERRAIN_SIZE) + ((float)z / ((float)TERRAIN_GRID_SIZE) * TERRAIN_SIZE);
 
-			//vertices[vertexIndex * 3] = (float)(m_tileX * VERTEX_COUNT) + (float)x - ((float)m_tileX * 1.0f);
+			//vertices[vertexIndex * 3] = (float)(m_tileX * TERRAIN_GRID_SIZE) + (float)x - ((float)m_tileX * 1.0f);
 			//vertices[vertexIndex * 3 + 1] = heightMap[i];
-			//vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * VERTEX_COUNT) + (float)z;
+			//vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * TERRAIN_GRID_SIZE) + (float)z;
 
 			///*
 			glm::vec3 normal = calculateNormal(x, z);
@@ -91,8 +91,8 @@ Mesh * Terrain::generateTerrain()
 			normals[vertexIndex * 3 + 2] = 0.0f;
 			*/
 
-			textureCoords[vertexIndex * 2] = (float)x / ((float)VERTEX_COUNT);
-			textureCoords[vertexIndex * 2 + 1] = (float)z / ((float)VERTEX_COUNT);
+			textureCoords[vertexIndex * 2] = (float)x / ((float)TERRAIN_GRID_SIZE);
+			textureCoords[vertexIndex * 2 + 1] = (float)z / ((float)TERRAIN_GRID_SIZE);
 
 			vertexIndex++;
 		}
@@ -100,12 +100,12 @@ Mesh * Terrain::generateTerrain()
 	}
 
 	vertexIndex = 0;
-	for (int z = 0; z < VERTEX_COUNT; z++) {
-		for (int x = 0; x < VERTEX_COUNT; x++) {
-			int topLeft = (z * (VERTEX_COUNT+1)) + x;
+	for (int z = 0; z < TERRAIN_GRID_SIZE; z++) {
+		for (int x = 0; x < TERRAIN_GRID_SIZE; x++) {
+			int topLeft = (z * (TERRAIN_GRID_SIZE+1)) + x;
 			int topRight = topLeft + 1;
 
-			int bottomLeft = ((z + 1) * (VERTEX_COUNT+1)) + x;
+			int bottomLeft = ((z + 1) * (TERRAIN_GRID_SIZE+1)) + x;
 			int bottomRight = bottomLeft + 1;
 
 			indices[vertexIndex++] = topLeft;
@@ -135,15 +135,15 @@ glm::vec3 Terrain::calculateNormal(int x, int z) {
 }
 
 float Terrain::getHeight(int x, int z) {
-	//return HeightGenerator::generateHeight((m_tileX * SIZE) + x, (m_tileZ * SIZE) + z);
+	//return HeightGenerator::generateHeight((m_tileX * TERRAIN_SIZE) + x, (m_tileZ * TERRAIN_SIZE) + z);
 	//return HeightGenerator::generateHeight(x, z);
-	//std::cout << "getHieght: " << (m_tileX * VERTEX_COUNT) + x << " " << (m_tileZ * VERTEX_COUNT) + z << "\n";
-	//return HeightGenerator::generateHeight((m_tileX * VERTEX_COUNT) + x - m_tileX, (m_tileZ * VERTEX_COUNT) + z - m_tileZ);
-	return HeightGenerator::generateHeight((m_tileX * VERTEX_COUNT) + x, (m_tileZ * VERTEX_COUNT) + z);
+	//std::cout << "getHieght: " << (m_tileX * TERRAIN_GRID_SIZE) + x << " " << (m_tileZ * TERRAIN_GRID_SIZE) + z << "\n";
+	//return HeightGenerator::generateHeight((m_tileX * TERRAIN_GRID_SIZE) + x - m_tileX, (m_tileZ * TERRAIN_GRID_SIZE) + z - m_tileZ);
+	return HeightGenerator::generateHeight((m_tileX * TERRAIN_GRID_SIZE) + x, (m_tileZ * TERRAIN_GRID_SIZE) + z);
 }
 
 float Terrain::lookUpHeight(int x, int z) {
-	int i = (x + 1) + ((z + 1) * (VERTEX_COUNT + 3));
+	int i = (x + 1) + ((z + 1) * (TERRAIN_GRID_SIZE + 3));
 	return m_heightMap[i];
 }
 
@@ -157,13 +157,13 @@ float Terrain::barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 
 
 //TODO test this actually works
 float Terrain::getInterpHeight(float x, float z) {
-	float gridSquareSize = (float)SIZE / ((float)VERTEX_COUNT);
+	float gridSquareSize = (float)TERRAIN_SIZE / ((float)TERRAIN_GRID_SIZE);
 	int gridX = (int)std::floor(x / gridSquareSize);
 	int gridZ = (int)std::floor(z / gridSquareSize);
 
 	
 
-	if (gridX >= VERTEX_COUNT || gridZ >= VERTEX_COUNT || gridX < 0 || gridZ < 0) {
+	if (gridX >= TERRAIN_GRID_SIZE || gridZ >= TERRAIN_GRID_SIZE || gridX < 0 || gridZ < 0) {
 		return 0;
 	}
 
