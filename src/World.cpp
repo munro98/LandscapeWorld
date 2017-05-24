@@ -32,8 +32,8 @@ void World::update(float playerX, float playerZ)
 {	
 	///*
 
-	int x = (int)std::floor(playerX / SIZE);
-	int z = (int)std::floor(playerZ / SIZE);
+	int x = (int)std::floor(playerX / TERRAIN_SIZE);
+	int z = (int)std::floor(playerZ / TERRAIN_SIZE);
 
 	//std::cout << x << ", " << z << std::endl;
 
@@ -193,16 +193,16 @@ void World::render(float playerX, float playerZ)
 //
 void World::rayCastTerrain(glm::vec3& start, glm::vec3& forward)
 {
-	int x = (int)std::floor(start.x / SIZE);
-	int z = (int)std::floor(start.z / SIZE);
+	int x = (int)std::floor(start.x / TERRAIN_SIZE);
+	int z = (int)std::floor(start.z / TERRAIN_SIZE);
 
 
 }
 
 Terrain* World::findTerrainAt(float worldX, float worldZ)
 {
-	int x = (int)std::floor(worldX / SIZE);
-	int z = (int)std::floor(worldZ / SIZE);
+	int x = (int)std::floor(worldX / TERRAIN_SIZE);
+	int z = (int)std::floor(worldZ / TERRAIN_SIZE);
 	TerrainPosition terrainPos(x, z);
 	auto chunkIt = m_terrains.find(terrainPos);
 	if (chunkIt == m_terrains.end())
@@ -225,8 +225,8 @@ Terrain* World::findTerrainAt(int x , int z)
 
 float World::heightAt(float worldX, float worldZ)
 {
-	int x = (int)std::floor(worldX / SIZE);
-	int z = (int)std::floor(worldZ / SIZE);
+	int x = (int)std::floor(worldX / TERRAIN_SIZE);
+	int z = (int)std::floor(worldZ / TERRAIN_SIZE);
 
 	TerrainPosition terrainPos(x, z);
 	auto chunkIt = m_terrains.find(terrainPos);
@@ -235,8 +235,8 @@ float World::heightAt(float worldX, float worldZ)
 		return 0;
 	}
 
-	float terrainX = worldX - (x * SIZE);
-	float terrainZ = worldZ - (z * SIZE);
+	float terrainX = worldX - (x * TERRAIN_SIZE);
+	float terrainZ = worldZ - (z * TERRAIN_SIZE);
 	//float height = chunkIt->second->lookUpHeight(terrainX*0.125, terrainZ*0.125);
 	//float height = chunkIt->second->getInterpHeight(worldX, worldZ);
 	float height = chunkIt->second->getInterpHeight(terrainX, terrainZ);

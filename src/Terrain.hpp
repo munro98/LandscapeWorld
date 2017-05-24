@@ -6,8 +6,8 @@
 #include "HeightGenerator.hpp"
 #include "BlendMapTexture.hpp"
 
-#define SIZE 128
-#define VERTEX_COUNT 16
+#define TERRAIN_SIZE 128
+#define TERRAIN_GRID_SIZE 16
 
 
 class Terrain
