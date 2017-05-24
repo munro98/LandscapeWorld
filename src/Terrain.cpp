@@ -1,11 +1,15 @@
 #include "Terrain.hpp"
 
 
-
 Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(VERTEX_COUNT + 2) * (VERTEX_COUNT + 2)])
 {
 	std::cout << "terrain: " << tileX << " " << tileZ << "\n";
 	m_mesh = generateTerrain();
+
+
+	BlendMapTexture blendMapTexture(512, 512, this);
+	m_texture = Loader::loadTexture(512, 512, blendMapTexture.m_pixels);
+	//m_texture = Loader::loadTexture("ground2048");
 }
 
 
@@ -13,6 +17,7 @@ Terrain::~Terrain()
 {
 	delete m_heightMap;
 	delete m_mesh;
+	delete m_texture;
 }
 
 Mesh * Terrain::generateTerrain()
@@ -48,12 +53,9 @@ Mesh * Terrain::generateTerrain()
 
 		for (int z = 0; z < (VERTEX_COUNT + 2); z++) {
 			int i = x + z * (VERTEX_COUNT + 2);
-			//int height = HeightGenerator::generateHeight(m_tileX * SIZE + j, m_tileZ * SIZE + i);
-			//int height = HeightGenerator::generateHeight(m_tileX * (VERTEX_COUNT-1) + x, m_tileZ * (VERTEX_COUNT-1) + z);
-			//int height = HeightGenerator::generateHeight((m_tileX * SIZE) + x, (m_tileZ * SIZE) + z);
 			int height = getHeight(x-1, z-1);
 			m_heightMap[i] = height;
-			//heightMap[i] = 5.0f;
+			//heightMap[i] = 0.0f;
 		}
 	}
 
@@ -136,7 +138,8 @@ float Terrain::getHeight(int x, int z) {
 	//return HeightGenerator::generateHeight((m_tileX * SIZE) + x, (m_tileZ * SIZE) + z);
 	//return HeightGenerator::generateHeight(x, z);
 	//std::cout << "getHieght: " << (m_tileX * VERTEX_COUNT) + x << " " << (m_tileZ * VERTEX_COUNT) + z << "\n";
-	return HeightGenerator::generateHeight((m_tileX * VERTEX_COUNT) + x - m_tileX, (m_tileZ * VERTEX_COUNT) + z - m_tileZ);
+	//return HeightGenerator::generateHeight((m_tileX * VERTEX_COUNT) + x - m_tileX, (m_tileZ * VERTEX_COUNT) + z - m_tileZ);
+	return HeightGenerator::generateHeight((m_tileX * VERTEX_COUNT) + x, (m_tileZ * VERTEX_COUNT) + z);
 }
 
 float Terrain::lookUpHeight(int x, int z) {
@@ -152,12 +155,15 @@ float Terrain::barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 
 	return l1 * p1.y + l2 * p2.y + l3 * p3.y;
 }
 
+//TODO test this actually works
 float Terrain::getInterpHeight(float x, float z) {
-	float gridSquareSize = SIZE / ((float)VERTEX_COUNT - 1.0f);
+	float gridSquareSize = (float)SIZE / ((float)VERTEX_COUNT);
 	int gridX = (int)std::floor(x / gridSquareSize);
 	int gridZ = (int)std::floor(z / gridSquareSize);
 
-	if (gridX >= VERTEX_COUNT - 1 || gridZ >= VERTEX_COUNT - 1 || gridX < 0 || gridZ < 0) {
+	
+
+	if (gridX >= VERTEX_COUNT || gridZ >= VERTEX_COUNT || gridX < 0 || gridZ < 0) {
 		return 0;
 	}
 
@@ -165,25 +171,21 @@ float Terrain::getInterpHeight(float x, float z) {
 	float zCoord = ((int)z % (int)gridSquareSize) / gridSquareSize;
 	float result;
 
-	//heights[gridX][gridZ]
-	if (xCoord <= (1 - zCoord)) {
-		int i1 = (x + 1) + ((z + 1) * (VERTEX_COUNT + 2));
-		int i2 = (x + 1 + 1) + ((z + 1) * (VERTEX_COUNT + 2));
-		int i3 = (x + 1) + ((z + 1 + 1) * (VERTEX_COUNT + 2));
+	//std::cout << gridX << " " << gridZ << " , " << xCoord << " " << zCoord << " " << "\n";
+	//std::cout << xCoord << " " << zCoord << " " << "\n";
 
-		result = barryCentric(glm::vec3(0, m_heightMap[i1], 0), 
-			glm::vec3(1,m_heightMap[i2], 0), 
-			glm::vec3(0,m_heightMap[i2], 1), 
+	if (xCoord <= (1 - zCoord)) {
+
+		result = barryCentric(glm::vec3(0, lookUpHeight(gridX, gridZ), 0),
+			glm::vec3(1, lookUpHeight(gridX +1, gridZ), 0),
+			glm::vec3(0, lookUpHeight(gridX, gridZ +1), 1),
 			glm::vec2(xCoord, zCoord));
 	}
 	else {
-		int i1 = (x + 1 + 1) + ((z + 1) * (VERTEX_COUNT + 2));
-		int i2 = (x + 1 + 1) + ((z + 1 + 1) * (VERTEX_COUNT + 2));
-		int i3 = (x + 1) + ((z + 1 + 1) * (VERTEX_COUNT + 2));
 
-		result = barryCentric(glm::vec3(1, m_heightMap[i1], 0), 
-			glm::vec3(1,m_heightMap[i2], 1), 
-			glm::vec3(0,m_heightMap[i3], 1), 
+		result = barryCentric(glm::vec3(1, lookUpHeight(gridX + 1, gridZ), 0),
+			glm::vec3(1, lookUpHeight(gridX + 1, gridZ +1), 1),
+			glm::vec3(0, lookUpHeight(gridX, gridZ + 1), 1),
 			glm::vec2(xCoord, zCoord));
 	}
 
@@ -193,6 +195,11 @@ float Terrain::getInterpHeight(float x, float z) {
 Mesh * Terrain::getMesh()
 {
 	return m_mesh;
+}
+
+Texture * Terrain::getBlendMapTexture()
+{
+	return m_texture;
 }
 
 int Terrain::getX()

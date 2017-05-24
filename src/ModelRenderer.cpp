@@ -22,7 +22,7 @@ ModelRenderer::~ModelRenderer()
 }
 
 
-void ModelRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection)
+void ModelRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, Mesh* box)
 {
 	m_shader.use();
 	//Update uniforms
@@ -30,7 +30,7 @@ void ModelRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection
 	m_shader.loadViewMatrix(view);
 	m_shader.loadProjectionMatrix(projection);
 
-	glBindVertexArray(m_mesh->getVaoID());
+	glBindVertexArray(box->getVaoID());
 
 
 	glEnableVertexAttribArray(0);
@@ -41,7 +41,7 @@ void ModelRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection
 	glActiveTexture(GL_TEXTURE0);
 	m_texture->bind();
 
-	glDrawElements(GL_TRIANGLES, m_mesh->getVertexCount(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, box->getVertexCount(), GL_UNSIGNED_INT, 0);
 	Texture::unbind();
 
 	glDisableVertexAttribArray(0);

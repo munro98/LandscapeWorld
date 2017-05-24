@@ -20,6 +20,8 @@ public:
 	static void storeDataInAttributeList(int attributeNumber, int coordinateSize, std::vector<float>& data);
 	static void bindIndicesBuffer(std::vector<int>& indices);
 
+	static Texture * loadTexture(int width, int height, int * pixels);
+
 	static Texture* loadTexture(std::string fileName);
 
 	static GLuint loadCubeMap(std::vector<std::string> cubeFaces);

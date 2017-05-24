@@ -4,6 +4,7 @@
 #include "Model.hpp"
 #include "Loader.hpp"
 #include "HeightGenerator.hpp"
+#include "BlendMapTexture.hpp"
 
 #define SIZE 128
 #define VERTEX_COUNT 16
@@ -25,12 +26,14 @@ public:
 	float getInterpHeight(float x, float z);
 
 	Mesh *getMesh();
+	Texture *getBlendMapTexture();
 	int getX();
 	int getZ();
 
 private:
 	int m_tileX, m_tileZ;
 	Mesh * m_mesh;
+	Texture *m_texture;
 	float *m_heightMap;
 };
 

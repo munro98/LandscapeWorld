@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 	}
 
 	glm::mat4 projection = glm::perspective(80.0f, (float)640 / (float)480, 0.1f, 1000.0f);
-	glm::mat4 model;
+	
 
 	World world;
 	
@@ -191,11 +191,14 @@ int main(int argc, char **argv) {
 
 	SkydomeRenderer skydomeRenderer(projection);
 
-	std::vector<Terrain*> terrains;
+	//std::vector<Terrain*> terrains;
 	//terrains.push_back(new Terrain(0, 0));
 	//terrains.push_back(new Terrain(-1, 0));
 	//terrains.push_back(new Terrain(-1, -1));
 	//terrains.push_back(new Terrain(0, -1));
+
+	Mesh *mesh = OBJLoader::loadObjModel("box");
+	
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -268,12 +271,18 @@ int main(int argc, char **argv) {
 		glm::mat4 view;
 		view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFront(), camera.getUp());
 
+		glm::mat4 model(1);
+		
 		//skyboxRenderer.render(view, model);
 		skydomeRenderer.render(view, model);
-
-		modelRenderer.render(view, model, projection);
-
+		
 		terrainRenderer.render(view, model, projection, camera.getPosition());
+
+		//glm::translate(model, camera.getPosition() + glm::vec3(0, -10, 0));
+		float heightAt = world.heightAt(camera.getPosition().x, camera.getPosition().z);
+
+		model = glm::translate(model, glm::vec3(camera.getPosition().x, heightAt, camera.getPosition().z));
+		modelRenderer.render(view, model, projection, mesh);
 
 		
 
