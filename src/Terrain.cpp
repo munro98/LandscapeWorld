@@ -22,12 +22,9 @@ Terrain::~Terrain()
 
 Mesh * Terrain::generateTerrain()
 {
-
-
-	//std::vector<float> heights();
-
 	int count = (TERRAIN_GRID_SIZE+1) * (TERRAIN_GRID_SIZE + 1);
 
+	//TODO use fixed size arrays.
 	std::vector<float> vertices = { -0.5f,-0.5f,0.0f,
 		0.5f,-0.5f,0.0f,
 		0.0f,0.5f,0.0f };
@@ -60,23 +57,17 @@ Mesh * Terrain::generateTerrain()
 	}
 
 	//Erode
-
 	
 	for (int x = 0; x < TERRAIN_GRID_SIZE+1; x++) {
 
 		for (int z = 0; z < TERRAIN_GRID_SIZE+1; z++) {
-			int i = x + z * TERRAIN_GRID_SIZE;
-
+			//int i = x + z * TERRAIN_GRID_SIZE;
 			//int i2 = (x+1) + ((z+1) * (TERRAIN_GRID_SIZE + 2));
 			//assert(i2 < ((TERRAIN_GRID_SIZE + 2) * (TERRAIN_GRID_SIZE + 2)));
 
 			vertices[vertexIndex * 3] = (float)(m_tileX * TERRAIN_SIZE) + ((float)x / ((float)TERRAIN_GRID_SIZE) * TERRAIN_SIZE);
 			vertices[vertexIndex * 3 + 1] = lookUpHeight(x, z);// m_heightMap[i2];
 			vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * TERRAIN_SIZE) + ((float)z / ((float)TERRAIN_GRID_SIZE) * TERRAIN_SIZE);
-
-			//vertices[vertexIndex * 3] = (float)(m_tileX * TERRAIN_GRID_SIZE) + (float)x - ((float)m_tileX * 1.0f);
-			//vertices[vertexIndex * 3 + 1] = heightMap[i];
-			//vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * TERRAIN_GRID_SIZE) + (float)z;
 
 			///*
 			glm::vec3 normal = calculateNormal(x, z);
@@ -135,8 +126,6 @@ glm::vec3 Terrain::calculateNormal(int x, int z) {
 }
 
 float Terrain::getHeight(int x, int z) {
-	//return HeightGenerator::generateHeight((m_tileX * TERRAIN_SIZE) + x, (m_tileZ * TERRAIN_SIZE) + z);
-	//return HeightGenerator::generateHeight(x, z);
 	//std::cout << "getHieght: " << (m_tileX * TERRAIN_GRID_SIZE) + x << " " << (m_tileZ * TERRAIN_GRID_SIZE) + z << "\n";
 	//return HeightGenerator::generateHeight((m_tileX * TERRAIN_GRID_SIZE) + x - m_tileX, (m_tileZ * TERRAIN_GRID_SIZE) + z - m_tileZ);
 	return HeightGenerator::generateHeight((m_tileX * TERRAIN_GRID_SIZE) + x, (m_tileZ * TERRAIN_GRID_SIZE) + z);
@@ -155,7 +144,7 @@ float Terrain::barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 
 	return l1 * p1.y + l2 * p2.y + l3 * p3.y;
 }
 
-//TODO test this actually works
+//TODO it Works!
 float Terrain::getInterpHeight(float x, float z) {
 	float gridSquareSize = (float)TERRAIN_SIZE / ((float)TERRAIN_GRID_SIZE);
 	int gridX = (int)std::floor(x / gridSquareSize);
