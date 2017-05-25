@@ -16,7 +16,7 @@ TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix, World &world) : m_s
 
 	m_shader.stop();
 
-	//m_grass = Loader::loadTexture("ground2048");
+	m_grass = Loader::loadTexture("ground2048");
 	//m_rock = Loader::loadTexture("rock");
 	//m_stones = Loader::loadTexture("rock");
 	//m_snow = Loader::loadTexture("rock");
@@ -42,6 +42,8 @@ void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projecti
 	m_shader.loadCamPos(camPos);
 
 	//Bind textures
+    //glActiveTexture(GL_TEXTURE0);
+    //m_grass->bind();
 
 	//glActiveTexture(GL_TEXTURE1);
 	//m_grass->bind();
