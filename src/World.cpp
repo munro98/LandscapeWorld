@@ -38,7 +38,8 @@ void World::update(float playerX, float playerZ)
 	//std::cout << x << ", " << z << std::endl;
 
 	updateChunk(x, z);
-	/*
+	///*
+#if 0
 	int di = 1;
 	int dj = 0;
 	int segmentLength = 1;
@@ -70,7 +71,8 @@ void World::update(float playerX, float playerZ)
 			}
 		}
 	}
-	*/
+#endif
+	//*/
 	///*
 	//Remove far terrains
 	for (auto it = m_terrains.begin(); it != m_terrains.end();) {

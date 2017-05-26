@@ -15,6 +15,8 @@ public:
 
 	void getAllUniformLocations();
 
+	void loadTextures();
+
 	void loadModelMatrix(glm::mat4 mat);
 
 	void loadViewMatrix(glm::mat4 mat);
@@ -37,5 +39,11 @@ private:
 	GLuint m_location_lightColour;
 
 	GLuint m_location_camPos;
+
+	GLuint m_location_blend;
+	GLuint m_location_grass;
+	GLuint m_location_stones;
+	GLuint m_location_rock;
+	GLuint m_location_snow;
 };
 

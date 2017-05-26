@@ -30,8 +30,27 @@ void TerrainShader::getAllUniformLocations()
 
 
 	m_location_camPos = Shader::getUniformLocation("camPos");
+
+	m_location_blend = Shader::getUniformLocation("blend");
+	m_location_grass = Shader::getUniformLocation("grass");
+	m_location_stones = Shader::getUniformLocation("stones");
+	m_location_rock = Shader::getUniformLocation("rock");
+	m_location_snow = Shader::getUniformLocation("snow");
+
+
+	
 	//assert(m_location_lightPosition != 0);
 	//assert(m_location_lightColour != 0);
+}
+
+
+void TerrainShader::loadTextures()
+{
+	Shader::loadInt(m_location_blend, 0);
+	Shader::loadInt(m_location_grass, 1);
+	Shader::loadInt(m_location_rock, 2);
+	Shader::loadInt(m_location_stones, 3);
+	Shader::loadInt(m_location_snow, 4);
 }
 
 
