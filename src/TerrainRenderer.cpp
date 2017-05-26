@@ -28,10 +28,10 @@ TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix, World &world) : m_s
 
 TerrainRenderer::~TerrainRenderer()
 {
-	//delete m_grass;
-	//delete m_rock;
-	//delete m_stones;
-	//delete m_snow;
+	delete m_grass;
+	delete m_rock;
+	delete m_stones;
+	delete m_snow;
 }
 
 void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos)

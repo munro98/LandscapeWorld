@@ -250,11 +250,31 @@ int main(int argc, char **argv) {
 			camera.backward(deltaFrame);
 		}
 
+		if (glfwGetKey(window, GLFW_KEY_F))
+		{
+			camera.left(deltaFrame);
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_H))
+		{
+			camera.right(deltaFrame);
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_T))
+		{
+			camera.forward(deltaFrame);
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_G))
+		{
+			camera.backward(deltaFrame);
+		}
+
 		glm::vec3 cameraPos = camera.getPosition();
 
 		world.update(cameraPos.x, cameraPos.z);
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.564f, 0.682f, 0.831f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(90.0f, (float)width / (float)height, 0.1f, 1000.0f);
@@ -262,7 +282,7 @@ int main(int argc, char **argv) {
 
 		//glDisable(GL_CULL_FACE);
 		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
+		
 
 
 		//triangleRenderer.render();
@@ -274,14 +294,18 @@ int main(int argc, char **argv) {
 		glm::mat4 model(1);
 		
 		//skyboxRenderer.render(view, model);
+		glDisable(GL_DEPTH_TEST);
 		skydomeRenderer.render(view, model);
-		
+		glEnable(GL_DEPTH_TEST);
 		terrainRenderer.render(view, model, projection, camera.getPosition());
 
 		//glm::translate(model, camera.getPosition() + glm::vec3(0, -10, 0));
-		float heightAt = world.heightAt(camera.getPosition().x, camera.getPosition().z);
+		//float heightAt = world.heightAt(camera.getPosition().x, camera.getPosition().z);
+		//model = glm::translate(model, glm::vec3(camera.getPosition().x, heightAt, camera.getPosition().z));
 
-		model = glm::translate(model, glm::vec3(camera.getPosition().x, heightAt, camera.getPosition().z));
+		float heightAt = world.heightAt(50, 50);
+		model = glm::translate(model, glm::vec3(50, heightAt, 50));
+
 		modelRenderer.render(view, model, projection, mesh);
 
 		

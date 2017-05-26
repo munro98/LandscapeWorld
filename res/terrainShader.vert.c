@@ -10,11 +10,18 @@ out vec3 WorldPos;
 
 out vec3 _toLightVector;
 
+out float visibility;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform vec3 camPos;
+
 uniform vec3 lightPosition;
+
+const float density = 0.002;
+const float gradient = 4.0;
 
 void main()
 {
@@ -22,6 +29,11 @@ void main()
 	gl_Position = projection * view * worldPosition;
 	Normal = mat3(model) * normal;
 	WorldPos = worldPosition.xyz;
+
+	float distance = length(camPos - worldPosition.xyz);
+	
+	visibility = exp(-pow((distance*density),gradient));
+	visibility = clamp(visibility, 0.0, 1.0);
 
 
 	TexCoords = textureCoords;

@@ -5,22 +5,42 @@ in vec3 WorldPos;
 
 in vec3 _toLightVector;
 
+in float visibility;
+
 out vec4 color;
 
 
-uniform sampler2D ourTexture1;
+uniform sampler2D blend;
+uniform sampler2D grass;
+uniform sampler2D rock;
+uniform sampler2D stones;
+uniform sampler2D snow;
 //uniform vec3 light_direction;
-const vec3 light_direction = vec3(-0.5, 0.6, 0.7);
+
 uniform vec3 lightPosition;
 uniform vec3 lightColour;
 
 
 uniform vec3 camPos;
 
+const vec3 light_direction = vec3(-0.5, 0.6, 0.7);
+const vec3 skyColour = vec3(0.564, 0.682, 0.831);
+//const float visibility = 0.5f;
+
+
 void main()
 {
-	//vec2 tiledTexCoords = TexCoords * 40;
-	vec2 tiledTexCoords = TexCoords;
+	vec2 tiledTexCoords = TexCoords * 40;
+
+	vec4 blendColour = texture(blend, TexCoords);
+
+	vec3 grassColour = texture(grass, tiledTexCoords).xyz * blendColour.g;
+	vec3 rockColour = texture(rock, tiledTexCoords).xyz * blendColour.g;
+	vec3 stonesColour = texture(stones, tiledTexCoords).xyz * blendColour.g;
+	vec3 snowColour = texture(snow, tiledTexCoords).xyz * blendColour.r;
+
+	vec3 texDiffuse = grassColour + snowColour;
+
 
 	vec3 unitNormal = normalize(Normal);
 	vec3 finalColour = vec3(0.0);
@@ -33,8 +53,10 @@ void main()
 
 	finalColour = finalColour + (nDotl * lightColour);
 
-	vec3 texDiffuse = texture(ourTexture1, tiledTexCoords).xyz;
+	//vec3 texDiffuse = texture(blend, TexCoords).xyz;
+	//vec3 texDiffuse = texture(snow, tiledTexCoords).xyz;
+	//mix(vec4(skyColour,1.0),out_Color, visibility);
+	color = mix(vec4(skyColour,1.0), vec4(finalColour * texDiffuse, 1.0), visibility);
 
-	color = vec4(finalColour * texDiffuse, 1.0);
 	//color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }

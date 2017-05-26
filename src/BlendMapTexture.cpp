@@ -3,10 +3,8 @@
 #include "Terrain.hpp"
 
 //BlendMapTexture::BlendMapTexture(int width, int height, Terrain *terrain) : m_width(width), m_height(height)
-BlendMapTexture::BlendMapTexture(int width, int height, Terrain *t) : m_width(width), m_height(height)
+BlendMapTexture::BlendMapTexture(int width, int height, Terrain *t) : m_width(width), m_height(height), m_pixels(new int[width * height])
 {
-	m_pixels = new int[width * height];
-
 
 	for (int row = 0; row < width; row++) {
 		for (int col = 0; col < height; col++) {
@@ -18,7 +16,7 @@ BlendMapTexture::BlendMapTexture(int width, int height, Terrain *t) : m_width(wi
 
 			//int index = col + row * width;
 
-			int r = 0;//t->lookUpHeight(col / 128, row / 128) * 2 + 50;
+			int r = 0; // 
 			int g = 0;
 			int b = 0;
 			int a = 0;

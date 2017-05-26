@@ -6,6 +6,9 @@ out vec4 color;
 
 uniform sampler2D ourTexture1;
 
+const vec3 light_direction = vec3(-0.5, 0.6, 0.7);
+const vec3 light_colour = vec3(1.4, 1.4, 1.4);
+
 void main()
 {
 	color = texture(ourTexture1, TexCoord);
