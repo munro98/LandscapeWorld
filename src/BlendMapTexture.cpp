@@ -23,11 +23,18 @@ BlendMapTexture::BlendMapTexture(int width, int height, Terrain *t) : m_width(wi
 
 			//if (t->lookUpHeight(col/32, row/32) > 0) {
 			//if (row > 8) {
-			if (t->getInterpHeight(col / 4, row / 4) > 0) {
-				r = 255;
+			float height = t->getInterpHeight(col / 4, row / 4);
+			if (height > 30) { // 30 grass
+				r = 255; // snow
+			}
+			else if (height > 10) { // 20 rock
+				a = 255; // rock
+			}
+			else if (height > -60){ // 40 grass
+				g = 255; // grass
 			}
 			else {
-				g = 255;
+				b = 255; // stones
 			}
 
 			int colour = r | (g << 8) | (b << 16) | (a << 24);

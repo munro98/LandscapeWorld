@@ -2,7 +2,9 @@
 
 #define WORLD_UPDATE_RADIUS 12
 #define WORLD_DELETE_RADIUS 16
+#define THREADS 2
 
+#include <mutex>
 
 #include <queue>
 #include <unordered_set>
@@ -21,6 +23,7 @@ public:
 
 	void update(float playerX, float playerZ);
 	void updateChunk(int x, int z);
+	void threadUpdateTerrains();
 	void render(float x, float y);
 	void rayCastTerrain(glm::vec3 & start, glm::vec3 & forward);
 	Terrain * findTerrainAt(float worldX, float worldZ);
@@ -31,8 +34,20 @@ public:
 private:
 	
 	std::unordered_map<TerrainPosition,  Terrain*> m_terrains;
-	std::unordered_set<TerrainPosition> m_chunksToAddToMap;
-	std::queue<TerrainPosition> m_chunksToGenerate;
+	std::unordered_set<TerrainPosition> m_terrainsToAddToMap;
+	std::queue<TerrainPosition> m_terrainsToGenerate;
+	std::queue<Terrain*> m_terrainsGenerated;
+
+
+	std::mutex m_terrainsGeneratedMutex;
+	std::mutex m_terrainsToGenerateMutex;
+	std::mutex m_threadMutex;
+	std::condition_variable m_threadVariable;
+
+	std::condition_variable m_threadEndVariable;
+	std::mutex m_threadEndMutex;
+
+	std::thread *m_threads[THREADS];
 
 	bool m_isRunning;
 };

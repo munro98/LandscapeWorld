@@ -7,7 +7,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include<glm/glm.hpp>
@@ -178,24 +177,16 @@ int main(int argc, char **argv) {
 		abort();
 	}
 
-	glm::mat4 projection = glm::perspective(80.0f, (float)640 / (float)480, 0.1f, 1000.0f);
+	glm::mat4 projection = glm::perspective(80.0f, (float)640 / (float)480, 0.5f, 2000.0f);
 	
 
 	World world;
-	
-	//SkyboxRenderer skyboxRenderer(projection);
-	TriangleRenderer triangleRenderer;
+	//TriangleRenderer triangleRenderer;
 	ModelRenderer modelRenderer(projection);
-
 	TerrainRenderer terrainRenderer(projection, world);
-
 	SkydomeRenderer skydomeRenderer(projection);
 
-	//std::vector<Terrain*> terrains;
-	//terrains.push_back(new Terrain(0, 0));
-	//terrains.push_back(new Terrain(-1, 0));
-	//terrains.push_back(new Terrain(-1, -1));
-	//terrains.push_back(new Terrain(0, -1));
+
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");
 	
@@ -277,12 +268,12 @@ int main(int argc, char **argv) {
 		glClearColor(0.564f, 0.682f, 0.831f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		projection = glm::perspective(90.0f, (float)width / (float)height, 0.1f, 1000.0f);
+		projection = glm::perspective(90.0f, (float)width / (float)height, 0.5f, 2000.0f);
 
 
 		//glDisable(GL_CULL_FACE);
 		glEnable(GL_CULL_FACE);
-		
+		glEnable(GL_DEPTH_TEST);
 
 
 		//triangleRenderer.render();
@@ -294,9 +285,11 @@ int main(int argc, char **argv) {
 		glm::mat4 model(1);
 		
 		//skyboxRenderer.render(view, model);
-		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_DEPTH_TEST);
+		
 		skydomeRenderer.render(view, model);
-		glEnable(GL_DEPTH_TEST);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		//glEnable(GL_DEPTH_TEST);
 		terrainRenderer.render(view, model, projection, camera.getPosition());
 
 		//glm::translate(model, camera.getPosition() + glm::vec3(0, -10, 0));

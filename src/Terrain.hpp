@@ -7,7 +7,7 @@
 #include "BlendMapTexture.hpp"
 
 #define TERRAIN_SIZE 128
-#define TERRAIN_GRID_SIZE 16
+#define TERRAIN_GRID_SIZE 32
 
 
 class Terrain
@@ -15,6 +15,8 @@ class Terrain
 public:
 	Terrain(int tileX, int tileZ);
 	~Terrain();
+
+	void sendToGPU();
 
 	Mesh* generateTerrain();
 

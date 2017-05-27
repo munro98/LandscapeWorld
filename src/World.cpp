@@ -7,6 +7,11 @@ World::World() : m_isRunning(true)
 	TerrainPosition terrainPos(0, 0);
 	Terrain* terrain = new Terrain(0, 0);
 	m_terrains.insert({ terrainPos,  terrain });
+
+	for (int i = 0; i < THREADS; ++i)
+	{
+		//m_threads[i] = new std::thread(&World::threadUpdateTerrains, this);
+	}
 }
 
 World::~World()
@@ -19,13 +24,13 @@ World::~World()
 		++it;
 		m_terrains.erase(toErase);
 	}
-	/*
-	while (!m_chunksGenerated.empty())
+	///*
+	while (!m_terrainsGenerated.empty())
 	{
-		delete m_chunksGenerated.front();
-		m_chunksGenerated.pop();
+		delete m_terrainsGenerated.front();
+		m_terrainsGenerated.pop();
 	}
-	*/
+	//*/
 }
 
 void World::update(float playerX, float playerZ)
@@ -39,7 +44,7 @@ void World::update(float playerX, float playerZ)
 
 	updateChunk(x, z);
 	///*
-#if 0
+#if 1
 	int di = 1;
 	int dj = 0;
 	int segmentLength = 1;
@@ -90,14 +95,11 @@ void World::update(float playerX, float playerZ)
 	}
 	//*/
 
-	if (!m_chunksToGenerate.empty())
+	if (!m_terrainsToGenerate.empty())
 	{
-		TerrainPosition terrainPos = m_chunksToGenerate.front();
-		m_chunksToGenerate.pop();
-		int unpacked[2];
-		//TerrainPosition::unpack(terrainPos, &unpacked[0], &unpacked[1]);
+		TerrainPosition terrainPos = m_terrainsToGenerate.front();
+		m_terrainsToGenerate.pop();
 		Terrain* terrain = new Terrain(terrainPos.x, terrainPos.z);
-		//Terrain* terrain = new Terrain(unpacked[0], unpacked[1]);
 
 		m_terrains.insert({ terrainPos,  terrain });
 	}
@@ -151,11 +153,38 @@ void World::update(float playerX, float playerZ)
 void World::updateChunk(int x, int z) {
 	TerrainPosition terrainPos(x, z);
 	auto chunkIt = m_terrains.find(terrainPos);
-	auto chunkSetIt = m_chunksToAddToMap.find(terrainPos);
-	if (chunkIt == m_terrains.end() && chunkSetIt == m_chunksToAddToMap.end())
+	auto chunkSetIt = m_terrainsToAddToMap.find(terrainPos);
+	if (chunkIt == m_terrains.end() && chunkSetIt == m_terrainsToAddToMap.end())
 	{
-		m_chunksToAddToMap.insert(terrainPos);
-		m_chunksToGenerate.push(terrainPos);
+		m_terrainsToAddToMap.insert(terrainPos);
+		m_terrainsToGenerate.push(terrainPos);
+	}
+
+}
+
+void World::threadUpdateTerrains() {
+
+	while (m_isRunning) {
+		//m_ChunkSetQueue lock
+		m_terrainsToGenerateMutex.lock();
+		if (!m_terrainsToGenerate.empty())
+		{
+			TerrainPosition terrainPos = m_terrainsToGenerate.front();
+			m_terrainsToGenerate.pop();
+			m_terrainsToGenerateMutex.unlock();
+
+			Terrain* terrain = new Terrain(terrainPos.x, terrainPos.z);
+
+			m_terrainsGeneratedMutex.lock();
+			m_terrainsGenerated.push(terrain);
+			m_terrainsGeneratedMutex.unlock();
+		}
+		else
+		{
+			m_terrainsToGenerateMutex.unlock();
+			std::unique_lock<std::mutex> lck(m_threadMutex);
+			m_threadVariable.wait(lck);
+		}
 	}
 
 }
@@ -241,6 +270,6 @@ float World::heightAt(float worldX, float worldZ)
 	//float height = chunkIt->second->lookUpHeight(terrainX*0.125, terrainZ*0.125);
 	//float height = chunkIt->second->getInterpHeight(worldX, worldZ);
 	float height = chunkIt->second->getInterpHeight(terrainX, terrainZ);
-	std::cout << terrainX << " " << terrainZ << " " << height << "\n";
+	//std::cout << terrainX << " " << terrainZ << " " << height << "\n";
 	return height;
 }

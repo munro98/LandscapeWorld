@@ -12,14 +12,20 @@ HeightGenerator::~HeightGenerator()
 {
 }
 
-int HeightGenerator::generateHeight(int x, int z)
+float HeightGenerator::generateHeight(int x, int z)
 {
 	//return generateSmoothNoise(x, z);
+	//generateInterpolatedNoise((float)x / FREQUENCY, (float)z / FREQUENCY) * NOISE_AMPLITUDE;
+	float value = 0;
+	//value += generateInterpolatedNoise((float)x / 15.0f, (float)z / 15.0f) * 25;
+	//value += generateInterpolatedNoise((float)x / 40.0f, (float)z / 40.0f) * 75;
+	//value += generateInterpolatedNoise((float)x / 8.0f, (float)z / 8.0f) * 16;
+	//value += generateInterpolatedNoise((float)x / 4.0f, (float)z / 4.0f) * 8;
 
-	float value =  generateInterpolatedNoise((float)x / 15.0f, (float)z / 15.0f) * 50;
-	value += generateInterpolatedNoise((float)x / 8.0f, (float)z / 8.0f) * 32;
-	value += generateInterpolatedNoise((float)x / 4.0f, (float)z / 4.0f) * 16;
-	//value += generateInterpolatedNoise((float)x / 0.8f, (float)z / 0.8f) * 16;
+	value += generateInterpolatedNoise((float)x / 100.0f, (float)z / 100.0f) * 120.0;
+	value += generateInterpolatedNoise((float)x / 40.0f, (float)z / 40.0f) * 75;
+	value += generateInterpolatedNoise((float)x / 8.0f, (float)z / 8.0f) * 8;
+	value += generateInterpolatedNoise((float)x / 2.0f, (float)z / 2.0f) * 0.6;
 
 
 	//value += generateInterpolatedNoise((float)x / 4.0f, (float)z / 4.0f) * 64;
@@ -62,11 +68,12 @@ float HeightGenerator::lerp(float a, float b, float f)
 
 float HeightGenerator::generateSmoothNoise(int x, int z)
 {
-	//float corners = (generateNoise2(x-1, z-1) + generateNoise2(x+1, z-1) + generateNoise2(x-1, z+1) + generateNoise2(x+1, z+1)) / 8.0f;
-	float sides = (generateNoise(x - 1, z) + generateNoise(x + 1, z) + generateNoise(x, z - 1) + generateNoise(x, z + 1)) / 4.0f;
+	//float corners = (generateNoise(x-1, z-1) + generateNoise(x+1, z-1) + generateNoise(x-1, z+1) + generateNoise(x+1, z+1)) / 8.0f;
+	//float sides = (generateNoise(x - 1, z) + generateNoise(x + 1, z) + generateNoise(x, z - 1) + generateNoise(x, z + 1)) / 4.0f;
 	float center = generateNoise(x, z);
-	return center;// +corners;// + sides
+	//return center + sides + corners;// +corners;// + sides
 	//return center + corners + sides;
+	return center;
 }
 
 ///*
