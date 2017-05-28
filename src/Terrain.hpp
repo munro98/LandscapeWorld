@@ -9,6 +9,15 @@
 #define TERRAIN_SIZE 128
 #define TERRAIN_GRID_SIZE 32
 
+#define TERRAIN_GRID_ELEMENTS (TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE)
+
+#define HEIGHTMAP_SIZE (TERRAIN_GRID_SIZE+1)
+
+#define HEIGHTMAP_ELEMENTS (HEIGHTMAP_SIZE * HEIGHTMAP_SIZE)
+
+#define VERTICES_ELEMENTS (HEIGHTMAP_ELEMENTS * 3)
+#define INDICES_ELEMENTS (6 * (TERRAIN_GRID_SIZE)*(TERRAIN_GRID_SIZE))
+
 
 class Terrain
 {
@@ -18,7 +27,7 @@ public:
 
 	void sendToGPU();
 
-	Mesh* generateTerrain();
+	void generateTerrain();
 
 	glm::vec3 calculateNormal(int x, int z);
 
@@ -34,8 +43,16 @@ public:
 
 private:
 	int m_tileX, m_tileZ;
+
 	Mesh * m_mesh;
 	Texture *m_texture;
 	float *m_heightMap;
+
+	BlendMapTexture *m_blendMapTexture;
+
+	std::vector<float> *m_vertices;
+	std::vector<float> *m_normals;
+	std::vector<float> *m_textureCoords;
+	std::vector<int> *m_indices;
 };
 

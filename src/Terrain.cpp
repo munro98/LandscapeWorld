@@ -3,13 +3,20 @@
 
 Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(TERRAIN_GRID_SIZE + 3) * (TERRAIN_GRID_SIZE + 3)])
 {
-	std::cout << "terrain: " << tileX << " " << tileZ << "\n";
-	m_mesh = generateTerrain();
+	//std::cout << "terrain: " << tileX << " " << tileZ << "\n";
+	
+	
+	generateTerrain();
+	m_blendMapTexture = new BlendMapTexture(512, 512, this);
 
+	//m_mesh = Loader::loadToVAO(*m_vertices, *m_textureCoords, *m_normals, *m_indices);
+	//m_blendMapTexture = new BlendMapTexture (512, 512, this);
+	//m_texture = Loader::loadTexture(512, 512, m_blendMapTexture->m_pixels);
 
-	BlendMapTexture blendMapTexture(512, 512, this);
-	m_texture = Loader::loadTexture(512, 512, blendMapTexture.m_pixels);
-	//m_texture = Loader::loadTexture("ground2048");
+	//sendToGPU();
+	//m_blendMapTexture = new BlendMapTexture(512, 512, this);
+	//m_texture = Loader::loadTexture(512, 512, m_blendMapTexture->m_pixels);
+	//m_mesh = Loader::loadToVAO(*m_vertices, *m_textureCoords, *m_normals, *m_indices);
 }
 
 
@@ -21,30 +28,33 @@ Terrain::~Terrain()
 }
 
 void Terrain::sendToGPU() {
-	//m_texture = Loader::loadTexture(512, 512, blendMapTexture.m_pixels);
-	//Mesh *mesh = Loader::loadToVAO(vertices, textureCoords, normals, indices);
+
+	
+	m_texture = Loader::loadTexture(512, 512, m_blendMapTexture->m_pixels);
+	m_mesh = Loader::loadToVAO(*m_vertices, *m_textureCoords, *m_normals, *m_indices);
+
+	delete m_vertices;
+	delete m_normals;
+	delete m_textureCoords;
+	delete m_indices;
+	delete m_blendMapTexture;
 }
 
-Mesh * Terrain::generateTerrain()
+void Terrain::generateTerrain()
 {
 	int count = (TERRAIN_GRID_SIZE+1) * (TERRAIN_GRID_SIZE + 1);
 
-	//TODO use fixed size arrays.
-	///*
-	std::vector<float> vertices(count * 3);
-	std::vector<float> normals(count * 3);
-	std::vector<float> textureCoords(count * 2);
-	std::vector<int> indices(6 * (TERRAIN_GRID_SIZE)*(TERRAIN_GRID_SIZE));
-	//*/
-	int vertexIndex = 0;
+	//std::vector<float> vertices(count * 3);
+	//std::vector<float> normals(count * 3);
+	//std::vector<float> textureCoords(count * 2);
+	//std::vector<int> indices(6 * (TERRAIN_GRID_SIZE)*(TERRAIN_GRID_SIZE));
 
-	/*
-	float *vertices = new float[count * 3];
-	float *normals = new float[count * 3];
-	float *textureCoords = new float[count * 2];
-	float *indices = new float[6 * (TERRAIN_GRID_SIZE)*(TERRAIN_GRID_SIZE)];
-	*/
-	
+	m_vertices = new std::vector<float> (count * 3);
+	m_normals = new std::vector<float> (count * 3);
+	m_textureCoords = new std::vector<float> (count * 2);
+	m_indices = new std::vector<int> (6 * (TERRAIN_GRID_SIZE)*(TERRAIN_GRID_SIZE));
+
+	int vertexIndex = 0;
 
 	for (int x = 0; x < (TERRAIN_GRID_SIZE + 3); x++) {
 
@@ -66,15 +76,15 @@ Mesh * Terrain::generateTerrain()
 			//int i2 = (x+1) + ((z+1) * (TERRAIN_GRID_SIZE + 2));
 			//assert(i2 < ((TERRAIN_GRID_SIZE + 2) * (TERRAIN_GRID_SIZE + 2)));
 
-			vertices[vertexIndex * 3] = (float)(m_tileX * TERRAIN_SIZE) + ((float)x / ((float)TERRAIN_GRID_SIZE) * TERRAIN_SIZE);
-			vertices[vertexIndex * 3 + 1] = lookUpHeight(x, z);// m_heightMap[i2];
-			vertices[vertexIndex * 3 + 2] = (float)(m_tileZ * TERRAIN_SIZE) + ((float)z / ((float)TERRAIN_GRID_SIZE) * TERRAIN_SIZE);
+			(*m_vertices)[vertexIndex * 3] = (float)(m_tileX * TERRAIN_SIZE) + ((float)x / ((float)TERRAIN_GRID_SIZE) * TERRAIN_SIZE);
+			(*m_vertices)[vertexIndex * 3 + 1] = lookUpHeight(x, z);// m_heightMap[i2];
+			(*m_vertices)[vertexIndex * 3 + 2] = (float)(m_tileZ * TERRAIN_SIZE) + ((float)z / ((float)TERRAIN_GRID_SIZE) * TERRAIN_SIZE);
 
 			///*
 			glm::vec3 normal = calculateNormal(x, z);
-			normals[vertexIndex * 3] = normal.x;
-			normals[vertexIndex * 3 + 1] = normal.y;
-			normals[vertexIndex * 3 + 2] = normal.z;
+			(*m_normals)[vertexIndex * 3] = normal.x;
+			(*m_normals)[vertexIndex * 3 + 1] = normal.y;
+			(*m_normals)[vertexIndex * 3 + 2] = normal.z;
 			//*/
 
 			/*
@@ -83,8 +93,8 @@ Mesh * Terrain::generateTerrain()
 			normals[vertexIndex * 3 + 2] = 0.0f;
 			*/
 
-			textureCoords[vertexIndex * 2] = (float)x / ((float)TERRAIN_GRID_SIZE);
-			textureCoords[vertexIndex * 2 + 1] = (float)z / ((float)TERRAIN_GRID_SIZE);
+			(*m_textureCoords)[vertexIndex * 2] = (float)x / ((float)TERRAIN_GRID_SIZE);
+			(*m_textureCoords)[vertexIndex * 2 + 1] = (float)z / ((float)TERRAIN_GRID_SIZE);
 
 			vertexIndex++;
 		}
@@ -101,12 +111,12 @@ Mesh * Terrain::generateTerrain()
 			int bottomLeft = ((z + 1) * (TERRAIN_GRID_SIZE+1)) + x;
 			int bottomRight = bottomLeft + 1;
 
-			indices[vertexIndex++] = topLeft;
-			indices[vertexIndex++] = topRight;
-			indices[vertexIndex++] = bottomLeft;
-			indices[vertexIndex++] = topRight;
-			indices[vertexIndex++] = bottomRight;
-			indices[vertexIndex++] = bottomLeft;
+			(*m_indices)[vertexIndex++] = topLeft;
+			(*m_indices)[vertexIndex++] = topRight;
+			(*m_indices)[vertexIndex++] = bottomLeft;
+			(*m_indices)[vertexIndex++] = topRight;
+			(*m_indices)[vertexIndex++] = bottomRight;
+			(*m_indices)[vertexIndex++] = bottomLeft;
 
 		}
 	}
@@ -146,10 +156,6 @@ Mesh * Terrain::generateTerrain()
 
 	}
 	*/
-	
-
-	Mesh *mesh = Loader::loadToVAO(vertices, textureCoords, normals, indices);
-	return mesh;
 }
 
 glm::vec3 Terrain::calculateNormal(int x, int z) {

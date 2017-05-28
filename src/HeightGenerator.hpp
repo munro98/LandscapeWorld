@@ -21,6 +21,12 @@ public:
 	static float generateSmoothNoise(int x, int z);
 	static float generateNoise(int x, int z);
 
+	static float generateNoise2(int x, int z);
+
+	static int hash(int key);
+
+	static int hash(int x, int y);
+
 	static int generateRandomInt(int startRange, int endRange);
 
 	static float generateRandomFloat(int startRange, int endRange);

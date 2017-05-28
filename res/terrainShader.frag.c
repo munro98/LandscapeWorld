@@ -35,11 +35,11 @@ void main()
 	vec4 blendColour = texture(blend, TexCoords);
 
 	vec3 grassColour = texture(grass, tiledTexCoords).xyz * blendColour.g;
-	vec3 rockColour = texture(rock, tiledTexCoords).xyz * blendColour.g;
-	vec3 stonesColour = texture(stones, tiledTexCoords).xyz * blendColour.g;
+	vec3 rockColour = texture(rock, tiledTexCoords).xyz * blendColour.a;
+	vec3 stonesColour = texture(stones, tiledTexCoords).xyz * blendColour.b;
 	vec3 snowColour = texture(snow, tiledTexCoords).xyz * blendColour.r;
 
-	vec3 texDiffuse = grassColour + snowColour;
+	vec3 texDiffuse = grassColour + snowColour + stonesColour + rockColour;
 
 
 	vec3 unitNormal = normalize(Normal);

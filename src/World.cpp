@@ -6,16 +6,29 @@ World::World() : m_isRunning(true)
 {
 	TerrainPosition terrainPos(0, 0);
 	Terrain* terrain = new Terrain(0, 0);
+	terrain->sendToGPU();
 	m_terrains.insert({ terrainPos,  terrain });
 
 	for (int i = 0; i < THREADS; ++i)
 	{
-		//m_threads[i] = new std::thread(&World::threadUpdateTerrains, this);
+		m_threads[i] = new std::thread(&World::threadUpdateTerrains, this);
 	}
 }
 
 World::~World()
 {
+	m_isRunning = false;
+	m_threadVariable.notify_all();
+
+	for (int i = 0; i < THREADS; ++i)
+	{
+		m_threads[i]->join();
+	}
+
+	for (int i = 0; i < THREADS; ++i)
+	{
+		delete m_threads[i];
+	}
 
 	for (auto it = m_terrains.begin(); it != m_terrains.end();) {
 		auto terrain = it->second;
@@ -30,6 +43,8 @@ World::~World()
 		delete m_terrainsGenerated.front();
 		m_terrainsGenerated.pop();
 	}
+
+	
 	//*/
 }
 
@@ -95,13 +110,56 @@ void World::update(float playerX, float playerZ)
 	}
 	//*/
 
+	/*
 	if (!m_terrainsToGenerate.empty())
 	{
 		TerrainPosition terrainPos = m_terrainsToGenerate.front();
 		m_terrainsToGenerate.pop();
 		Terrain* terrain = new Terrain(terrainPos.x, terrainPos.z);
 
+		terrain->sendToGPU();
+
 		m_terrains.insert({ terrainPos,  terrain });
+	}
+	*/
+	/*
+	m_terrainsToGenerateMutex.lock();
+	if (!m_terrainsToGenerate.empty())
+	{
+		TerrainPosition terrainPos = m_terrainsToGenerate.front();
+		m_terrainsToGenerate.pop();
+		m_terrainsToGenerateMutex.unlock();
+
+		Terrain* terrain = new Terrain(terrainPos.x, terrainPos.z);
+
+		m_terrainsGeneratedMutex.lock();
+		m_terrainsGenerated.push(terrain);
+		m_terrainsGeneratedMutex.unlock();
+	}
+	else
+	{
+		m_terrainsToGenerateMutex.unlock();
+	}
+	*/
+
+	m_terrainsGeneratedMutex.lock();
+	if (!m_terrainsGenerated.empty())
+	{
+		Terrain* terrain = m_terrainsGenerated.front();
+		m_terrainsGenerated.pop();
+		m_terrainsGeneratedMutex.unlock();
+
+		terrain->sendToGPU();
+		TerrainPosition terrainPos(terrain->getX(), terrain->getZ());
+
+		m_terrains.insert({ terrainPos,  terrain });
+
+		m_terrainsToAddToMap.erase(terrainPos);
+
+	}
+	else {
+		m_terrainsGeneratedMutex.unlock();
+
 	}
 
 	/* Implement if terrain deformation is added
@@ -157,7 +215,12 @@ void World::updateChunk(int x, int z) {
 	if (chunkIt == m_terrains.end() && chunkSetIt == m_terrainsToAddToMap.end())
 	{
 		m_terrainsToAddToMap.insert(terrainPos);
+
+		m_terrainsToGenerateMutex.lock();
 		m_terrainsToGenerate.push(terrainPos);
+		m_terrainsToGenerateMutex.unlock();
+
+		m_threadVariable.notify_all();
 	}
 
 }
@@ -165,7 +228,6 @@ void World::updateChunk(int x, int z) {
 void World::threadUpdateTerrains() {
 
 	while (m_isRunning) {
-		//m_ChunkSetQueue lock
 		m_terrainsToGenerateMutex.lock();
 		if (!m_terrainsToGenerate.empty())
 		{

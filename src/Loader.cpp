@@ -12,7 +12,7 @@ Loader::~Loader()
 
 Mesh* Loader::loadToVAO(std::vector<float>& positions, std::vector<float>& textureCoords, std::vector<float>& normals, std::vector<int>& indices)
 {
-	std::cout << positions.size() << " " << textureCoords.size() << " " << normals.size() << "\n";
+	//std::cout << positions.size() << " " << textureCoords.size() << " " << normals.size() << "\n";
 
 	GLuint vaoID = createVAO();
 	bindIndicesBuffer(indices);
@@ -25,9 +25,10 @@ Mesh* Loader::loadToVAO(std::vector<float>& positions, std::vector<float>& textu
 	return new Mesh(vaoID, indices.size());
 }
 
+// broken
 Mesh* Loader::loadToVAO2(std::vector<float>& positions, std::vector<float>& textureCoords, std::vector<float>& normals, std::vector<int>& indices)
 {
-	std::cout << positions.size() << " " << textureCoords.size() << " " << normals.size() << "\n";
+	//std::cout << positions.size() << " " << textureCoords.size() << " " << normals.size() << "\n";
 
 	std::vector<float> modelData;
 

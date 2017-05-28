@@ -70,6 +70,7 @@ float HeightGenerator::generateSmoothNoise(int x, int z)
 {
 	//float corners = (generateNoise(x-1, z-1) + generateNoise(x+1, z-1) + generateNoise(x-1, z+1) + generateNoise(x+1, z+1)) / 8.0f;
 	//float sides = (generateNoise(x - 1, z) + generateNoise(x + 1, z) + generateNoise(x, z - 1) + generateNoise(x, z + 1)) / 4.0f;
+	//float center = generateNoise(x, z);
 	float center = generateNoise(x, z);
 	//return center + sides + corners;// +corners;// + sides
 	//return center + corners + sides;
@@ -80,8 +81,8 @@ float HeightGenerator::generateSmoothNoise(int x, int z)
 float HeightGenerator::generateNoise(int x, int z)
 {
 	//rng.seed(std::random_device()());
-	static std::mt19937 rng;
-	static std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+	std::mt19937 rng;
+	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 	rng.seed(x * 49632 + z * 325176);
 	//rng.seed(Hasher::hash(x,z));
 
@@ -91,14 +92,34 @@ float HeightGenerator::generateNoise(int x, int z)
 	return value;
 }
 //*/
-/*
+
 float HeightGenerator::generateNoise2(int x, int z)
 {
 	int value = (hash(x, z) % 128) - 64;
 	float value2 = (float)value / 64.0f;
 	//std::cout << value << "\n";
 	return value2;
-}*/
+}
+
+int HeightGenerator::hash(int key)
+{
+	key = ~key + (key << 15);
+	key = key ^ (key >> 12);
+	key = key + (key << 2);
+	key = key ^ (key >> 4);
+	key = key * 2048;
+	key = key ^ (key >> 16);
+	return std::hash<int>{}(key);
+}
+
+int HeightGenerator::hash(int x, int y)
+{
+	x = hash(x);
+	y = hash(y);
+	return hash(x ^ (y << 2));
+}
+
+
 
 int HeightGenerator::generateRandomInt(int startRange, int endRange)
 {
