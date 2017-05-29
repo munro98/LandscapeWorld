@@ -44,7 +44,6 @@ private:
 	std::mutex m_threadMutex;
 	std::condition_variable m_threadVariable;
 
-	std::condition_variable m_threadEndVariable;
 	std::mutex m_threadEndMutex;
 
 	std::thread *m_threads[THREADS];

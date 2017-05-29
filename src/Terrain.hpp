@@ -34,6 +34,7 @@ public:
 	float getHeight(int x, int z);
 	float lookUpHeight(int x, int z);
 	float barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos);
+	glm::vec3 getNormal(float x, float z);
 	float getInterpHeight(float x, float z);
 
 	Mesh *getMesh();

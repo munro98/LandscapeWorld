@@ -165,7 +165,7 @@ glm::vec3 Terrain::calculateNormal(int x, int z) {
 	float heightD = lookUpHeight(x, z - 1);
 	float heightU = lookUpHeight(x, z + 1);
 
-	glm::vec3 normal(heightL - heightR, 16.0f, heightD - heightU);
+	glm::vec3 normal(heightL - heightR, 8.0f, heightD - heightU);
 	return normal;
 }
 
@@ -186,6 +186,30 @@ float Terrain::barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 
 	float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
 	float l3 = 1.0f - l1 - l2;
 	return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+}
+
+glm::vec3 Terrain::getNormal(float x, float z) {
+	float gridSquareSize = (float)TERRAIN_SIZE / ((float)TERRAIN_GRID_SIZE);
+	int gridX = (int)std::floor(x / gridSquareSize);
+	int gridZ = (int)std::floor(z / gridSquareSize);
+
+
+
+	if (gridX >= TERRAIN_GRID_SIZE || gridZ >= TERRAIN_GRID_SIZE || gridX < 0 || gridZ < 0) {
+		return glm::vec3(0,0,0);
+	}
+
+	float xCoord = ((int)x % (int)gridSquareSize) / gridSquareSize;
+	float zCoord = ((int)z % (int)gridSquareSize) / gridSquareSize;
+	glm::vec3 result;
+
+	result = calculateNormal(gridX, gridZ);
+
+	//std::cout << gridX << " " << gridZ << " , " << xCoord << " " << zCoord << " " << "\n";
+	//std::cout << xCoord << " " << zCoord << " " << "\n";
+	std::cout << result.x << " " << result.y << " " << result.z << "\n";
+
+	return result;
 }
 
 //TODO it Works!

@@ -276,7 +276,7 @@ int main(int argc, char **argv) {
 		glEnable(GL_DEPTH_TEST);
 
 
-		//triangleRenderer.render();
+		
 
 		//////////////////////////////////////////////////////
 		glm::mat4 view;
@@ -298,10 +298,15 @@ int main(int argc, char **argv) {
 
 		float heightAt = world.heightAt(50, 50);
 		model = glm::translate(model, glm::vec3(50, heightAt, 50));
+		Terrain *t = world.findTerrainAt(0, 0);
+		glm::vec3 v;
+		if (t != nullptr) {
+			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
+		}
 
 		modelRenderer.render(view, model, projection, mesh);
 
-		
+		//triangleRenderer.render();
 
 		// Render GUI on top
 		SimpleGUI::render();
