@@ -346,6 +346,7 @@ namespace SimpleGUI {
 		//Register GUI components
 		SimpleGUI::newFrame();
 
+
 		if (ImGui::IsMouseClicked(1))
 			ImGui::OpenPopup("Player");
 
@@ -370,5 +371,12 @@ namespace SimpleGUI {
 		//Flush components and render
 
 		ImGui::Render();
+	}
+
+
+
+	void showWindow(bool* p_open)
+	{
+
 	}
 }

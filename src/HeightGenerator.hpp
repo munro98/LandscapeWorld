@@ -34,6 +34,8 @@ public:
 
 	static float random();
 
+	static int m_seed;
+
 
 };
 

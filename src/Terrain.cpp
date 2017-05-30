@@ -22,11 +22,18 @@ Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heigh
 
 Terrain::~Terrain()
 {
-	delete m_heightMap;
+	delete[] m_heightMap;
     if (m_sentToGPU) {
         delete m_mesh;
         delete m_texture;
-    }
+	}
+	else {
+		delete m_vertices;
+		delete m_normals;
+		delete m_textureCoords;
+		delete m_indices;
+		delete m_blendMapTexture;
+	}
 	
 }
 

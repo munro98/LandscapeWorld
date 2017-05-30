@@ -25,7 +25,6 @@
 
 using namespace std;
 
-
 GLFWwindow* window;
 
 static const float fovx = 80.0f;
@@ -39,6 +38,8 @@ glm::vec2 lastMousePosition = glm::vec2(0.0, 0.0);
 
 bool hasWindowFocus = true;
 Camera camera;
+
+bool showMenu = true;
 
 void windowFocusCallback(GLFWwindow* win, int focused) {
 	if (focused)
@@ -265,7 +266,7 @@ int main(int argc, char **argv) {
 
 		world.update(cameraPos.x, cameraPos.z);
 
-		glClearColor(0.564f, 0.682f, 0.831f, 1.0f);
+		glClearColor(0.564f, 0.682f, 0.831f, 1.0f); // Blueish colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(90.0f, (float)width / (float)height, 0.5f, 2000.0f);
@@ -288,7 +289,7 @@ int main(int argc, char **argv) {
 		//glDisable(GL_DEPTH_TEST);
 		
 		skydomeRenderer.render(view, model);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT); // Everything goes on top of sky
 		//glEnable(GL_DEPTH_TEST);
 		terrainRenderer.render(view, model, projection, camera.getPosition());
 
@@ -309,7 +310,85 @@ int main(int argc, char **argv) {
 		//triangleRenderer.render();
 
 		// Render GUI on top
-		SimpleGUI::render();
+		/*
+		if (showMenu) {
+			ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+			ImGui::ShowTestWindow(&showMenu);
+		}
+		*/
+
+		
+
+		//SimpleGUI::render();
+		if (showMenu) {
+			SimpleGUI::newFrame();
+
+			if (ImGui::IsMouseClicked(1))
+				ImGui::OpenPopup("Player");
+
+			if (ImGui::BeginPopup("Player")) {
+				if (ImGui::Selectable("1")) {
+
+
+				}
+
+				if (ImGui::Selectable("2")) {
+
+
+				}
+
+				if (ImGui::Selectable("3")) {
+
+
+				}
+
+				ImGui::EndPopup();
+			}
+
+			//ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+			//ImGui::ShowTestWindow(&showMenu);
+
+			static bool no_titlebar = false;
+			static bool no_border = true;
+			static bool no_resize = false;
+			static bool no_move = false;
+			static bool no_scrollbar = false;
+			static bool no_collapse = false;
+			static bool no_menu = false;
+
+			// Demonstrate the various window flags. Typically you would just use the default.
+			ImGuiWindowFlags window_flags = 0;
+			if (no_titlebar)  window_flags |= ImGuiWindowFlags_NoTitleBar;
+			if (!no_border)   window_flags |= ImGuiWindowFlags_ShowBorders;
+			if (no_resize)    window_flags |= ImGuiWindowFlags_NoResize;
+			if (no_move)      window_flags |= ImGuiWindowFlags_NoMove;
+			if (no_scrollbar) window_flags |= ImGuiWindowFlags_NoScrollbar;
+			if (no_collapse)  window_flags |= ImGuiWindowFlags_NoCollapse;
+			if (!no_menu)     window_flags |= ImGuiWindowFlags_MenuBar;
+			ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
+			if (ImGui::Begin("ImGui Demo", &showMenu, window_flags))
+			{
+				ImGui::PushItemWidth(-140);// Right align, keep 140 pixels for labels
+				//ImGui::Text("hello.");
+
+				static int seedValue = 0;
+				ImGui::InputInt("terrain seed int", &seedValue);
+				static bool a = false;
+				if (ImGui::Button("Apply Seed(lots of memory allocation)")) { 
+					world.applyNewSeed(seedValue);
+					cout << "Applying seed\n"; 
+					a ^= 1; 
+				}
+			}
+
+			ImGui::End();
+
+
+			//Flush components and render
+			ImGui::Render();
+		}
+
+		
 
 		//Swap front and back buffers
 		glfwSwapBuffers(window);

@@ -19,8 +19,6 @@ World::~World()
 {
     
 	m_isRunning = false;
-    //Lock
-    //Empty terrainsToGenerate here
     
 	m_threadVariable.notify_all();
 
@@ -48,8 +46,67 @@ World::~World()
 		m_terrainsGenerated.pop();
 	}
 
+	while (!m_terrainsToGenerate.empty())
+	{
+		m_terrainsToGenerate.pop();
+	}
+
 	
 	//*/
+}
+
+void World::applyNewSeed(int newSeed) {
+	m_isRunning = false;
+
+	m_threadVariable.notify_all();
+
+	for (int i = 0; i < THREADS; ++i)
+	{
+		m_threads[i]->join();
+	}
+
+	for (int i = 0; i < THREADS; ++i)
+	{
+		delete m_threads[i];
+	}
+
+	for (auto it = m_terrains.begin(); it != m_terrains.end();) {
+		auto terrain = it->second;
+		delete terrain;
+		auto toErase = it;
+		++it;
+		m_terrains.erase(toErase);
+	}
+	///*
+	while (!m_terrainsGenerated.empty())
+	{
+		delete m_terrainsGenerated.front();
+		m_terrainsGenerated.pop();
+	}
+
+	while (!m_terrainsToGenerate.empty())
+	{
+		m_terrainsToGenerate.pop();
+	}
+
+
+	
+	for (auto it = m_terrainsToAddToMap.begin(); it != m_terrainsToAddToMap.end();) {
+		auto toErase = it;
+		++it;
+		m_terrainsToAddToMap.erase(toErase);
+	}
+
+	///////////////////////// Everything is cleaned
+	HeightGenerator::m_seed = newSeed;
+	m_isRunning = true;
+
+	for (int i = 0; i < THREADS; ++i)
+	{
+		m_threads[i] = new std::thread(&World::threadUpdateTerrains, this);
+	}
+
+
 }
 
 void World::update(float playerX, float playerZ)

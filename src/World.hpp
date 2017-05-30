@@ -22,6 +22,10 @@ public:
 	World();
 	~World();
 
+	void applyNewSeed(int newSeed);
+
+	void applyNewSeed();
+
 	void update(float playerX, float playerZ);
 	void updateChunk(int x, int z);
 	void threadUpdateTerrains();
