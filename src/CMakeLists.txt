@@ -57,3 +57,7 @@ add_executable(${LANDSCAPE_WORLD} ${headers} ${sources})
 target_link_libraries(${LANDSCAPE_WORLD} PRIVATE glew glfw ${GLFW_LIBRARIES})
 target_link_libraries(${LANDSCAPE_WORLD} PRIVATE imgui)
 target_link_libraries(${LANDSCAPE_WORLD} PRIVATE stb_image)
+target_link_libraries (${LANDSCAPE_WORLD} ${CMAKE_THREAD_LIBS_INIT})
+
+
+

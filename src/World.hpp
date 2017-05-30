@@ -9,6 +9,7 @@
 #include <queue>
 #include <unordered_set>
 #include <unordered_map>
+#include <thread>
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 

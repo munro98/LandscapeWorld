@@ -15,8 +15,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
+
+#add_definitions("-std=c++11")
+find_package (Threads)
+
 #Find OpenGL
 find_package(OpenGL REQUIRED)
+
 
 
 #Include GLFW
@@ -60,6 +65,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "^(Apple)?Clang$")
 	# C++14
 	add_compile_options(-std=c++1y)
+	#add_compile_options(-pthread)
 	# Full normal warnings
 	add_compile_options(-Wall -Wextra -pedantic)
 	# Promote missing return to error
