@@ -139,10 +139,10 @@ Texture* Loader::loadTexture(int width, int height, int* pixels)
 //TODO: Handle errors
 Texture* Loader::loadTexture(std::string fileName)
 {
-	fileName = "./res/" + fileName + ".png";
+	fileName = "./LandscapeWorld/res/" + fileName + ".png";
 	//std::cout << fileName;
 	const char *textureName = fileName.c_str();
-	//char *textureName = "./res/TextureMap.png";
+	//char *textureName = "./LandscapeWorld/res/TextureMap.png";
 	int x, y, bytesPerPixel;
 	unsigned char* textureData = stbi_load(textureName, &x, &y, &bytesPerPixel, 3);
 
@@ -180,7 +180,7 @@ GLuint Loader::loadCubeMap(std::vector<std::string> cubeFaces) {
 
 	for (int i = 0; i < cubeFaces.size(); i++) {
 
-		std::string fileName = "./res/" + cubeFaces[i] + ".png";
+		std::string fileName = "./LandscapeWorld/res/" + cubeFaces[i] + ".png";
 		const char *textureName = fileName.c_str();
 		int x, y, bytesPerPixel;
 

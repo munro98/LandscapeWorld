@@ -33,7 +33,7 @@ Mesh* OBJLoader::loadObjModel(const std::string& fileName)
 	std::vector<float> verticesArray;
 
 	std::ifstream file;
-	file.open(("./res/" + fileName + ".obj").c_str());
+	file.open(("./LandscapeWorld/res/" + fileName + ".obj").c_str());
 
 	std::string output;
 
