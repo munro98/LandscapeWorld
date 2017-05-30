@@ -350,6 +350,7 @@ int main(int argc, char **argv) {
 				ImGui::EndPopup();
 			}
 
+			//Uncomment to show test window
 			//ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
 			//ImGui::ShowTestWindow(&showMenu);
 
@@ -377,13 +378,17 @@ int main(int argc, char **argv) {
 				//ImGui::Text("hello.");
 
 				static int seedValue = 0;
-				ImGui::InputInt("terrain seed int", &seedValue);
+				ImGui::InputInt("Terrain seed int", &seedValue);
 				static bool a = false;
 				if (ImGui::Button("Apply Seed(lots of memory allocation)")) { 
 					world.applyNewSeed(seedValue);
 					cout << "Applying seed\n"; 
 					a ^= 1; 
 				}
+				static bool showBlendMap = true;
+				ImGui::Checkbox("Show terrain blendMap", &showBlendMap);
+				static bool updateFrustum = true;
+				ImGui::Checkbox("Update frustum", &updateFrustum);
 			}
 
 			ImGui::End();

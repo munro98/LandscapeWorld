@@ -21,8 +21,6 @@ BlendMapTexture::BlendMapTexture(int width, int height, Terrain *t) : m_width(wi
 			int b = 0;
 			int a = 0;
 
-			//if (t->lookUpHeight(col/32, row/32) > 0) {
-			//if (row > 8) {
 			float height = t->getInterpHeight(col / 4, row / 4);
 			if (height > 30) { // 30 grass
 				r = 255; // snow
@@ -42,52 +40,55 @@ BlendMapTexture::BlendMapTexture(int width, int height, Terrain *t) : m_width(wi
 
 		}
 	}
+	///*
+	//Run Simple Blur on blendMap
+	for (int i = 0; i < 4; i++) {
+		//Horizontal pass
+		for (int row = 0; row < width; row++) {
+			for (int col = 1; col < height - 1; col++) {
 
+				int index = col + row * width;
 
-	/*
-	float scaleWidth = (float)width / (float)16;
-	float scaleHeight = (float)height/ (float)16;
+				int c1 = m_pixels[index - 1];
+				int c2 = m_pixels[index];
+				int c3 = m_pixels[index + 1];
 
-	for (int row = 0; row < width; row++) {
-		for (int col = 0; col < height; col++) {
+				int r2 = ((c1 & 0x000000FF) + (c2 & 0x000000FF) + (c3 & 0x000000FF)) / 3;
+				int g2 = (((c1 & 0x0000FF00) >> 8) + ((c2 & 0x0000FF00) >> 8) + ((c3 & 0x0000FF00) >> 8)) / 3;
+				int b2 = (((c1 & 0x00FF0000) >> 16) + ((c2 & 0x00FF0000) >> 16) + ((c3 & 0x00FF0000) >> 16)) / 3;
+				int a2 = (((c1 & 0xFF000000) >> 24) + ((c2 & 0xFF000000) >> 24) + ((c3 & 0xFF000000) >> 24)) / 3;
 
-			int index = col + row * width;
-			std::cout << "row" << index << "\n";
-			
-			int pixel = (row * (width)) + (col);
-			int nearestMatch = (((int)(row / scaleHeight) * (16)) + ((int)(col / scaleWidth)));
-
-
-			std::cout << row << " > " << (int)(row / scaleHeight) * (16) << ", "  << col << " > " << (int)(col / scaleWidth) << "\n";
-
-			
-			int index = col + row * width;
-
-			int r = 255;
-			int g = 255;
-			int b = 255;
-			int a = 0;
-
-			int colour = r | (g << 8) | (b << 16) | (a << 24);
-			m_pixels[index] = colour;// 0x000000FF;
-			
+				int colour = r2 | (g2 << 8) | (b2 << 16) | (a2 << 24);
+				m_pixels[index] = colour;
+			}
 		}
-	}
-	*/
-	/*
-	for (int i = 0; i < width * height; i++) {
-		int r = 255;
-		int g = 255;
-		int b = 255;
-		int a = 0;
+		//Vertical pass
+		for (int row = 1; row < width - 1; row++) {
+			for (int col = 0; col < height; col++) {
 
-		int colour = r | (g << 8) | (b << 16) | (a << 24);
-		m_pixels[i] = colour;// 0x000000FF;
+				int index = col + row * width;
+
+				int c1 = m_pixels[index - width];
+				int c2 = m_pixels[index];
+				int c3 = m_pixels[index + width];
+
+				int r2 = ((c1 & 0x000000FF) + (c2 & 0x000000FF) + (c3 & 0x000000FF)) / 3;
+				int g2 = (((c1 & 0x0000FF00) >> 8) + ((c2 & 0x0000FF00) >> 8) + ((c3 & 0x0000FF00) >> 8)) / 3;
+				int b2 = (((c1 & 0x00FF0000) >> 16) + ((c2 & 0x00FF0000) >> 16) + ((c3 & 0x00FF0000) >> 16)) / 3;
+				int a2 = (((c1 & 0xFF000000) >> 24) + ((c2 & 0xFF000000) >> 24) + ((c3 & 0xFF000000) >> 24)) / 3;
+
+				int colour = r2 | (g2 << 8) | (b2 << 16) | (a2 << 24);
+				m_pixels[index] = colour;
+			}
+		}
+
+
 	}
-	*/
+	//*/
+	
 }
 
 BlendMapTexture::~BlendMapTexture()
 {
-	delete m_pixels;
+	delete[] m_pixels;
 }

@@ -175,7 +175,7 @@ glm::vec3 Terrain::calculateNormal(int x, int z) {
 	float heightD = lookUpHeight(x, z - 1);
 	float heightU = lookUpHeight(x, z + 1);
 
-	glm::vec3 normal(heightL - heightR, 8.0f, heightD - heightU);
+	glm::vec3 normal(heightL - heightR, 12.0f, heightD - heightU);
 	return normal;
 }
 
