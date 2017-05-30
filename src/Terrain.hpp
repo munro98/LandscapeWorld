@@ -55,5 +55,6 @@ private:
 	std::vector<float> *m_normals;
 	std::vector<float> *m_textureCoords;
 	std::vector<int> *m_indices;
+    bool m_sentToGPU;
 };
 

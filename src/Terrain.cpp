@@ -1,7 +1,7 @@
 #include "Terrain.hpp"
 
 
-Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(TERRAIN_GRID_SIZE + 3) * (TERRAIN_GRID_SIZE + 3)])
+Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(TERRAIN_GRID_SIZE + 3) * (TERRAIN_GRID_SIZE + 3)]), m_sentToGPU(false)
 {
 	//std::cout << "terrain: " << tileX << " " << tileZ << "\n";
 	
@@ -23,13 +23,16 @@ Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heigh
 Terrain::~Terrain()
 {
 	delete m_heightMap;
-	delete m_mesh;
-	delete m_texture;
+    if (m_sentToGPU) {
+        delete m_mesh;
+        delete m_texture;
+    }
+	
 }
 
 void Terrain::sendToGPU() {
 
-	
+    m_sentToGPU |= true;
 	m_texture = Loader::loadTexture(512, 512, m_blendMapTexture->m_pixels);
 	m_mesh = Loader::loadToVAO(*m_vertices, *m_textureCoords, *m_normals, *m_indices);
 
