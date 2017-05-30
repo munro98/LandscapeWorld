@@ -21,7 +21,7 @@ public:
 	void loadVector(int location, glm::vec3 vector);
 	void loadVector(int location, glm::vec2 vector);
 	void loadBool(int location, bool value);
-	void loadMatrix(int location, glm::mat4 matrix);
+	void loadMatrix(int location, glm::mat4& matrix);
 
 	void use();
 	static void stop();

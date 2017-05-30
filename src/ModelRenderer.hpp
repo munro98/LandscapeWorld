@@ -7,12 +7,12 @@
 class ModelRenderer
 {
 public:
-	ModelRenderer(glm::mat4 projectionMatrix);
+	ModelRenderer(glm::mat4& projectionMatrix);
 	~ModelRenderer();
 
-	void render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, Mesh * box);
+	void render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, Mesh * box);
 
-	void render(glm::mat4 view, glm::mat4 model, glm::mat4 projection);
+	void render(glm::mat4& view, glm::mat4& model, glm::mat4& projection);
 
 private:
 	ModelShader m_shader;

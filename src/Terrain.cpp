@@ -217,7 +217,7 @@ glm::vec3 Terrain::getNormal(float x, float z) {
 
 	//std::cout << gridX << " " << gridZ << " , " << xCoord << " " << zCoord << " " << "\n";
 	//std::cout << xCoord << " " << zCoord << " " << "\n";
-	std::cout << result.x << " " << result.y << " " << result.z << "\n";
+	//std::cout << result.x << " " << result.y << " " << result.z << "\n";
 
 	return result;
 }

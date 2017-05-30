@@ -93,7 +93,7 @@ void Shader::loadBool(int location, bool value) {
 	glUniform1f(location, toLoad);
 }
 
-void Shader::loadMatrix(int location, glm::mat4 matrix) {
+void Shader::loadMatrix(int location, glm::mat4& matrix) {
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 

@@ -22,6 +22,8 @@ SET(headers
 	"World.hpp"
 	"TerrainPosition.hpp"
 	"BlendMapTexture.hpp"
+	"WaterRenderer.hpp"
+	"WaterShader.hpp"
 )
 
 
@@ -49,6 +51,8 @@ SET(sources
 	"World.cpp"
 	"TerrainPosition.cpp"
 	"BlendMapTexture.cpp"
+	"WaterRenderer.cpp"
+	"WaterShader.cpp"
 )
 
 #Add executable target

@@ -1,6 +1,6 @@
 #pragma once
 
-#define WORLD_UPDATE_RADIUS 12
+#define WORLD_UPDATE_RADIUS 2//12
 #define WORLD_DELETE_RADIUS 16
 #define THREADS 2
 
@@ -23,8 +23,6 @@ public:
 	~World();
 
 	void applyNewSeed(int newSeed);
-
-	void applyNewSeed();
 
 	void update(float playerX, float playerZ);
 	void updateChunk(int x, int z);

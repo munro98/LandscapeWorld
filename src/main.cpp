@@ -21,6 +21,7 @@
 #include "ModelRenderer.hpp"
 #include "SkydomeRenderer.hpp"
 #include "TerrainRenderer.hpp"
+#include "WaterRenderer.hpp"
 #include "World.hpp"
 
 using namespace std;
@@ -186,8 +187,8 @@ int main(int argc, char **argv) {
 	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
-
-
+	
+	WaterRenderer waterRenderer(projection);
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");
 	
@@ -306,6 +307,10 @@ int main(int argc, char **argv) {
 		}
 
 		modelRenderer.render(view, model, projection, mesh);
+
+		glEnable(GL_BLEND); // Water can be transparent
+		waterRenderer.render(view, model, projection, camera.getPosition());
+		glDisable(GL_BLEND);
 
 		//triangleRenderer.render();
 

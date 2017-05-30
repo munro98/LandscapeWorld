@@ -12,7 +12,7 @@ Camera::Camera()
 	mUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	mRight = glm::normalize(glm::cross(mUp, mDirection));
 
-	mSpeed = 200.0f;
+	mSpeed = 80.0f;
 
 	mYaw = -90.0f;
 	mPitch = 0.0f;
