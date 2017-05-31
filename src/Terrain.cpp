@@ -1,7 +1,7 @@
 #include "Terrain.hpp"
+#include "Frustum.hpp"
 
-
-Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(TERRAIN_GRID_SIZE + 3) * (TERRAIN_GRID_SIZE + 3)]), m_sentToGPU(false)
+Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(TERRAIN_GRID_SIZE + 3) * (TERRAIN_GRID_SIZE + 3)]), m_sentToGPU(false),m_isInFrustum(Frustum::TEST_INSIDE)
 {
 	//std::cout << "terrain: " << tileX << " " << tileZ << "\n";
 	

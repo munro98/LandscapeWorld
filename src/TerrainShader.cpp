@@ -28,7 +28,7 @@ void TerrainShader::getAllUniformLocations()
 	m_location_lightPosition = Shader::getUniformLocation("lightPosition");
 	m_location_lightColour = Shader::getUniformLocation("lightColour");
 
-
+	m_location_showBlendMap = Shader::getUniformLocation("showBlendMap");
 	m_location_camPos = Shader::getUniformLocation("camPos");
 
 	m_location_blend = Shader::getUniformLocation("blend");
@@ -82,4 +82,9 @@ void TerrainShader::loadLightColour(glm::vec3 lightColour)
 void TerrainShader::loadCamPos(glm::vec3 camPos)
 {
 	Shader::loadVector(m_location_camPos, camPos);
+}
+
+void TerrainShader::loadShowBlendMap(float f)
+{
+	Shader::loadFloat(m_location_showBlendMap, f);
 }

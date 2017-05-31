@@ -24,13 +24,15 @@
 #include "WaterRenderer.hpp"
 #include "World.hpp"
 
+#include "Frustum.hpp"
+
 using namespace std;
 
 GLFWwindow* window;
 
 static const float fovx = 80.0f;
 static const float znear = 0.1f;
-static const float zfar = 1000.0f;
+static const float zfar = 2000.0f;
 
 
 bool leftMouseDown = false;
@@ -182,6 +184,9 @@ int main(int argc, char **argv) {
 	glm::mat4 projection = glm::perspective(80.0f, (float)640 / (float)480, 0.5f, 2000.0f);
 	
 
+	bool updateFrustum = true;
+	float showBlendMap = 0.0f;
+
 	World world;
 	//TriangleRenderer triangleRenderer;
 	ModelRenderer modelRenderer(projection);
@@ -195,12 +200,14 @@ int main(int argc, char **argv) {
 
 	while (!glfwWindowShouldClose(window)) {
 
+		//Poll for and process events
+		glfwPollEvents();
+
 		float currentFrame = glfwGetTime();
 		deltaFrame = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		//Poll for and process events
-		glfwPollEvents();
+		
 
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
@@ -267,7 +274,7 @@ int main(int argc, char **argv) {
 
 		world.update(cameraPos.x, cameraPos.z);
 
-		glClearColor(0.564f, 0.682f, 0.831f, 1.0f); // Blueish colour
+		glClearColor(0.564f, 0.682f, 0.831f, 1.0f); // Blueish sky colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(90.0f, (float)width / (float)height, 0.5f, 2000.0f);
@@ -284,6 +291,13 @@ int main(int argc, char **argv) {
 		glm::mat4 view;
 		view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFront(), camera.getUp());
 
+		Frustum frustum(view, projection);
+
+		if (updateFrustum) {
+			world.checkTerrainInFrustum(frustum);
+		}
+		
+
 		glm::mat4 model(1);
 		
 		//skyboxRenderer.render(view, model);
@@ -292,7 +306,7 @@ int main(int argc, char **argv) {
 		skydomeRenderer.render(view, model);
 		glClear(GL_DEPTH_BUFFER_BIT); // Everything goes on top of sky
 		//glEnable(GL_DEPTH_TEST);
-		terrainRenderer.render(view, model, projection, camera.getPosition());
+		terrainRenderer.render(view, model, projection, cameraPos, showBlendMap);
 
 		//glm::translate(model, camera.getPosition() + glm::vec3(0, -10, 0));
 		//float heightAt = world.heightAt(camera.getPosition().x, camera.getPosition().z);
@@ -309,7 +323,7 @@ int main(int argc, char **argv) {
 		modelRenderer.render(view, model, projection, mesh);
 
 		glEnable(GL_BLEND); // Water can be transparent
-		waterRenderer.render(view, model, projection, camera.getPosition());
+		waterRenderer.render(view, model, projection, cameraPos);
 		glDisable(GL_BLEND);
 
 		//triangleRenderer.render();
@@ -372,7 +386,7 @@ int main(int argc, char **argv) {
 			if (no_collapse)  window_flags |= ImGuiWindowFlags_NoCollapse;
 			if (!no_menu)     window_flags |= ImGuiWindowFlags_MenuBar;
 			ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
-			if (ImGui::Begin("ImGui Demo", &showMenu, window_flags))
+			if (ImGui::Begin("LandScape Demo", &showMenu, window_flags))
 			{
 				ImGui::PushItemWidth(-140);// Right align, keep 140 pixels for labels
 				//ImGui::Text("hello.");
@@ -385,9 +399,10 @@ int main(int argc, char **argv) {
 					cout << "Applying seed\n"; 
 					a ^= 1; 
 				}
-				static bool showBlendMap = true;
-				ImGui::Checkbox("Show terrain blendMap", &showBlendMap);
-				static bool updateFrustum = true;
+				//static bool showBlendMap = true;
+				//ImGui::Checkbox("Show terrain blendMap", &showBlendMap);
+				ImGui::SliderFloat("Show terrain blendMap", &showBlendMap, 0.0f, 1.0f, "%.3f");
+				
 				ImGui::Checkbox("Update frustum", &updateFrustum);
 			}
 

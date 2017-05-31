@@ -42,6 +42,8 @@ public:
 	int getX();
 	int getZ();
 
+	int m_isInFrustum;
+
 private:
 	int m_tileX, m_tileZ;
 

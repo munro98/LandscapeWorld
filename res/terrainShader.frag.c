@@ -20,17 +20,18 @@ uniform sampler2D snow;
 uniform vec3 lightPosition;
 uniform vec3 lightColour;
 
+uniform float showBlendMap;
 
 uniform vec3 camPos;
 
 const vec3 light_direction = vec3(-0.5, 0.6, 0.7);
 const vec3 skyColour = vec3(0.564, 0.682, 0.831);
-//const float visibility = 0.5f;
+//const float showBlendMap = 0.5f;
 
 
 void main()
 {
-	vec2 tiledTexCoords = TexCoords * 40;
+	vec2 tiledTexCoords = TexCoords * 20;
 
 	vec4 blendColour = texture(blend, TexCoords);
 
@@ -40,6 +41,8 @@ void main()
 	vec3 snowColour = texture(snow, tiledTexCoords).xyz * blendColour.r;
 
 	vec3 texDiffuse = grassColour + snowColour + stonesColour + rockColour;
+
+	texDiffuse = mix(texDiffuse, blendColour.rgb, showBlendMap);
 
 
 	vec3 unitNormal = normalize(Normal);

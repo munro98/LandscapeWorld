@@ -312,6 +312,24 @@ void World::threadUpdateTerrains() {
 
 }
 
+int World::chunkVisible(Frustum frustum, int terrainX, int terrainZ) {
+	BoundingBox box(glm::vec3(0.0f, -128, 0.0f), glm::vec3(TERRAIN_SIZE, 128, TERRAIN_SIZE), glm::vec3(terrainX * TERRAIN_SIZE, 0.0f, terrainZ * TERRAIN_SIZE));
+	return frustum.testIntersection(box);
+}
+
+void World::checkTerrainInFrustum(Frustum &frustum)
+{
+	for (auto it = m_terrains.begin(); it != m_terrains.end(); ++it) {
+
+		Terrain *terrain = it->second;
+		int terrainX = terrain->getX();
+		int terrainZ = terrain->getZ();
+
+		int vis = chunkVisible(frustum, terrainX, terrainZ);
+		terrain->m_isInFrustum = vis;
+		
+	}
+}
 
 void World::render(float playerX, float playerZ)
 {
@@ -320,22 +338,25 @@ void World::render(float playerX, float playerZ)
 		//int terrainZ = it->second->getZ();
 
 		Terrain *terrain = it->second;
-		Mesh *mesh = terrain->getMesh();
-		Texture *texture = terrain->getBlendMapTexture();
-		glActiveTexture(GL_TEXTURE0);
-		texture->bind();
+		if (terrain->m_isInFrustum == Frustum::TEST_INTERSECT ||terrain->m_isInFrustum == Frustum::TEST_INSIDE) {
+			Mesh *mesh = terrain->getMesh();
+			Texture *texture = terrain->getBlendMapTexture();
+			glActiveTexture(GL_TEXTURE0);
+			texture->bind();
+
+			glBindVertexArray(mesh->getVaoID());
+
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+
+			glDrawElements(GL_TRIANGLES, mesh->getVertexCount(), GL_UNSIGNED_INT, 0);
+
+			glDisableVertexAttribArray(0);
+			glDisableVertexAttribArray(1);
+			glDisableVertexAttribArray(2);
+		}
 		
-		glBindVertexArray(mesh->getVaoID());
-
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-
-		glDrawElements(GL_TRIANGLES, mesh->getVertexCount(), GL_UNSIGNED_INT, 0);
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
 	}
 }
 

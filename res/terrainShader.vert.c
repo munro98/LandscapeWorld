@@ -20,8 +20,8 @@ uniform vec3 camPos;
 
 uniform vec3 lightPosition;
 
-const float density = 0.002;
-const float gradient = 4.0;
+const float density = 0.001;
+const float gradient = 8.0;
 
 void main()
 {

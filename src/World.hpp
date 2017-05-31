@@ -1,6 +1,6 @@
 #pragma once
 
-#define WORLD_UPDATE_RADIUS 2//12
+#define WORLD_UPDATE_RADIUS 12//12
 #define WORLD_DELETE_RADIUS 16
 #define THREADS 2
 
@@ -13,8 +13,11 @@
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 
+
 #include "Terrain.hpp"
 #include "TerrainPosition.hpp"
+#include "Frustum.hpp"
+#include "BoundingBox.hpp"
 
 class World
 {
@@ -27,6 +30,8 @@ public:
 	void update(float playerX, float playerZ);
 	void updateChunk(int x, int z);
 	void threadUpdateTerrains();
+	int chunkVisible(Frustum frustum, int terrainX, int terrainZ);
+	void checkTerrainInFrustum(Frustum & frustum);
 	void render(float x, float y);
 	void rayCastTerrain(glm::vec3 & start, glm::vec3 & forward);
 	Terrain * findTerrainAt(float worldX, float worldZ);

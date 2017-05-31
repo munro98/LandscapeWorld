@@ -29,6 +29,8 @@ public:
 
 	void loadCamPos(glm::vec3 camPos);
 
+	void loadShowBlendMap(float f);
+
 
 private:
 	GLuint m_location_model;
@@ -39,6 +41,7 @@ private:
 	GLuint m_location_lightColour;
 
 	GLuint m_location_camPos;
+	GLuint m_location_showBlendMap;
 
 	GLuint m_location_blend;
 	GLuint m_location_grass;

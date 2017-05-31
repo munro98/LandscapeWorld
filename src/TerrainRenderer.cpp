@@ -14,15 +14,22 @@ TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix, World &world) : m_s
 	m_shader.loadLightPosition(glm::vec3(1.0, 100.0f, 10.0f));
 	m_shader.loadLightColour(glm::vec3(1.4, 1.4, 1.4));
 
-
+	m_shader.loadShowBlendMap(0.5f);
 
 
 	m_shader.stop();
-
+//For fast loading
+#if 1
 	m_grass = Loader::loadTexture("ground2048");
 	m_rock = Loader::loadTexture("rock");
 	m_stones = Loader::loadTexture("stones");
 	m_snow = Loader::loadTexture("snow");
+#else
+	m_grass = Loader::loadTexture("white");
+	m_rock = Loader::loadTexture("white");
+	m_stones = Loader::loadTexture("white");
+	m_snow = Loader::loadTexture("white");
+#endif
 
 }
 
@@ -34,7 +41,7 @@ TerrainRenderer::~TerrainRenderer()
 	delete m_snow;
 }
 
-void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos)
+void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos, float showBlendMap)
 {
 	m_shader.use();
 	//Update uniforms
@@ -43,6 +50,7 @@ void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projecti
 	m_shader.loadProjectionMatrix(projection);
 
 	m_shader.loadCamPos(camPos);
+	m_shader.loadShowBlendMap(showBlendMap);
 
 	m_shader.loadTextures();
 

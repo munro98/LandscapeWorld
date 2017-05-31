@@ -24,6 +24,8 @@ SET(headers
 	"BlendMapTexture.hpp"
 	"WaterRenderer.hpp"
 	"WaterShader.hpp"
+	"Frustum.hpp"
+	"BoundingBox.hpp"
 )
 
 
@@ -53,6 +55,8 @@ SET(sources
 	"BlendMapTexture.cpp"
 	"WaterRenderer.cpp"
 	"WaterShader.cpp"
+	"Frustum.cpp"
+	"BoundingBox.cpp"
 )
 
 #Add executable target
