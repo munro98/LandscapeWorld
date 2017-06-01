@@ -4,8 +4,6 @@
 #include <random>
 #include <glm/gtc/type_ptr.hpp>
 
-
-#include "Math.h"
 #include "Terrain.hpp"
 
 class HeightGenerator

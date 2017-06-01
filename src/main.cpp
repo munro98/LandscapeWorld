@@ -401,7 +401,7 @@ int main(int argc, char **argv) {
 				}
 				//static bool showBlendMap = true;
 				//ImGui::Checkbox("Show terrain blendMap", &showBlendMap);
-				ImGui::SliderFloat("Show terrain blendMap", &showBlendMap, 0.0f, 1.0f, "%.3f");
+				ImGui::SliderFloat("Terrain blendMap", &showBlendMap, 0.0f, 1.0f, "%.3f");
 				
 				ImGui::Checkbox("Update frustum", &updateFrustum);
 			}
