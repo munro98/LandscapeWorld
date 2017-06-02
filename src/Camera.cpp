@@ -18,7 +18,7 @@ Camera::Camera()
 
 	mSpeed = 80.0f;
 	m_acceleration = 800.0f;
-	m_gravity = 600.0f;
+	m_gravity = 100.0f;
 	m_maxSpeed = 80.0f;
 
 	mYaw = -90.0f;
@@ -33,9 +33,11 @@ Camera::~Camera()
 }
 
 void Camera::update(float delta, World& world, bool takeInput) {
-	if (glm::length(m_velocity) != 0) {
+
+	glm::vec2 v(m_velocity.x, m_velocity.z);
+	if (glm::length(v) != 0) {
 		float deceleration = 600 * delta;
-		m_velocity -= deceleration * glm::normalize(m_velocity);
+		m_velocity -= deceleration * glm::normalize(glm::vec3(v.x, 0.0f, v.y));
 		//std::cout << deceleration;
 	}
 	//else if (glm::length(glm::vec3(m_velocity.x, 0.0f, m_velocity.z)) > m_maxSpeed) {
@@ -54,6 +56,7 @@ void Camera::update(float delta, World& world, bool takeInput) {
 
 	if (mPosition.y - 4.4f < world.heightAt(mPosition.x, mPosition.z)) {
 		mPosition.y = world.heightAt(mPosition.x, mPosition.z) + 4.4f;
+		m_velocity.y = 0.0f;
 	}
 	
 
