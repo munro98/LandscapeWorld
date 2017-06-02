@@ -21,6 +21,7 @@ uniform vec3 lightPosition;
 uniform vec3 lightColour;
 
 uniform float showBlendMap;
+uniform float snowCoverage; //0.99
 
 uniform vec3 camPos;
 
@@ -43,20 +44,17 @@ void main()
 
 	vec3 texDiffuse = grassColour + snowColour + stonesColour + rockColour;
 
-	texDiffuse = mix(texDiffuse, blendColour.rgb, showBlendMap);
-
-
 	vec3 unitNormal = normalize(Normal);
-
-
-	if (dot(unitNormal, up) > 0.99) {
-		//texDiffuse = texture(snow, tiledTexCoords).rgb;
-	}
 
 	if (dot(unitNormal, up) < 0.8) {
 		texDiffuse = texture(rock, tiledTexCoords).rgb;
 	}
 
+	if (dot(unitNormal, up) > snowCoverage) {
+		texDiffuse = texture(snow, tiledTexCoords).rgb;
+	}
+
+	texDiffuse = mix(texDiffuse, blendColour.rgb, showBlendMap);
 
 	
 	vec3 finalColour = vec3(0.0);

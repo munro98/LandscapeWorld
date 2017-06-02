@@ -43,6 +43,7 @@ bool hasWindowFocus = true;
 Camera camera;
 
 bool showMenu = true;
+bool isFlying = false;
 
 void windowFocusCallback(GLFWwindow* win, int focused) {
 	if (focused)
@@ -91,6 +92,7 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 //Called for scroll event on since the last glfwPollEvents
 void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 	// cout << "Scroll Callback :: xoffset=" << xoffset << "yoffset=" << yoffset << endl;
+
 }
 
 
@@ -100,6 +102,9 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// cout << "Key Callback :: key=" << key << "scancode=" << scancode
 	// 	<< "action=" << action << "mods=" << mods << endl;
 
+	if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+		isFlying = !isFlying;
+	}
 }
 
 
@@ -186,6 +191,7 @@ int main(int argc, char **argv) {
 
 	bool updateFrustum = true;
 	float showBlendMap = 0.0f;
+	float snowCoverage = 0.99f;
 
 	World world;
 	//TriangleRenderer triangleRenderer;
@@ -207,7 +213,7 @@ int main(int argc, char **argv) {
 		deltaFrame = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		
+
 
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
@@ -229,26 +235,58 @@ int main(int argc, char **argv) {
 		camera.Rotate(xoffset, -yoffset);
 		*/
 
+		if (isFlying) {
+			if (glfwGetKey(window, GLFW_KEY_A))
+			{
+				camera.left(deltaFrame);
+			}
 
-		if (glfwGetKey(window, GLFW_KEY_A))
-		{
-			camera.left(deltaFrame);
-		}
+			if (glfwGetKey(window, GLFW_KEY_D))
+			{
+				camera.right(deltaFrame);
+			}
 
-		if (glfwGetKey(window, GLFW_KEY_D))
-		{
-			camera.right(deltaFrame);
-		}
+			if (glfwGetKey(window, GLFW_KEY_W))
+			{
+				camera.forward(deltaFrame);
+			}
 
-		if (glfwGetKey(window, GLFW_KEY_W))
-		{
-			camera.forward(deltaFrame);
+			if (glfwGetKey(window, GLFW_KEY_S))
+			{
+				camera.backward(deltaFrame);
+			}
 		}
+		else {
+			bool takeInput = false;
+			if (glfwGetKey(window, GLFW_KEY_A))
+			{
+				takeInput |= true;
+				camera.leftAccelerate(deltaFrame);
+			}
 
-		if (glfwGetKey(window, GLFW_KEY_S))
-		{
-			camera.backward(deltaFrame);
+			if (glfwGetKey(window, GLFW_KEY_D))
+			{
+				takeInput |= true;
+				camera.rightAccelerate(deltaFrame);
+			}
+
+			if (glfwGetKey(window, GLFW_KEY_W))
+			{
+				takeInput |= true;
+				camera.forwardAccelerate(deltaFrame);
+			}
+
+			if (glfwGetKey(window, GLFW_KEY_S))
+			{
+				takeInput |= true;
+				camera.backwardAccelerate(deltaFrame);
+			}
+
+			camera.update(deltaFrame, world, takeInput);
+
+
 		}
+		
 
 		if (glfwGetKey(window, GLFW_KEY_F))
 		{
@@ -269,6 +307,7 @@ int main(int argc, char **argv) {
 		{
 			camera.backward(deltaFrame);
 		}
+
 
 		glm::vec3 cameraPos = camera.getPosition();
 
@@ -306,7 +345,7 @@ int main(int argc, char **argv) {
 		skydomeRenderer.render(view, model);
 		glClear(GL_DEPTH_BUFFER_BIT); // Everything goes on top of sky
 		//glEnable(GL_DEPTH_TEST);
-		terrainRenderer.render(view, model, projection, cameraPos, showBlendMap);
+		terrainRenderer.render(view, model, projection, cameraPos, showBlendMap, snowCoverage);
 
 		//glm::translate(model, camera.getPosition() + glm::vec3(0, -10, 0));
 		//float heightAt = world.heightAt(camera.getPosition().x, camera.getPosition().z);
@@ -402,7 +441,7 @@ int main(int argc, char **argv) {
 				//static bool showBlendMap = true;
 				//ImGui::Checkbox("Show terrain blendMap", &showBlendMap);
 				ImGui::SliderFloat("Terrain blendMap", &showBlendMap, 0.0f, 1.0f, "%.3f");
-				
+				ImGui::SliderFloat("Snow coverage", &snowCoverage, 0.0f, 1.0f, "%.3f");
 				ImGui::Checkbox("Update frustum", &updateFrustum);
 			}
 

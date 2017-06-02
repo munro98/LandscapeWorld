@@ -41,7 +41,7 @@ TerrainRenderer::~TerrainRenderer()
 	delete m_snow;
 }
 
-void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos, float showBlendMap)
+void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos, float showBlendMap, float snowCoverage)
 {
 	m_shader.use();
 	//Update uniforms
@@ -51,6 +51,7 @@ void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projecti
 
 	m_shader.loadCamPos(camPos);
 	m_shader.loadShowBlendMap(showBlendMap);
+	m_shader.loadSnowCoverage(snowCoverage);
 
 	m_shader.loadTextures();
 

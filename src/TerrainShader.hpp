@@ -31,6 +31,8 @@ public:
 
 	void loadShowBlendMap(float f);
 
+	void loadSnowCoverage(float f);
+
 
 private:
 	GLuint m_location_model;
@@ -42,6 +44,8 @@ private:
 
 	GLuint m_location_camPos;
 	GLuint m_location_showBlendMap;
+
+	GLuint m_location_snowCoverage;
 
 	GLuint m_location_blend;
 	GLuint m_location_grass;

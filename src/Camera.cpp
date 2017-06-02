@@ -12,7 +12,14 @@ Camera::Camera()
 	mUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	mRight = glm::normalize(glm::cross(mUp, mDirection));
 
+	m_front2 = glm::vec3(0.0f, 0.0f, -1.0f);
+	m_up2 = glm::vec3(0.0f, 1.0f, 0.0f);
+	m_right2 = glm::normalize(glm::cross(mUp, mDirection));
+
 	mSpeed = 80.0f;
+	m_acceleration = 800.0f;
+	m_gravity = 600.0f;
+	m_maxSpeed = 80.0f;
 
 	mYaw = -90.0f;
 	mPitch = 0.0f;
@@ -23,6 +30,35 @@ Camera::Camera()
 
 Camera::~Camera()
 {
+}
+
+void Camera::update(float delta, World& world, bool takeInput) {
+	if (glm::length(m_velocity) != 0) {
+		float deceleration = 600 * delta;
+		m_velocity -= deceleration * glm::normalize(m_velocity);
+		//std::cout << deceleration;
+	}
+	//else if (glm::length(glm::vec3(m_velocity.x, 0.0f, m_velocity.z)) > m_maxSpeed) {
+	if (glm::length(glm::vec3(m_velocity.x, 0.0, m_velocity.z)) > m_maxSpeed) {
+		glm::vec2 v2(m_velocity.x, m_velocity.z);
+		v2 = glm::normalize(v2);
+		m_velocity = glm::vec3(v2.x * m_maxSpeed, m_velocity.y, v2.y * m_maxSpeed);// m_maxSpeed * glm::normalize(m_velocity);
+		//std::cout << mPosition.x << " " << mPosition.y << " " << mPosition.z << "\n";
+	}
+
+	if (mPosition.y - 4.4f > world.heightAt(mPosition.x, mPosition.z)) {
+		m_velocity.y -= m_gravity * delta;
+	}
+
+	mPosition += m_velocity * delta;
+
+	if (mPosition.y - 4.4f < world.heightAt(mPosition.x, mPosition.z)) {
+		mPosition.y = world.heightAt(mPosition.x, mPosition.z) + 4.4f;
+	}
+	
+
+	//std::cout << mPosition.x << " " << mPosition.y << " " << mPosition.z << "\n";
+	
 }
 
 void Camera::forward(float delta) {
@@ -39,6 +75,23 @@ void Camera::left(float delta) {
 
 void Camera::right(float delta) {
 	mPosition += mSpeed * delta * glm::normalize(glm::cross(mFront, mUp));
+}
+
+
+void Camera::forwardAccelerate(float delta) {
+	m_velocity += m_acceleration * m_front2 * delta;
+}
+
+void Camera::backwardAccelerate(float delta) {
+	m_velocity -= m_acceleration * m_front2 * delta;
+}
+
+void Camera::leftAccelerate(float delta) {
+	m_velocity -= m_acceleration * delta * glm::normalize(glm::cross(m_front2, m_up2));
+}
+
+void Camera::rightAccelerate(float delta) {
+	m_velocity += m_acceleration * delta * glm::normalize(glm::cross(m_front2, m_up2));
 }
 
 void Camera::rotate(float x, float y) {
@@ -61,6 +114,17 @@ void Camera::rotate(float x, float y) {
 
 	mUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	mRight = glm::normalize(glm::cross(mUp, mDirection));
+
+
+
+	glm::vec3 front2;
+	front2.x = cos(glm::radians(mYaw));
+	front2.z = sin(glm::radians(mYaw));
+	m_front2 = glm::normalize(front2);
+
+	m_up2 = glm::vec3(0.0f, 1.0f, 0.0f);
+	m_right2 = glm::normalize(glm::cross(m_up2, mDirection));
+
 }
 
 glm::vec3 Camera::getPosition() {

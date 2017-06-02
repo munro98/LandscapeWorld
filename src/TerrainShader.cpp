@@ -37,8 +37,8 @@ void TerrainShader::getAllUniformLocations()
 	m_location_rock = Shader::getUniformLocation("rock");
 	m_location_snow = Shader::getUniformLocation("snow");
 
+	m_location_snowCoverage = Shader::getUniformLocation("snowCoverage");
 
-	
 	//assert(m_location_lightPosition != 0);
 	//assert(m_location_lightColour != 0);
 }
@@ -87,4 +87,9 @@ void TerrainShader::loadCamPos(glm::vec3 camPos)
 void TerrainShader::loadShowBlendMap(float f)
 {
 	Shader::loadFloat(m_location_showBlendMap, f);
+}
+
+void TerrainShader::loadSnowCoverage(float f)
+{
+	Shader::loadFloat(m_location_snowCoverage, f);
 }

@@ -14,6 +14,8 @@ public:
 	TerrainRenderer(glm::mat4 projectionMatrix, World &world);
 	~TerrainRenderer();
 
+	void render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos, float showBlendMap, float snowCoverage);
+
 	void render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos, float showBlendMap);
 
 	void render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos);
