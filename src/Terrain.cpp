@@ -5,7 +5,6 @@ Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heigh
 {
 	//std::cout << "terrain: " << tileX << " " << tileZ << "\n";
 	
-	
 	generateTerrain();
 	m_blendMapTexture = new BlendMapTexture(512, 512, this);
 

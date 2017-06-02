@@ -26,6 +26,7 @@ uniform vec3 camPos;
 
 const vec3 light_direction = vec3(-0.5, 0.6, 0.7);
 const vec3 skyColour = vec3(0.564, 0.682, 0.831);
+const vec3 up = vec3(0.0, 1.0, 0);
 //const float showBlendMap = 0.5f;
 
 
@@ -46,6 +47,18 @@ void main()
 
 
 	vec3 unitNormal = normalize(Normal);
+
+
+	if (dot(unitNormal, up) > 0.99) {
+		//texDiffuse = texture(snow, tiledTexCoords).rgb;
+	}
+
+	if (dot(unitNormal, up) < 0.8) {
+		texDiffuse = texture(rock, tiledTexCoords).rgb;
+	}
+
+
+	
 	vec3 finalColour = vec3(0.0);
 
 	float distance = length(_toLightVector);
