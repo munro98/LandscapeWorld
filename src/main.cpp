@@ -23,6 +23,7 @@
 #include "TerrainRenderer.hpp"
 #include "WaterRenderer.hpp"
 #include "World.hpp"
+#include "GrassRenderer.hpp"
 
 #include "Frustum.hpp"
 
@@ -189,6 +190,7 @@ int main(int argc, char **argv) {
 
 	World world;
 	//TriangleRenderer triangleRenderer;
+	GrassRenderer grassRenderer;
 	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
@@ -327,6 +329,7 @@ int main(int argc, char **argv) {
 		glDisable(GL_BLEND);
 
 		//triangleRenderer.render();
+		grassRenderer.render();
 
 		// Render GUI on top
 		/*
