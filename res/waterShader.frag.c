@@ -27,12 +27,13 @@ void main()
 	vec4 normalMapColour = texture(normalMap, TexCoord);
 	vec4 reflectColour = skyColour;
 
-	vec3 normal = vec3(normalMapColour.r * 2.0 - 1.0, normalMapColour.b, normalMapColour.g * 2.0 - 1.0);
+	vec3 normal = normalMapColour.rbg;// * 2.0 - 1.0, normalMapColour.b, normalMapColour.g * 2.0 - 1.0);
+	//vec3 normal = vec3(normalMapColour.r * 2.0 - 1.0, normalMapColour.b, normalMapColour.g * 2.0 - 1.0);
 
 	vec3 viewVector = normalize(toCameraVector);
-	float refractiveFactor = dot(viewVector, vec3(0.0,1.0,0.0));
+	// float refractiveFactor = dot(viewVector, vec3(0.0,1.0,0.0));
 	
-	refractiveFactor = pow(refractiveFactor, 1);
+	// refractiveFactor = pow(refractiveFactor, 1);
 
 
 	vec3 reflectedLight = reflect(normalize(-lightDirection), normal);
@@ -40,7 +41,6 @@ void main()
 	specular = pow(specular, shineDamper);
 	vec3 specularHighlights = lightColour * specular * reflectivity;
 
-	//color = vec4(specularHighlights, 1.0);
-	color = vec4(reflectColour.x, reflectColour.y, reflectColour.z, clamp(refractiveFactor, 0.55, 1.0)) + vec4(specularHighlights, 0.0);
-	//color = vec4(0.0f, 0.0f, 1.0f, 0.5f);
+	//color = vec4(reflectColour.x, reflectColour.y, reflectColour.z, clamp(refractiveFactor, 0.55, 1.0)) + vec4(specularHighlights, 0.0);
+	color = vec4(reflectColour.x, reflectColour.y, reflectColour.z, 1) + vec4(specularHighlights, 0.0);
 }

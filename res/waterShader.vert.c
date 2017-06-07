@@ -24,6 +24,4 @@ void main()
 	TexCoord = textureCoords;
 
 	toCameraVector = cameraPosition - worldPosition.xyz;
-
-
 }

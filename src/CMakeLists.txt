@@ -26,6 +26,8 @@ SET(headers
 	"WaterShader.hpp"
 	"Frustum.hpp"
 	"BoundingBox.hpp"
+	"MovingWaterRenderer.hpp"
+	"MovingWaterShader.hpp"
 )
 
 
@@ -57,6 +59,8 @@ SET(sources
 	"WaterShader.cpp"
 	"Frustum.cpp"
 	"BoundingBox.cpp"
+	"MovingWaterRenderer.cpp"
+	"MovingWaterShader.cpp"
 )
 
 #Add executable target

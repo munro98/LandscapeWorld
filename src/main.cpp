@@ -25,6 +25,7 @@
 #include "World.hpp"
 
 #include "Frustum.hpp"
+#include "MovingWaterRenderer.hpp"
 
 using namespace std;
 
@@ -130,7 +131,7 @@ int main(int argc, char **argv) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
 	//Get the version for GLFW
@@ -200,6 +201,8 @@ int main(int argc, char **argv) {
 	SkydomeRenderer skydomeRenderer(projection);
 	
 	WaterRenderer waterRenderer(projection);
+	MovingWaterRenderer movingWaterRenderer(glm::vec3(0,1,0));
+	//MovingWaterRenderer movingWaterRenderer(projection);
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");
 	
@@ -362,8 +365,10 @@ int main(int argc, char **argv) {
 		modelRenderer.render(view, model, projection, mesh);
 
 		glEnable(GL_BLEND); // Water can be transparent
-		waterRenderer.render(view, model, projection, cameraPos);
+		//waterRenderer.render(view, model, projection, cameraPos);
 		glDisable(GL_BLEND);
+
+		movingWaterRenderer.render(view, model, projection, cameraPos);
 
 		//triangleRenderer.render();
 
