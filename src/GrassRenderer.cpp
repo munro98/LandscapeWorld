@@ -30,7 +30,7 @@ GrassRenderer::GrassRenderer() : m_shader(Shader("grassShader"))
 	glBindVertexArray(0);
 }
 
-void GrassRenderer::render() {
+void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition) {
 	//Draw a few points
 	m_shader.use();
 	glBindVertexArray(m_VAO);

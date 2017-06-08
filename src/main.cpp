@@ -329,7 +329,7 @@ int main(int argc, char **argv) {
 		glDisable(GL_BLEND);
 
 		//triangleRenderer.render();
-		grassRenderer.render();
+		grassRenderer.render(model);
 
 		// Render GUI on top
 		/*
