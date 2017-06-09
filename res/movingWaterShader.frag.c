@@ -17,9 +17,9 @@ void main()
 	//{
 	//	gl_FragColor.g = 1;
 	//}
-	vec3 Normal = texture2D(WaterNormalMap, gl_TexCoord[0].st).rgb;
-	gl_FragColor.rgb = Normal;
-	//gl_FragColor.rgb = vec3(1,0,0);
+	//vec3 Normal = texture2D(WaterNormalMap, gl_TexCoord[0].st).rgb;
+	//gl_FragColor.rgb = Normal;
+	gl_FragColor.rgb = vec3(0,1,0);
 	//gl_FragColor.b = 1;
 
 	//gl_FragColor.r = Position.y;

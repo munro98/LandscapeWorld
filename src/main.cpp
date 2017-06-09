@@ -195,7 +195,7 @@ int main(int argc, char **argv) {
 	float snowCoverage = 0.99f;
 
 	World world;
-	//TriangleRenderer triangleRenderer;
+	TriangleRenderer triangleRenderer;
 	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
@@ -368,8 +368,9 @@ int main(int argc, char **argv) {
 		//waterRenderer.render(view, model, projection, cameraPos);
 		glDisable(GL_BLEND);
 
+		glDisable(GL_CULL_FACE);
 		movingWaterRenderer.render(view, model, projection, cameraPos);
-
+		glEnable(GL_CULL_FACE);
 		//triangleRenderer.render();
 
 		// Render GUI on top
