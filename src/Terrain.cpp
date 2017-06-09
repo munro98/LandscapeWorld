@@ -1,21 +1,15 @@
 #include "Terrain.hpp"
 #include "Frustum.hpp"
 
-Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), m_heightMap(new float[(TERRAIN_GRID_SIZE + 3) * (TERRAIN_GRID_SIZE + 3)]), m_sentToGPU(false),m_isInFrustum(Frustum::TEST_INSIDE)
+Terrain::Terrain(int tileX, int tileZ) : m_tileX(tileX), m_tileZ(tileZ), 
+m_heightMap(new float[(TERRAIN_GRID_SIZE + 3) * (TERRAIN_GRID_SIZE + 3)]), 
+m_sentToGPU(false),m_isInFrustum(Frustum::TEST_INSIDE)
 {
 	//std::cout << "terrain: " << tileX << " " << tileZ << "\n";
 	
 	generateTerrain();
 	m_blendMapTexture = new BlendMapTexture(512, 512, this);
 
-	//m_mesh = Loader::loadToVAO(*m_vertices, *m_textureCoords, *m_normals, *m_indices);
-	//m_blendMapTexture = new BlendMapTexture (512, 512, this);
-	//m_texture = Loader::loadTexture(512, 512, m_blendMapTexture->m_pixels);
-
-	//sendToGPU();
-	//m_blendMapTexture = new BlendMapTexture(512, 512, this);
-	//m_texture = Loader::loadTexture(512, 512, m_blendMapTexture->m_pixels);
-	//m_mesh = Loader::loadToVAO(*m_vertices, *m_textureCoords, *m_normals, *m_indices);
 }
 
 
@@ -52,11 +46,6 @@ void Terrain::sendToGPU() {
 void Terrain::generateTerrain()
 {
 	int count = (TERRAIN_GRID_SIZE+1) * (TERRAIN_GRID_SIZE + 1);
-
-	//std::vector<float> vertices(count * 3);
-	//std::vector<float> normals(count * 3);
-	//std::vector<float> textureCoords(count * 2);
-	//std::vector<int> indices(6 * (TERRAIN_GRID_SIZE)*(TERRAIN_GRID_SIZE));
 
 	m_vertices = new std::vector<float> (count * 3);
 	m_normals = new std::vector<float> (count * 3);
@@ -221,7 +210,6 @@ glm::vec3 Terrain::getNormal(float x, float z) {
 	return result;
 }
 
-//TODO it Works!
 float Terrain::getInterpHeight(float x, float z) {
 	float gridSquareSize = (float)TERRAIN_SIZE / ((float)TERRAIN_GRID_SIZE);
 	int gridX = (int)std::floor(x / gridSquareSize);

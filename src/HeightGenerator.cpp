@@ -122,33 +122,11 @@ int HeightGenerator::hash(int x, int y)
 }
 
 
-
-int HeightGenerator::generateRandomInt(int startRange, int endRange)
-{
-	//rng.seed(std::random_device()());
-	static std::mt19937 rng;
-	std::uniform_int_distribution<int> dist(startRange, endRange);
-
-	int value = dist(rng);
-	return value;
-}
-
-float HeightGenerator::generateRandomFloat(int startRange, int endRange)
-{
-	static std::mt19937 rng;
-	static std::uniform_real_distribution<float> dist(startRange, endRange);
-
-	float value = dist(rng);
-	return value;
-}
-
 float HeightGenerator::random()
 {
-	//rng.seed(std::random_device()());
 	static std::mt19937 rng;
 	static std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
-	//rng.seed(x * 49632 + z * 325176);
-	//std::cout << dist(rng) << std::endl;
+	rng.seed(std::random_device()());
 	float value = dist(rng);
 
 	return value;
