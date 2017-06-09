@@ -24,7 +24,6 @@ void GrassShader::getAllUniformLocations()
 	m_location_model = Shader::getUniformLocation("model");
 	m_location_view = Shader::getUniformLocation("view");
 	m_location_projection = Shader::getUniformLocation("projection");
-
 	m_location_cameraPosition = Shader::getUniformLocation("cameraPosition");
 }
 

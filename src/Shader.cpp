@@ -21,6 +21,7 @@ Shader::Shader(std::string name)
 
 	//optional geometry shader
 	const char *geometryShaderSource; //need to declare this outside the conditional in order to be recognised aparently
+
 	if(useGeometryShader){
 		std::string output3 = loadShader("./LandscapeWorld/res/" + name + ".geo.c");
 		geometryShaderSource = output3.c_str();
@@ -92,9 +93,8 @@ Shader::Shader(std::string name)
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	
-	//if(useGeometryShader){//optional geometryshader
-		glDeleteShader(geometryShader);
-	//}
+	glDeleteShader(geometryShader);
+	
 }
 
 

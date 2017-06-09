@@ -1,34 +1,26 @@
- #include "GrassRenderer.hpp"
+#include "GrassRenderer.hpp"
+#include "GrassShader.hpp"
 #include <cmath>
 #include <random>
 
-GrassRenderer::GrassRenderer() : m_shader(Shader("grassShader"))
+GrassRenderer::GrassRenderer() : m_shader(GrassShader("grassShader"))
 {
 	m_shader.use();
 	//Update uniforms here
 	m_shader.stop();
 
 	//TODO generate an area of grass to instance over the scene
+	static GLfloat vertices[DENSITY*3];
 
-	const int density = 50; //number of grass instances over square unit of worldspace
-	
-	static GLfloat vertices[density*2];
-	
 	std::mt19937 rng; //random number generator
 	rng.seed(std::random_device()());
 	std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-	
-	for(int i = 0; i<density*2;++i){
-		vertices[i] = dist(rng);
-	}
-	
-	// Send simple triangle to GPU
-	//static GLfloat vertices[] = {
-	//	-0.5f,-0.5f,0.0f,
-	//	0.5f,-0.5f,0.0f,
-	//	0.0f,0.5f,0.0f
-	//};
 
+	for(int i = 0; i<DENSITY*3;i=i+3){
+		vertices[i] = dist(rng);
+		vertices[i+1] = 0;
+		vertices[i+2] = dist(rng);
+	}
 
 	glGenVertexArrays(1, &m_VAO);
 	glBindVertexArray(m_VAO);
@@ -44,11 +36,19 @@ GrassRenderer::GrassRenderer() : m_shader(Shader("grassShader"))
 }
 
 void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition) {
-	//Draw a few points
 	m_shader.use();
+
+	m_shader.loadProjectionMatrix(projection);
+	m_shader.loadModelMatrix(model);
+	m_shader.loadViewMatrix(view);
+	m_shader.loadCameraPosition(cameraPosition);
+
+
 	glBindVertexArray(m_VAO);
-	glDrawArrays(GL_POINTS, 0, 3);
+	glDrawArrays(GL_POINTS, 0, DENSITY);
 	glBindVertexArray(0);
+
+
 	m_shader.stop();
 }
 

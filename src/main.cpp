@@ -189,6 +189,7 @@ int main(int argc, char **argv) {
 	float showBlendMap = 0.0f;
 
 	World world;
+	
 	//TriangleRenderer triangleRenderer;
 	GrassRenderer grassRenderer;
 	ModelRenderer modelRenderer(projection);
