@@ -1,25 +1,25 @@
-#include "MovingWaterShader.hpp"
+#include "WaterHightShader.hpp"
 
 
 
-MovingWaterShader::MovingWaterShader(std::string name) : Shader(name)
+WaterHightShader::WaterHightShader(std::string name) : Shader(name)
 {
 	getAllUniformLocations();
 }
 
 
-MovingWaterShader::~MovingWaterShader()
+WaterHightShader::~WaterHightShader()
 {
 }
 
-void MovingWaterShader::bindAttributes()
+void WaterHightShader::bindAttributes()
 {
 	Shader::bindAttribute(0, "position");
 	Shader::bindAttribute(1, "textureCoords");
 	Shader::bindAttribute(2, "normal");
 }
 
-void MovingWaterShader::getAllUniformLocations()
+void WaterHightShader::getAllUniformLocations()
 {
 	m_location_model = Shader::getUniformLocation("model");
 	m_location_view = Shader::getUniformLocation("view");
@@ -30,37 +30,37 @@ void MovingWaterShader::getAllUniformLocations()
 	m_location_LightPosition = getUniformLocation("LightPosition");
 }
 
-void MovingWaterShader::loadModelMatrix(glm::mat4 mat)
+void WaterHightShader::loadModelMatrix(glm::mat4 mat)
 {
 	Shader::loadMatrix(m_location_model, mat);
 }
 
-void MovingWaterShader::loadViewMatrix(glm::mat4 mat)
+void WaterHightShader::loadViewMatrix(glm::mat4 mat)
 {
 	Shader::loadMatrix(m_location_view, mat);
 }
 
-void MovingWaterShader::loadProjectionMatrix(glm::mat4 mat)
+void WaterHightShader::loadProjectionMatrix(glm::mat4 mat)
 {
 	Shader::loadMatrix(m_location_projection, mat);
 }
 
-void MovingWaterShader::loadCameraPosition(glm::vec3& p)
+void WaterHightShader::loadCameraPosition(glm::vec3& p)
 {
 	Shader::loadVector(m_location_cameraPosition, p);
 }
 
-void MovingWaterShader::loadLightPosition(glm::vec3& p)
+void WaterHightShader::loadLightPosition(glm::vec3& p)
 {
 	Shader::loadVector(m_location_LightPosition, p);
 }
 
-void MovingWaterShader::loadWaterHightMap(GLuint i)
+void WaterHightShader::loadWaterHightMap(GLuint i)
 {
 	loadInt(m_location_WaterHightMap, i);
 }
 
-void MovingWaterShader::loadWaterNormalMap(GLuint i)
+void WaterHightShader::loadWaterNormalMap(GLuint i)
 {
 	loadInt(m_location_WaterNormalMap, i);
 }

@@ -5,11 +5,11 @@
 #include "Texture.hpp"
 #include "Loader.hpp"
 
-class MovingWaterShader : public Shader
+class WaterNormalShader : public Shader
 {
 public:
-	MovingWaterShader(std::string name);
-	~MovingWaterShader();
+	WaterNormalShader(std::string name);
+	~WaterNormalShader();
 
 	void bindAttributes();
 	void getAllUniformLocations();

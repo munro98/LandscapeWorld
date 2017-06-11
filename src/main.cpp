@@ -21,11 +21,11 @@
 #include "ModelRenderer.hpp"
 #include "SkydomeRenderer.hpp"
 #include "TerrainRenderer.hpp"
-#include "WaterRenderer.hpp"
+#include "_WaterRenderer.hpp"
 #include "World.hpp"
 
 #include "Frustum.hpp"
-#include "MovingWaterRenderer.hpp"
+#include "WaterRenderer.hpp"
 
 using namespace std;
 
@@ -200,9 +200,9 @@ int main(int argc, char **argv) {
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
 	
-	WaterRenderer waterRenderer(projection);
-	MovingWaterRenderer movingWaterRenderer(glm::vec3(0,1,0));
-	//MovingWaterRenderer movingWaterRenderer(projection);
+	WaterRenderer_Old waterRenderer(projection);
+	WaterRenderer movingWaterRenderer(glm::vec3(0,1,0));
+	//WaterRenderer movingWaterRenderer(projection);
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");
 	
