@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
 	World world;
 	
 	//TriangleRenderer triangleRenderer;
-	GrassRenderer grassRenderer;
+	GrassRenderer grassRenderer(world);
 	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
