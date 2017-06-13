@@ -21,9 +21,6 @@ out vec2 vVaryingTexCoord0;
 
 void main() 
 {
-	vVaryingTexCoord0 = vTexCoord0;    
-	// vec4 tmp = vVertex * 2 - 1;
-	
-	// gl_Position = vec4(tmp.x, tmp.y, 0.0, 1.0);         
+	vVaryingTexCoord0 = vTexCoord0;
 	gl_Position = vec4(vVertex.x, vVertex.y, 0.0, 1.0);         
 }
