@@ -26,6 +26,8 @@ SET(headers
 	"WaterShader.hpp"
 	"Frustum.hpp"
 	"BoundingBox.hpp"
+	"GrassRenderer.hpp"
+	"GrassShader.hpp"
 )
 
 
@@ -57,6 +59,8 @@ SET(sources
 	"WaterShader.cpp"
 	"Frustum.cpp"
 	"BoundingBox.cpp"
+	"GrassRenderer.cpp"
+	"GrassShader.cpp"
 )
 
 #Add executable target
