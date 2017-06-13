@@ -42,6 +42,7 @@ glm::vec2 lastMousePosition = glm::vec2(0.0, 0.0);
 
 bool hasWindowFocus = true;
 Camera camera;
+WaterRenderer* _waterRendere;
 
 bool showMenu = true;
 bool isFlying = false;
@@ -85,7 +86,13 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 	SimpleGUI::mouseButtonCallback(win, button, action, mods);
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
+	{
 		leftMouseDown = (action == GLFW_PRESS);
+		if (action == 0)
+		{
+			_waterRendere->addDrop();
+		}
+	}
 }
 
 
@@ -201,7 +208,8 @@ int main(int argc, char **argv) {
 	SkydomeRenderer skydomeRenderer(projection);
 	
 	WaterRenderer_Old waterRenderer(projection);
-	WaterRenderer movingWaterRenderer(glm::vec3(0,1,0));
+	glm::vec3 lightPos = glm::vec3(0, 1, 0);
+	_waterRendere = new WaterRenderer(lightPos);
 	//WaterRenderer movingWaterRenderer(projection);
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");
@@ -362,14 +370,14 @@ int main(int argc, char **argv) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		modelRenderer.render(view, model, projection, mesh);
+		//modelRenderer.render(view, model, projection, mesh);
 
 		glEnable(GL_BLEND); // Water can be transparent
 		//waterRenderer.render(view, model, projection, cameraPos);
 		glDisable(GL_BLEND);
 
 		glDisable(GL_CULL_FACE);
-		movingWaterRenderer.render(view, model, projection, cameraPos);
+		_waterRendere->render(view, model, projection, cameraPos);
 		glEnable(GL_CULL_FACE);
 		//triangleRenderer.render();
 
@@ -380,8 +388,6 @@ int main(int argc, char **argv) {
 			ImGui::ShowTestWindow(&showMenu);
 		}
 		*/
-
-		
 
 		//SimpleGUI::render();
 		if (showMenu) {
@@ -458,12 +464,8 @@ int main(int argc, char **argv) {
 			ImGui::Render();
 		}
 
-		
-
 		//Swap front and back buffers
 		glfwSwapBuffers(window);
-
-		
 	}
 
 	glfwTerminate();

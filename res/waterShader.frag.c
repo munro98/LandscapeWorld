@@ -8,35 +8,26 @@ varying vec3 Position;
 
 void main()
 {
-	//if(texture2D(WaterNormalMap, vec2(1,1)).r < 0.2)
-	//if(Position.y > 0.2)
-	//{
-	//	gl_FragColor.b = 1;
-	//}
-	//else
-	//{
-	//	gl_FragColor.g = 1;
-	//}
-	vec3 Normal = texture2D(WaterNormalMap, gl_TexCoord[0].st).rgb;
-	gl_FragColor.rgb = Normal;
-	//if (Position.g < 0.5)
-	//{
-	//	gl_FragColor.rgb = vec3(0, 1, 0);
-	//}
-	//else
-	//{
-	//	gl_FragColor.rgb = vec3(1, 0, 0);
-	//}
+	// vec3 Normal = normalize(texture2D(WaterNormalMap, gl_TexCoord[0].st).rgb);
+	// //gl_FragColor.rgb = Normal;
+	// vec3 Direction = normalize(Position - CameraPosition);
 
-	//gl_FragColor.rgb = vec3(0, 0, 0);
-	//gl_FragColor.g = Position.g;
+	// //vec3 ReflectedColor = textureCube(PoolSkyCubeMap, IntersectCubeMap(Position, reflect(Direction, Normal))).rgb;
+	// //vec3 RefractedColor = textureCube(PoolSkyCubeMap, IntersectCubeMap(Position, refract(Direction, Normal, 0.750395))).rgb;
 
-	//gl_FragColor.b = 1;
+	// vec3 LightDirectionReflected = reflect(normalize(Position -  LightPosition), Normal);
 
-	//gl_FragColor.r = Position.y;
+	// float Specular = pow(max(-dot(Direction, LightDirectionReflected), 0.0), 128);
 
-	//vec3 Normal = normalize(texture2D(WaterNormalMap, gl_TexCoord[0].st).rgb);
-	//vec3 Direction = normalize(Position - CameraPosition);
+	// //gl_FragColor.rgb = mix(ReflectedColor, RefractedColor, -dot(Normal, Direction)) + Specular;
+	// gl_FragColor.rgb = normalize(LightDirectionReflected + Specular);
+	// //gl_FragColor = vec4(0,1,0, 0);
 
-
+	// Test for simple Normal map
+	// vec3 Normal = texture2D(WaterNormalMap, gl_TexCoord[0].st).rgb;
+	// gl_FragColor.rgb = Normal;
+	
+	// Test for simple hight map
+	gl_FragColor.rgb = vec3(0,1,1);
+	gl_FragColor.r = abs(Position.y);
 }

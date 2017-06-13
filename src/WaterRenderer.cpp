@@ -4,10 +4,15 @@
 #include "Texture.hpp"
 #include "Loader.hpp"
 #include <glm/gtc/matrix_transform.inl>
+#include "GLFW/glfw3.h"
 
 using namespace glm;
 
-WaterRenderer::WaterRenderer(vec3& lightPosition) : m_waterShader(WaterShader("waterShader"))
+WaterRenderer::WaterRenderer(vec3& lightPosition) :
+	m_waterShader(WaterShader("waterShader")),
+	m_waterHightShader(WaterHeightShader("waterHeightMap")),
+	m_waterNormalShader(WaterNormalShader("waterNormalMap")),
+	m_waterAddDropShader(WaterAddDropShader("waterAddDrop"))
 {
 	GLint gl_max_texture_max_anisotropy_ext = 0;
 	glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &gl_max_texture_max_anisotropy_ext);
@@ -15,12 +20,28 @@ WaterRenderer::WaterRenderer(vec3& lightPosition) : m_waterShader(WaterShader("w
 	initTriangles();
 	initWaterHeightMaps(gl_max_texture_max_anisotropy_ext);
 	initWaterNormalMap(gl_max_texture_max_anisotropy_ext);
-	
+
 	m_waterShader.use();
 	m_waterShader.loadWaterHightMap(0);
 	m_waterShader.loadWaterNormalMap(1);
 	m_waterShader.loadLightPosition(lightPosition);
 	m_waterShader.stop();
+
+	m_waterHightShader.use();
+	m_waterHightShader.loadODWHMR(1.0f / WHMR_W);
+	m_waterHightShader.stop();
+
+	m_waterNormalShader.use();
+	m_waterNormalShader.loadODWNMR(1.0f / WNMR_W);
+	m_waterNormalShader.loadWMSDWNMRM2(2.0f / WNMR_W * 2);
+	m_waterNormalShader.stop();
+
+	glGenFramebuffersEXT(1, &FBO);
+
+	initQuadGeometry(&mQuadVAO);
+
+	//glGenFramebuffers(1, &mFboId);
+	//glBindFramebuffer(GL_FRAMEBUFFER, mFboId);
 
 	//m_mesh = OBJLoader::loadObjModel("waterplane");
 	//m_texture = Loader::loadTexture("waterNormalMap");
@@ -33,16 +54,10 @@ WaterRenderer::~WaterRenderer()
 void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& cameraPosition)
 {
 	mat4 waterModel = mat4();
-	waterModel = rotate(waterModel, -45.0f, vec3(1, 0, 0));
-	waterModel = translate(waterModel, vec3(30, 20, 30));
+	//waterModel = rotate(waterModel, -45.0f, vec3(1, 0, 0));
+	waterModel = translate(waterModel, vec3(50, 11, 50));
 	waterModel = scale(waterModel, vec3(2, 2, 2));
 	
-
-
-	m_waterShader.use();
-	m_waterShader.loadProjectionMatrix(projection);
-	m_waterShader.loadModelMatrix(waterModel);
-	m_waterShader.loadViewMatrix(view);
 	//glm::mat4 m = glm::mat4();
 	//glm::mat4 m2 = glm::mat4();
 	//glm::mat4 m3 = glm::mat4();
@@ -54,9 +69,80 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	//m_waterShader.loadModelMatrix(m2);
 	//m_waterShader.loadViewMatrix(m);
 
+	double currentTime = glfwGetTime();
+	_diff += _lastTime == 0 ? 0 : currentTime - _lastTime;
+	_lastTime = currentTime;
+
+	if (_diff > 0.016)
+	{
+		_diff = 0;
+
+		int origViewport[4];
+		glGetIntegerv(GL_VIEWPORT, origViewport);
+
+		glViewport(0, 0, WHMR_W, WHMR_H);
+		
+		//GLuint whmid = (WHMID + 1) % 2;
+
+		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, FBO);
+		//glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, WaterHeightMapsTexture[whmid], 0);
+		//glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, 0, 0);
+
+		//m_waterHightShader.use();
+		//glBindTexture(GL_TEXTURE_2D, WaterHeightMapsTexture[WHMID]);
+		//glBegin(GL_QUADS);
+		//glVertex2f(0.0f, 0.0f);
+		//glVertex2f(1.0f, 0.0f);
+		//glVertex2f(1.0f, 1.0f);
+		//glVertex2f(0.0f, 1.0f);
+		//glEnd();
+		//glBindTexture(GL_TEXTURE_2D, 0);
+		//m_waterHightShader.stop();
+
+		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+		//glBindTexture(GL_TEXTURE_2D, WaterHeightMapsTexture[whmid]);
+		//glGenerateMipmapEXT(GL_TEXTURE_2D);
+		//glBindTexture(GL_TEXTURE_2D, 0);
+
+		//++WHMID %= 2;
+
+		//// update water normal map
+		//glViewport(0, 0, WNMR_W, WNMR_H);
+		//
+		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, FBO);
+		//glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, WaterNormalMap, 0);
+		//glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, 0, 0);
+
+		//m_waterNormalShader.use();
+		//glBindTexture(GL_TEXTURE_2D, WaterHeightMapsTexture[WHMID]);
+		//glBegin(GL_QUADS);
+		//glVertex2f(0.0f, 0.0f);
+		//glVertex2f(1.0f, 0.0f);
+		//glVertex2f(1.0f, 1.0f);
+		//glVertex2f(0.0f, 1.0f);
+		//glEnd();
+		//glBindTexture(GL_TEXTURE_2D, 0);
+		//m_waterNormalShader.stop();
+
+		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+		//glBindTexture(GL_TEXTURE_2D, WaterNormalMap);
+		//glGenerateMipmapEXT(GL_TEXTURE_2D);
+		//glBindTexture(GL_TEXTURE_2D, 0);
+
+		glViewport(origViewport[0], origViewport[1], origViewport[2], origViewport[3]);
+	}
+
+	m_waterShader.use();
+	m_waterShader.loadProjectionMatrix(projection);
+	m_waterShader.loadModelMatrix(waterModel);
+	m_waterShader.loadViewMatrix(view);
+	m_waterShader.loadCameraPosition(cameraPosition);
+
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, WaterHeightMaps[0]);
-	//glBindTexture(GL_TEXTURE_2D, WaterHeightMaps[WHMID]);
+	//glBindTexture(GL_TEXTURE_2D, WaterHeightMaps[0]);
+	glBindTexture(GL_TEXTURE_2D, WaterHeightMapsTexture[WHMID]);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, WaterNormalMap);
 
@@ -71,6 +157,70 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void WaterRenderer::addDrop()
+{
+	//if (x >= -1.0f && x <= 1.0f && y >= -1.0f && y <= 1.0f)
+	{
+		int origViewport[4];
+		glGetIntegerv(GL_VIEWPORT, origViewport);
+		glViewport(0, 0, WMR, WMR);
+
+		GLuint nextID = 1 - WHMID;
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+
+		WaterHeightMapsFrameBuffer[nextID].bind();
+		m_waterAddDropShader.use();
+		m_waterAddDropShader.loadDropRadius(0.1);
+		vec2 p = vec2(0.5, 0.5);
+		m_waterAddDropShader.loadPosition(p);
+		WaterHeightMapsFrameBuffer[nextID].bindColorTargetAsTexture(0);
+
+		drawQuad(mQuadVAO);
+		m_waterAddDropShader.stop();
+		FrameBuffer::bindSystemFrameBuffer();
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		++WHMID %= 2;
+
+		glViewport(origViewport[0], origViewport[1], origViewport[2], origViewport[3]);
+	}
+}
+
+//void WaterRenderer::addDrop()
+//{
+//	//if (x >= -1.0f && x <= 1.0f && y >= -1.0f && y <= 1.0f)
+//	{
+//		//glViewport(0, 0, WMR, WMR);
+//
+//		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, FBO);
+//		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, WaterHeightMaps[(WHMID + 1) % 2], 0);
+//		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, 0, 0);
+//
+//		m_waterAddDropShader.use();
+//		glBindTexture(GL_TEXTURE_2D, WaterHeightMaps[WHMID]);
+//		//glUniform1f(WaterAddDropProgram.UniformLocations[0], DropRadius);
+//		//glUniform2fv(WaterAddDropProgram.UniformLocations[1], 1, &vec2(x * 0.5f + 0.5f, 0.5f - y * 0.5f));
+//		//glUniform1f(glGetUniformLocation(_waterDropShader, "DropRadius"), 0.05);
+//		//glUniform2fv(glGetUniformLocation(_waterDropShader, "Position"), 1, &vec2(0.5f, 0.5f));
+//		m_waterAddDropShader.loadDropRadius(0.05);
+//		vec2 p = vec2(0.5, 0.5);
+//		m_waterAddDropShader.loadPosition(p);
+//		glBegin(GL_QUADS);
+//		glVertex2f(0.0f, 0.0f);
+//		glVertex2f(1.0f, 0.0f);
+//		glVertex2f(1.0f, 1.0f);
+//		glVertex2f(0.0f, 1.0f);
+//		glEnd();
+//		glBindTexture(GL_TEXTURE_2D, 0);
+//		m_waterAddDropShader.stop();
+//
+//		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+//
+//		++WHMID %= 2;
+//	}
+//}
 
 //void WaterRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition)
 //{
@@ -348,34 +498,85 @@ void WaterRenderer::initTriangles()
 //	delete[] Vertices;
 //}
 
+//void WaterRenderer::initWaterHeightMaps(GLuint gl_max_texture_max_anisotropy_ext)
+//{
+//	glActiveTexture(GL_TEXTURE0);
+//	glGenTextures(2, WaterHeightMaps);
+//
+//	int totCount = WHMR_W * WHMR_H;
+//	vec4 *Heights = new vec4[totCount];
+//
+//	for (int i = 0; i < totCount; i++)
+//	{
+//		Heights[i] = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+//		//Heights[i] = vec4(0.0f, (float)(i) / totCount, 0.0f, 0.0f);
+//	}
+//
+//	for (int i = 0; i < 2; i++)
+//	{
+//		glBindTexture(GL_TEXTURE_2D, WaterHeightMaps[i]);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_max_texture_max_anisotropy_ext);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WHMR_W, WHMR_H, 0, GL_RGBA, GL_FLOAT, Heights);
+//		glGenerateMipmapEXT(GL_TEXTURE_2D);
+//		glBindTexture(GL_TEXTURE_2D, 0);
+//	}
+//
+//	delete[] Heights;
+//}
+
 void WaterRenderer::initWaterHeightMaps(GLuint gl_max_texture_max_anisotropy_ext)
 {
 	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(2, WaterHeightMaps);
+	//glGenTextures(2, WaterHeightMaps);
 
-	int totCount = WHMR_W * WHMR_H;
-	vec4 *Heights = new vec4[totCount];
+	//int totCount = WHMR_W * WHMR_H;
+	//vec4 *Heights = new vec4[totCount];
 
-	for (int i = 0; i < totCount; i++)
-	{
-		//Heights[i] = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-		Heights[i] = vec4(0.0f, (float)(i) / totCount, 0.0f, 0.0f);
-	}
+	//for (int i = 0; i < totCount; i++)
+	//{
+	//	Heights[i] = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	//	//Heights[i] = vec4(0.0f, (float)(i) / totCount, 0.0f, 0.0f);
+	//}
+
+	// get current settings:
+	int view[4];
+	glGetIntegerv(GL_VIEWPORT, view);
+	float col[4];
+	glGetFloatv(GL_COLOR_CLEAR_VALUE, col);
+
+	// new viewport:
+	glViewport(0, 0, WHMR_W, WHMR_H);
 
 	for (int i = 0; i < 2; i++)
 	{
-		glBindTexture(GL_TEXTURE_2D, WaterHeightMaps[i]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_max_texture_max_anisotropy_ext);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WHMR_W, WHMR_H, 0, GL_RGBA, GL_FLOAT, Heights);
-		glGenerateMipmapEXT(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		WaterHeightMapsTexture[i] = createEmptyTexture2D(WHMR_W, WHMR_H);
+
+		WaterHeightMapsFrameBuffer[i].createAndBind();
+		WaterHeightMapsFrameBuffer[i].attachTextureAsColorTarget(0, WaterHeightMapsTexture[i], WHMR_W, WHMR_H);
+		WaterHeightMapsFrameBuffer[i].setDrawBuffers();
+		WaterHeightMapsFrameBuffer[i].check();
+
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		//glBindTexture(GL_TEXTURE_2D, WaterHeightMaps[i]);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_max_texture_max_anisotropy_ext);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WHMR_W, WHMR_H, 0, GL_RGBA, GL_FLOAT, Heights);
+		//glGenerateMipmapEXT(GL_TEXTURE_2D);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	delete[] Heights;
+	FrameBuffer::bindSystemFrameBuffer();
+	glViewport(view[0], view[1], view[2], view[3]);
+	glClearColor(col[0], col[1], col[2], col[3]);
 }
 
 void WaterRenderer::initWaterNormalMap(GLuint gl_max_texture_max_anisotropy_ext)
@@ -388,8 +589,8 @@ void WaterRenderer::initWaterNormalMap(GLuint gl_max_texture_max_anisotropy_ext)
 
 	for (int i = 0; i < totCount; i++)
 	{
-		//Normals[i] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-		Normals[i] = vec4((float)(i) / totCount, 1.0f, 0.0f, 1.0f);
+		Normals[i] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		//Normals[i] = vec4((float)(i) / totCount, 1.0f, 0.0f, 1.0f);
 	}
 
 	glBindTexture(GL_TEXTURE_2D, WaterNormalMap);
@@ -403,4 +604,82 @@ void WaterRenderer::initWaterNormalMap(GLuint gl_max_texture_max_anisotropy_ext)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	delete[] Normals;
+}
+
+GLuint WaterRenderer::createEmptyTexture2D(GLuint w, GLuint h)
+{
+	GLuint texId;
+	glGenTextures(1, &texId);
+
+	//if (texId == 0)
+	//{
+	//	return 0;
+	//}
+
+	glBindTexture(GL_TEXTURE_2D, texId);
+	//CHECK_OPENGL_ERRORS();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//CHECK_OPENGL_ERRORS();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//CHECK_OPENGL_ERRORS();
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, NULL);
+
+	return texId;
+}
+
+void WaterRenderer::initQuadGeometry(GLuint* vao)
+{
+	assert(vao && "vao cannot be null");
+
+	// triangle strip
+	static const float quadData[] =
+	{
+		-1.0f, -1.0f, 0.0f, // pos
+		0.0f, 0.0f,         // tex
+
+		-1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f,
+
+		1.0f, -1.0f, 0.0f,
+		1.0f, 0.0f,
+
+		1.0f, 1.0f, 0.0f,
+		1.0f, 1.0f,
+	};
+
+	const GLsizei STRIDE = sizeof(float) * 5;
+
+	GLuint vbo = 0;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadData), quadData, GL_STATIC_DRAW);
+
+	//
+	// VAO setup
+	//
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(*vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE, 0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, STRIDE, (const void *)(sizeof(float) * 3));
+	//CHECK_OPENGL_ERRORS();
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void WaterRenderer::drawQuad(GLuint vao)
+{
+	glBindVertexArray(vao);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

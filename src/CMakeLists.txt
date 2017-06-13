@@ -28,8 +28,10 @@ SET(headers
 	"BoundingBox.hpp"
 	"WaterRenderer.hpp"
 	"WaterShader.hpp"
-	"WaterHightShader.hpp"
+	"WaterHeightShader.hpp"
 	"WaterNormalShader.hpp"
+	"WaterAddDropShader.hpp"
+	"FrameBuffer.hpp"
 )
 
 
@@ -63,8 +65,10 @@ SET(sources
 	"BoundingBox.cpp"
 	"WaterRenderer.cpp"
 	"WaterShader.cpp"
-	"WaterHightShader.cpp"
+	"WaterHeightShader.cpp"
 	"WaterNormalShader.cpp"
+	"WaterAddDropShader.cpp"
+	"FrameBuffer.cpp"
 )
 
 #Add executable target

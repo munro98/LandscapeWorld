@@ -5,11 +5,11 @@
 #include "Texture.hpp"
 #include "Loader.hpp"
 
-class WaterHightShader : public Shader
+class WaterAddDropShader : public Shader
 {
 public:
-	WaterHightShader(std::string name);
-	~WaterHightShader();
+	WaterAddDropShader(std::string name);
+	~WaterAddDropShader();
 
 	void bindAttributes();
 	void getAllUniformLocations();
@@ -18,18 +18,14 @@ public:
 	void loadViewMatrix(glm::mat4 mat);
 	void loadProjectionMatrix(glm::mat4 mat);
 
-	void loadCameraPosition(glm::vec3 &p);
-	void loadLightPosition(glm::vec3 &p);
-	void loadWaterHightMap(GLuint);
-	void loadWaterNormalMap(GLuint);
+	void loadDropRadius(float);
+	void loadPosition(glm::vec2 &p);
 
 private:
 	GLuint m_location_model;
 	GLuint m_location_view;
 	GLuint m_location_projection;
-	GLuint m_location_cameraPosition;
-	GLuint m_location_LightPosition;
-	GLuint m_location_WaterHightMap;
-	GLuint m_location_WaterNormalMap;
+	GLuint m_location_dropRadius;
+	GLuint m_location_position;
 };
 
