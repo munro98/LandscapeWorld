@@ -369,7 +369,8 @@ int main(int argc, char **argv) {
 		glDisable(GL_BLEND);
 
 		//triangleRenderer.render();
-		grassRenderer.render(view, model, projection, cameraPos);
+		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
+		grassRenderer.render(view, grassModel, projection, cameraPos);
 
 		// Render GUI on top
 		/*
