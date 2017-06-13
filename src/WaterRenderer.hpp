@@ -34,10 +34,12 @@ private:
 
 	//Mesh* m_mesh;
 	//Texture* m_texture;
-	GLuint WaterHeightMapsTexture[2];
-	FrameBuffer WaterHeightMapsFrameBuffer[2];
+	GLuint WaterHeightMapTextures[2];
+	FrameBuffer WaterHeightMapFrameBuffers[2];
 
-	GLuint WaterNormalMap;
+	GLuint WaterNormalMapTexture;
+	FrameBuffer WaterNormaMapFrameBuffer;
+
 	GLuint WaterVBO;
 	GLuint WHMID = 0;
 	GLuint FBO;
@@ -49,6 +51,7 @@ private:
 	void initWaterHeightMaps(GLuint);
 	void initWaterNormalMap(GLuint);
 	GLuint createEmptyTexture2D(GLuint w, GLuint h);
+	GLuint createNormalTexture2D(GLuint w, GLuint h);
 	void initQuadGeometry(GLuint* vao);
 	void drawQuad(GLuint);
 };

@@ -90,10 +90,10 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 
-		WaterHeightMapsFrameBuffer[nextId].bind();
+		WaterHeightMapFrameBuffers[nextId].bind();
 		m_waterHightShader.use();
 		//WaterHeightMapsFrameBuffer[nextId].bindColorTargetAsTexture(0);
-		WaterHeightMapsFrameBuffer[WHMID].bindColorTargetAsTexture(0);
+		WaterHeightMapFrameBuffers[WHMID].bindColorTargetAsTexture(0);
 
 		drawQuad(mQuadVAO);
 		m_waterHightShader.stop();
@@ -103,6 +103,20 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 
 		WHMID = nextId;
 		//++WHMID %= 2;
+
+		// Set viewport to exactly the hight and width of the WaterNormalMap resolution
+		//glActiveTexture(GL_TEXTURE1);
+		glViewport(0, 0, WNMR_W, WNMR_H);
+
+		WaterNormaMapFrameBuffer.bind();
+		m_waterNormalShader.use();
+		//glBindTexture(GL_TEXTURE_2D, WaterHeightMapTextures[WHMID]);
+		WaterHeightMapFrameBuffers[WHMID].bindColorTargetAsTexture(0);
+		drawQuad(mQuadVAO);
+		m_waterNormalShader.stop();
+
+		FrameBuffer::bindSystemFrameBuffer();
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		//// update water normal map
 		//glViewport(0, 0, WNMR_W, WNMR_H);
@@ -139,9 +153,9 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	m_waterShader.loadCameraPosition(cameraPosition);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, WaterHeightMapsTexture[WHMID]);
+	glBindTexture(GL_TEXTURE_2D, WaterHeightMapTextures[WHMID]);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, WaterNormalMap);
+	glBindTexture(GL_TEXTURE_2D, WaterNormalMapTexture);
 
 	glBindVertexArray(WaterVBO);
 	glDrawArrays(GL_TRIANGLES, 0, QuadsVerticesCount);
@@ -274,13 +288,13 @@ void WaterRenderer::addDrop()
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 
-		WaterHeightMapsFrameBuffer[nextId].bind();
+		WaterHeightMapFrameBuffers[nextId].bind();
 		m_waterAddDropShader.use();
 		m_waterAddDropShader.loadDropRadius(0.1);
 		vec2 p = vec2(0.5, 0.5);
 		m_waterAddDropShader.loadPosition(p);
 		//WaterHeightMapsFrameBuffer[nextId].bindColorTargetAsTexture(0);
-		WaterHeightMapsFrameBuffer[WHMID].bindColorTargetAsTexture(0);
+		WaterHeightMapFrameBuffers[WHMID].bindColorTargetAsTexture(0);
 
 		drawQuad(mQuadVAO);
 		m_waterAddDropShader.stop();
@@ -648,12 +662,12 @@ void WaterRenderer::initWaterHeightMaps(GLuint gl_max_texture_max_anisotropy_ext
 
 	for (int i = 0; i < 2; i++)
 	{
-		WaterHeightMapsTexture[i] = createEmptyTexture2D(WHMR_W, WHMR_H);
+		WaterHeightMapTextures[i] = createEmptyTexture2D(WHMR_W, WHMR_H);
 
-		WaterHeightMapsFrameBuffer[i].createAndBind();
-		WaterHeightMapsFrameBuffer[i].attachTextureAsColorTarget(0, WaterHeightMapsTexture[i], WHMR_W, WHMR_H);
-		WaterHeightMapsFrameBuffer[i].setDrawBuffers();
-		WaterHeightMapsFrameBuffer[i].check();
+		WaterHeightMapFrameBuffers[i].createAndBind();
+		WaterHeightMapFrameBuffers[i].attachTextureAsColorTarget(0, WaterHeightMapTextures[i], WHMR_W, WHMR_H);
+		WaterHeightMapFrameBuffers[i].setDrawBuffers();
+		WaterHeightMapFrameBuffers[i].check();
 
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -665,31 +679,82 @@ void WaterRenderer::initWaterHeightMaps(GLuint gl_max_texture_max_anisotropy_ext
 	glClearColor(col[0], col[1], col[2], col[3]);
 }
 
+//void WaterRenderer::initWaterNormalMap(GLuint gl_max_texture_max_anisotropy_ext)
+//{
+//	glActiveTexture(GL_TEXTURE1);
+//	glGenTextures(1, &WaterNormalMap);
+//
+//	int totCount = WNMR_W * WNMR_H;
+//	vec4 *Normals = new vec4[totCount];
+//
+//	for (int i = 0; i < totCount; i++)
+//	{
+//		Normals[i] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+//		//Normals[i] = vec4((float)(i) / totCount, 1.0f, 0.0f, 1.0f);
+//	}
+//
+//	glBindTexture(GL_TEXTURE_2D, WaterNormalMap);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_max_texture_max_anisotropy_ext);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WNMR_W, WNMR_H, 0, GL_RGBA, GL_FLOAT, Normals);
+//	glGenerateMipmapEXT(GL_TEXTURE_2D);
+//	glBindTexture(GL_TEXTURE_2D, 0);
+//
+//	delete[] Normals;
+//}
+//
+
 void WaterRenderer::initWaterNormalMap(GLuint gl_max_texture_max_anisotropy_ext)
 {
 	glActiveTexture(GL_TEXTURE1);
-	glGenTextures(1, &WaterNormalMap);
+	// save current settings:
+	int view[4];
+	glGetIntegerv(GL_VIEWPORT, view);
+	float col[4];
+	glGetFloatv(GL_COLOR_CLEAR_VALUE, col);
 
-	int totCount = WNMR_W * WNMR_H;
-	vec4 *Normals = new vec4[totCount];
+	glViewport(0, 0, WNMR_W, WNMR_H);
 
-	for (int i = 0; i < totCount; i++)
-	{
-		Normals[i] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-		//Normals[i] = vec4((float)(i) / totCount, 1.0f, 0.0f, 1.0f);
-	}
+	WaterNormalMapTexture = createEmptyTexture2D(WNMR_W, WNMR_H);
+	//WaterNormalMapTexture = createNormalTexture2D(WNMR_W, WNMR_H);
+	WaterNormaMapFrameBuffer.createAndBind();
+	WaterNormaMapFrameBuffer.attachTextureAsColorTarget(0, WaterNormalMapTexture, WNMR_W, WNMR_H);
+	WaterNormaMapFrameBuffer.setDrawBuffers();
+	WaterNormaMapFrameBuffer.check();
 
-	glBindTexture(GL_TEXTURE_2D, WaterNormalMap);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_max_texture_max_anisotropy_ext);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WNMR_W, WNMR_H, 0, GL_RGBA, GL_FLOAT, Normals);
-	glGenerateMipmapEXT(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	delete[] Normals;
+	// reset to previouse settings
+	FrameBuffer::bindSystemFrameBuffer();
+	glViewport(view[0], view[1], view[2], view[3]);
+	glClearColor(col[0], col[1], col[2], col[3]);
+
+	//glGenTextures(1, &WaterNormalMap);
+
+	//int totCount = WNMR_W * WNMR_H;
+	//vec4 *Normals = new vec4[totCount];
+
+	//for (int i = 0; i < totCount; i++)
+	//{
+	//	Normals[i] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	//	//Normals[i] = vec4((float)(i) / totCount, 1.0f, 0.0f, 1.0f);
+	//}
+
+	//glBindTexture(GL_TEXTURE_2D, WaterNormalMap);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_max_texture_max_anisotropy_ext);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WNMR_W, WNMR_H, 0, GL_RGBA, GL_FLOAT, Normals);
+	//glGenerateMipmapEXT(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+
+	//delete[] Normals;
 }
 
 GLuint WaterRenderer::createEmptyTexture2D(GLuint w, GLuint h)
@@ -712,6 +777,33 @@ GLuint WaterRenderer::createEmptyTexture2D(GLuint w, GLuint h)
 	//CHECK_OPENGL_ERRORS();
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, NULL);
+
+	return texId;
+}
+
+GLuint WaterRenderer::createNormalTexture2D(GLuint w, GLuint h)
+{
+	GLuint texId;
+	glGenTextures(1, &texId);
+
+	int totCount = w * h;
+	vec4 *Normals = new vec4[totCount];
+
+	for (int i = 0; i < totCount; i++)
+	{
+		//Normals[i] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		Normals[i] = vec4((float)(i) / totCount, 1.0f, 0.0f, 1.0f);
+	}
+
+	glBindTexture(GL_TEXTURE_2D, texId);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, Normals);
+
+	delete[] Normals;
 
 	return texId;
 }
