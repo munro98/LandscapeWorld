@@ -202,14 +202,14 @@ int main(int argc, char **argv) {
 	float snowCoverage = 0.99f;
 
 	World world;
-	TriangleRenderer triangleRenderer;
-	ModelRenderer modelRenderer(projection);
+	//TriangleRenderer triangleRenderer;
+	//ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
 	
-	WaterRenderer_Old waterRenderer(projection);
+	//WaterRenderer_Old waterRenderer(projection);
 	glm::vec3 lightPos = glm::vec3(0, 10, 0);
-	_waterRendere = new WaterRenderer(lightPos);
+	_waterRendere = new WaterRenderer(projection, lightPos);
 	//WaterRenderer movingWaterRenderer(projection);
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");

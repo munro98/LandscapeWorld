@@ -4,12 +4,13 @@
 #include "WaterNormalShader.hpp"
 #include "WaterAddDropShader.hpp"
 #include "FrameBufObj.hpp"
+#include "ModelShader.hpp"
 
 class WaterRenderer
 {
 public:
 	// Constructor
-	WaterRenderer(glm::vec3& lightPosition);
+	WaterRenderer(glm::mat4& projection, glm::vec3& lightPosition);
 	// Destructor
 	~WaterRenderer();
 
@@ -22,6 +23,7 @@ public:
 private:
 	// The water mesh resolution
 	const int WaterMeshResolution_Width = 128;
+	const int WaterMeshResolution_Height = 128;
 
 	// The WaterHeightMapt resolution
 	const int WaterHeightMapResolution_Width = 128;
@@ -40,10 +42,14 @@ private:
 	FrameBufObj _waterNormalMapFrameBuffer;
 
 	// The Shaders
+	ModelShader _modelShader;
 	WaterShader _waterShader;
 	WaterHeightShader _waterHeightShader;
 	WaterNormalShader _waterNormalShader;
 	WaterAddDropShader _waterAddDropShader;
+
+	Mesh* _bathtubMesh;
+	Texture* _texture;
 
 	// Variables to keep track of time for constant update 
 	// of the height and normal map to maintain constant speed
@@ -68,6 +74,8 @@ private:
 
 	// Initializes the WaterNormalMap
 	void initWaterNormalMap();
+
+	void renderBathtub(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection);
 
 	// Generates an TextureID and creates an empty thexture for later updates by the shaders
 	static GLuint createEmptyTexture(GLuint w, GLuint h);

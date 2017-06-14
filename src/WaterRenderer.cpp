@@ -6,7 +6,8 @@
 
 using namespace glm;
 
-WaterRenderer::WaterRenderer(vec3& lightPosition) :
+WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
+	_modelShader(ModelShader("modelShader")),
 	_waterShader(WaterShader("waterShader")),
 	_waterHeightShader(WaterHeightShader("waterHeightMapShader")),
 	_waterNormalShader(WaterNormalShader("waterNormalMapShader")),
@@ -26,23 +27,36 @@ WaterRenderer::WaterRenderer(vec3& lightPosition) :
 	_waterShader.loadWaterHeightMap(0);
 	_waterShader.loadWaterNormalMap(1);
 	_waterShader.loadLightPosition(lightPosition);
+	_waterShader.loadProjectionMatrix(projection);
+	//vec4 waterColor = vec4(1, 0, 0, 1.0);
 	vec4 waterColor = vec4(112.0 / 255.0, 143.0 / 255.0, 184.0 / 255.0, 1.0);
 	_waterShader.loadWaterColor(waterColor);
 	_waterShader.stop();
 
 	//  - the water height shader, wich will update the height map
 	_waterHeightShader.use();
-	_waterHeightShader.loadODWHMR(1.0f / WaterHeightMapResolution_Width);
+	_waterHeightShader.loadwaterHeightMapResolutionWidth(1.0f / WaterHeightMapResolution_Width);
+	_waterHeightShader.loadwaterHeightMapResolutionHeight(1.0f / WaterHeightMapResolution_Height);
 	_waterHeightShader.stop();
 
 	//  - the water normal shader, wich will update the normal map
 	_waterNormalShader.use();
-	_waterNormalShader.loadODWNMR(1.0f / WaterNormalMapResolution_Width);
+	_waterNormalShader.loadwaterNormalMapResolutionWidth(1.0f / WaterNormalMapResolution_Width);
+	_waterNormalShader.loadwaterNormalMapResolutionHeight(1.0f / WaterNormalMapResolution_Height);
 	_waterNormalShader.loadWMSDWNMRM2(2.0f / WaterNormalMapResolution_Width * 2);
 	_waterNormalShader.stop();
 
 	// Setupt the square to update the maps
 	initSquareGeometry(&_squareBuffId);
+
+	// Init Bathtub mesh
+	//_bathtubMesh = OBJLoader::loadObjModel("box");
+	_bathtubMesh = OBJLoader::loadObjModel("bathtub");
+	_texture = Loader::loadTexture("white");
+	// Init model Shader
+	_modelShader.use();
+	_modelShader.loadProjectionMatrix(projection);
+	_modelShader.stop();
 }
 
 WaterRenderer::~WaterRenderer()
@@ -59,7 +73,7 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 {
 	mat4 waterModel = mat4();
 	//waterModel = rotate(waterModel, -45.0f, vec3(1, 0, 0));
-	waterModel = translate(waterModel, vec3(50, 11, 50));
+	waterModel = translate(waterModel, vec3(50, 9.6, 50));
 	waterModel = scale(waterModel, vec3(2, 2, 2));
 
 	double currentTime = glfwGetTime();
@@ -76,8 +90,8 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 
 		// Set viewport to exactly the height and width of the WaterHeightMap resolution
 		glViewport(0, 0, WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
-		
-		// Get the next id for the water height buffer
+
+		//// Get the next id for the water height buffer
 		GLuint nextId = (_waterHeightMapId + 1) % 2;
 
 		glDisable(GL_DEPTH_TEST);
@@ -112,6 +126,8 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 
 		// reset the Viewport to the previouse values
 		glViewport(origViewport[0], origViewport[1], origViewport[2], origViewport[3]);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
 	}
 
 	// Actual rendering
@@ -139,6 +155,9 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	FrameBufObj::resetBinding();
 	glActiveTexture(GL_TEXTURE0);
 	FrameBufObj::resetBinding();
+
+	waterModel = translate(waterModel, vec3(0, -1.1, 0));
+	renderBathtub(view, waterModel, projection);
 }
 
 void WaterRenderer::addDrop()
@@ -150,7 +169,7 @@ void WaterRenderer::addDrop()
 		glGetIntegerv(GL_VIEWPORT, origViewport);
 
 		// Set Viewport to with and height of the Water Map
-		glViewport(0, 0, WaterMeshResolution_Width, WaterMeshResolution_Width);
+		glViewport(0, 0, WaterMeshResolution_Width, WaterMeshResolution_Height);
 
 		// Calculate the next ID for the WaterHeightMap
 		GLuint nextId = (_waterHeightMapId + 1) % 2;
@@ -161,8 +180,8 @@ void WaterRenderer::addDrop()
 		_waterHeightMapFrameBuffers[nextId].bind();
 		// Use the WaterDropShader and pass in the apropriate values
 		_waterAddDropShader.use();
-		_waterAddDropShader.loadDropRadius(0.05);
-		vec2 dropPosition = vec2(0.5, 0.5);
+		_waterAddDropShader.loadDropRadius(0.1);
+		vec2 dropPosition = vec2(0.25, 0.5);
 		_waterAddDropShader.loadPosition(dropPosition);
 		// Load the current WaterHeightMap to read from
 		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
@@ -187,16 +206,17 @@ void WaterRenderer::initWaterPlane()
 	int WMRP1 = WaterMeshResolution_Width + 1;
 	vec3 *Vertices = new vec3[WMRP1 * WMRP1];
 	
-	float WMSDWMR = 2.0f / static_cast<float>(WaterMeshResolution_Width);
+	float WMSDWMR_W = 2.0f / static_cast<float>(WaterMeshResolution_Width);
+	float WMSDWMR_H = 2.0f / static_cast<float>(WaterMeshResolution_Height);
 	
 	// Create triangel points
 	for (int y = 0; y <= WaterMeshResolution_Width; y++)
 	{
-		for (int x = 0; x <= WaterMeshResolution_Width; x++)
+		for (int x = 0; x <= WaterMeshResolution_Height; x++)
 		{
-			Vertices[WMRP1 * y + x].x = x * WMSDWMR - 1.0f;
+			Vertices[WMRP1 * y + x].x = x * WMSDWMR_W - 1.0f;
 			Vertices[WMRP1 * y + x].y = 0.0f;
-			Vertices[WMRP1 * y + x].z = 1.0f - y * WMSDWMR;
+			Vertices[WMRP1 * y + x].z = 1.0f - y * WMSDWMR_W;
 		}
 	}
 	
@@ -207,7 +227,7 @@ void WaterRenderer::initWaterPlane()
 	{
 		int yp1 = y + 1;
 	
-		for (int x = 0; x < WaterMeshResolution_Width; x++)
+		for (int x = 0; x < WaterMeshResolution_Height; x++)
 		{
 			int xp1 = x + 1;
 	
@@ -377,4 +397,31 @@ void WaterRenderer::drawSquare(GLuint buffId)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void WaterRenderer::renderBathtub(mat4& view, glm::mat4& model, glm::mat4& projection)
+{
+	_modelShader.use();
+	//Update uniforms
+	_modelShader.loadModelMatrix(model);
+	_modelShader.loadViewMatrix(view);
+	_modelShader.loadProjectionMatrix(projection);
+
+	glBindVertexArray(_bathtubMesh->getVaoID());
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+
+	//Bind texture
+	glActiveTexture(GL_TEXTURE0);
+	_texture->bind();
+
+	glDrawElements(GL_TRIANGLES, _bathtubMesh->getVertexCount(), GL_UNSIGNED_INT, 0);
+	Texture::unbind();
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glBindVertexArray(0);
 }

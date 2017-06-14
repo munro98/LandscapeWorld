@@ -18,14 +18,16 @@ public:
 	void loadViewMatrix(glm::mat4 mat);
 	void loadProjectionMatrix(glm::mat4 mat);
 
-	void loadODWNMR(float);
+	void loadwaterNormalMapResolutionWidth(float);
+	void loadwaterNormalMapResolutionHeight(float);
 	void loadWMSDWNMRM2(float);
 
 private:
 	GLuint m_location_model;
 	GLuint m_location_view;
 	GLuint m_location_projection;
-	GLuint m_location_ODWNMR;
+	GLuint m_location_waterNormalMapResolution_W;
+	GLuint m_location_waterNormalMapResolution_H;
 	GLuint m_location_WMSDWNMRM2;
 };
 

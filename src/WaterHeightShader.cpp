@@ -24,7 +24,8 @@ void WaterHeightShader::getAllUniformLocations()
 	m_location_model = getUniformLocation("model");
 	m_location_view = getUniformLocation("view");
 	m_location_projection = getUniformLocation("projection");
-	m_location_ODWHMR = getUniformLocation("ODWHMR");
+	m_location_waterHeightMapResolution_W = getUniformLocation("waterHeightMapResolution_W");
+	m_location_waterHeightMapResolution_H = getUniformLocation("waterHeightMapResolution_H");
 }
 
 void WaterHeightShader::loadModelMatrix(glm::mat4 mat)
@@ -42,7 +43,12 @@ void WaterHeightShader::loadProjectionMatrix(glm::mat4 mat)
 	loadMatrix(m_location_projection, mat);
 }
 
-void WaterHeightShader::loadODWHMR(float resolution)
+void WaterHeightShader::loadwaterHeightMapResolutionWidth(float resolution)
 {
-	Shader::loadFloat(m_location_ODWHMR, resolution);
+	Shader::loadFloat(m_location_waterHeightMapResolution_W, resolution);
+}
+
+void WaterHeightShader::loadwaterHeightMapResolutionHeight(float resolution)
+{
+	Shader::loadFloat(m_location_waterHeightMapResolution_H, resolution);
 }
