@@ -18,8 +18,8 @@ TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix, World &world) : m_s
 
 
 	m_shader.stop();
-//For fast loading
-#if 0
+//0 For fast loading
+#if 1
 	m_grass = Loader::loadTexture("ground2048");
 	m_rock = Loader::loadTexture("rock");
 	m_stones = Loader::loadTexture("stones");
