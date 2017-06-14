@@ -31,7 +31,7 @@ SET(headers
 	"WaterHeightShader.hpp"
 	"WaterNormalShader.hpp"
 	"WaterAddDropShader.hpp"
-	"FrameBuffer.hpp"
+	"FrameBufObj.hpp"
 )
 
 
@@ -68,7 +68,7 @@ SET(sources
 	"WaterHeightShader.cpp"
 	"WaterNormalShader.cpp"
 	"WaterAddDropShader.cpp"
-	"FrameBuffer.cpp"
+	"FrameBufObj.cpp"
 )
 
 #Add executable target
