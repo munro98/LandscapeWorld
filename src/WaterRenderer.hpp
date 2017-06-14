@@ -4,7 +4,7 @@
 #include "WaterHeightShader.hpp"
 #include "WaterNormalShader.hpp"
 #include "WaterAddDropShader.hpp"
-#include "FrameBuffer.hpp"
+#include "FrameBufObj.hpp"
 
 #define WMR 128 // water mesh resolution
 #define WHMR_W 128 // water height map resolution
@@ -34,10 +34,10 @@ private:
 	//Mesh* m_mesh;
 	//Texture* m_texture;
 	GLuint WaterHeightMapTextures[2];
-	FrameBuffer WaterHeightMapFrameBuffers[2];
+	FrameBufObj WaterHeightMapFrameBuffers[2];
 
 	GLuint WaterNormalMapTexture;
-	FrameBuffer WaterNormaMapFrameBuffer;
+	FrameBufObj WaterNormaMapFrameBuffer;
 
 	GLuint WaterVBO;
 	GLuint WHMID = 0;
