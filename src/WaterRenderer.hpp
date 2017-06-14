@@ -23,7 +23,6 @@ public:
 	void addDrop();
 
 private:
-	//Shader m_waterShader;
 	WaterShader m_waterShader;
 	WaterHeightShader m_waterHightShader;
 	WaterNormalShader m_waterNormalShader;
@@ -48,10 +47,9 @@ private:
 	int QuadsVerticesCount = 0;
 
 	void initTriangles();
-	void initWaterHeightMaps(GLuint);
-	void initWaterNormalMap(GLuint);
+	void initWaterHeightMaps();
+	void initWaterNormalMap();
 	GLuint createEmptyTexture2D(GLuint w, GLuint h);
-	GLuint createNormalTexture2D(GLuint w, GLuint h);
 	void initQuadGeometry(GLuint* vao);
 	void drawQuad(GLuint);
 };
