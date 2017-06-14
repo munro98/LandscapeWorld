@@ -35,19 +35,6 @@ GrassRenderer::GrassRenderer(World &world) : m_shader(GrassShader("grassShader")
 
 	glBindVertexArray(0);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition) {
@@ -90,7 +77,7 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
     	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 10000, &translations[0], GL_STATIC_DRAW);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 3, translations.data(), GL_STATIC_DRAW); //Nigel: now using data contained in vector
-																										//sizeof(GLfloat) * 10000 * 3
+													//sizeof(GLfloat) * 10000 * 3
     	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(m_VAO);

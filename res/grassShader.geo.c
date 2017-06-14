@@ -1,7 +1,7 @@
  
 #version 330 core
 layout (points) in;
-layout (triangle_strip, max_vertices = 5) out;
+layout (triangle_strip, max_vertices = 7) out;
 
 in VS_OUT {
     vec3 color;
@@ -9,25 +9,32 @@ in VS_OUT {
 
 out vec3 fColor;
 
-void build_house(vec4 position)
-{    
+//TODO take a rotation
+
+//TODO output normals
+
+void grass_blade(vec4 position){
     fColor = gs_in[0].color; // gs_in[0] since there's only one input vertex
-    gl_Position = position + vec4(-0.2, -0.2, 0.0, 0.0); // 1:bottom-left   
+    gl_Position = position + vec4(-0.05, 0.0, 0.0, 0.0); // 1  
     EmitVertex();   
-    gl_Position = position + vec4( 0.2, -0.2, 0.0, 0.0); // 2:bottom-right
+    gl_Position = position + vec4( 0.05, 0.0, 0.0, 0.0); // 2
     EmitVertex();
-    gl_Position = position + vec4(-0.2,  0.2, 0.0, 0.0); // 3:top-left
+    gl_Position = position + vec4(0.05,  0.1, 0.0, 0.0); // 3
     EmitVertex();
-    gl_Position = position + vec4( 0.2,  0.2, 0.0, 0.0); // 4:top-right
+    gl_Position = position + vec4( 0.0,  0.2, 0.0, 0.0); // 4
     EmitVertex();
-    gl_Position = position + vec4( 0.0,  0.4, 0.0, 0.0); // 5:top
+    gl_Position = position + vec4( 0.05,  0.3, 0.0, 0.0); // 5
+    EmitVertex();
+    gl_Position = position + vec4( 0.1,  0.2, 0.0, 0.0); // 6
+    EmitVertex();
+    gl_Position = position + vec4( 0.15,  0.4, 0.0, 0.0); // 7
     fColor = vec3(1.0, 1.0, 1.0);
     EmitVertex();
     EndPrimitive();
 }
 
 void main() {    
-    build_house(gl_in[0].gl_Position);
+    grass_blade(gl_in[0].gl_Position);
 }
 
 
