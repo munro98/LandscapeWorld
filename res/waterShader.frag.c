@@ -1,46 +1,35 @@
-#version 330 core
-in vec2 TexCoord;
-in vec3 surfaceNormal;
+#version 330
 
-in vec3 toCameraVector;
+uniform sampler2D WaterNormalMap;
 
-in vec3 fromLightVector;
+uniform vec3 LightPosition;
+uniform vec3 CameraPosition;
+uniform vec4 waterColor;
 
-out vec4 color;
+in vec3 Position;
+in vec2 vVaryingTexCoord0;
 
-uniform sampler2D normalMap;
-
-
-const vec3 lightDirection = vec3(-0.5, 0.6, 0.7);
-const vec3 lightColour = vec3(1.4, 1.4, 1.4);
-
-
-const vec4 skyColour = vec4(0.38, 0.504, 0.668, 1); //For reflections
-
-const float waveStrength = 0.02;
-const float shineDamper = 100.0;
-const float reflectivity = 0.1;
+out vec4 vFragColor;
 
 void main()
 {
-	//color = texture(normalMap, TexCoord);
-	vec4 normalMapColour = texture(normalMap, TexCoord);
-	vec4 reflectColour = skyColour;
+	// lighting
+	vec3 ambient  = vec3(0.1);
+	vec3 diffuse  = vec3(0.0);
+	vec3 specular = vec3(0.0);
 
-	vec3 normal = vec3(normalMapColour.r * 2.0 - 1.0, normalMapColour.b, normalMapColour.g * 2.0 - 1.0);
-
-	vec3 viewVector = normalize(toCameraVector);
-	float refractiveFactor = dot(viewVector, vec3(0.0,1.0,0.0));
+	vec3 Normal = normalize(texture(WaterNormalMap, vVaryingTexCoord0.st).rgb);
 	
-	refractiveFactor = pow(refractiveFactor, 1);
+	vec3 eye = normalize(CameraPosition - Position);
+	vec3 light = normalize(LightPosition - Position);
+	vec3 halfVec = normalize(eye + light);
+	// diffuse
+	float diff = max(0.0, dot(Normal, light));
+	diffuse += vec3(diff);
+	// specular
+	float spec = pow(max(0.0, dot(Normal, halfVec)), 64);
+	specular += vec3(spec);
 
-
-	vec3 reflectedLight = reflect(normalize(-lightDirection), normal);
-	float specular = max(dot(reflectedLight, viewVector), 0.0);
-	specular = pow(specular, shineDamper);
-	vec3 specularHighlights = lightColour * specular * reflectivity;
-
-	//color = vec4(specularHighlights, 1.0);
-	color = vec4(reflectColour.x, reflectColour.y, reflectColour.z, clamp(refractiveFactor, 0.55, 1.0)) + vec4(specularHighlights, 0.0);
-	//color = vec4(0.0f, 0.0f, 1.0f, 0.5f);
+	vFragColor.rgb = waterColor.rgb * (ambient + diffuse) + specular;
+	vFragColor.a = waterColor.a;
 }

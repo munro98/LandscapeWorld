@@ -22,10 +22,16 @@ SET(headers
 	"World.hpp"
 	"TerrainPosition.hpp"
 	"BlendMapTexture.hpp"
-	"WaterRenderer.hpp"
-	"WaterShader.hpp"
+	"_WaterRenderer.hpp"
+	"_WaterShader.hpp"
 	"Frustum.hpp"
 	"BoundingBox.hpp"
+	"WaterRenderer.hpp"
+	"WaterShader.hpp"
+	"WaterHeightShader.hpp"
+	"WaterNormalShader.hpp"
+	"WaterAddDropShader.hpp"
+	"FrameBufObj.hpp"
 )
 
 
@@ -53,10 +59,16 @@ SET(sources
 	"World.cpp"
 	"TerrainPosition.cpp"
 	"BlendMapTexture.cpp"
-	"WaterRenderer.cpp"
-	"WaterShader.cpp"
+	"_WaterRenderer.cpp"
+	"_WaterShader.cpp"
 	"Frustum.cpp"
 	"BoundingBox.cpp"
+	"WaterRenderer.cpp"
+	"WaterShader.cpp"
+	"WaterHeightShader.cpp"
+	"WaterNormalShader.cpp"
+	"WaterAddDropShader.cpp"
+	"FrameBufObj.cpp"
 )
 
 #Add executable target

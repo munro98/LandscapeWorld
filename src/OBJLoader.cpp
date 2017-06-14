@@ -99,12 +99,9 @@ Mesh* OBJLoader::loadObjModel(const std::string& fileName)
 			}
 		}
 
-		//std::cout << vertices.size() << " " << textures.size() << " " << normals.size() << " " << indices.size() << " \n";
-
+		std::cout << vertices.size() << " " << textures.size() << " " << normals.size() << " " << indices.size() << " \n";
 
 		while (file.good()) {
-			
-
 			output.append(line + "\n");
 			std::stringstream lineSS(line);
 
@@ -113,28 +110,38 @@ Mesh* OBJLoader::loadObjModel(const std::string& fileName)
 
 			if (c != 'f')
 			{
+				getline(file, line);
 				continue;
 			}
 
-			int vi11, vi12, vi13;
-			int vi21, vi22, vi23;
-			int vi31, vi32, vi33;
-			lineSS >> vi11 >> c >> vi12 >> c >> vi13;
-			lineSS >> vi21 >> c >> vi22 >> c >> vi23;
-			lineSS >> vi31 >> c >> vi32 >> c >> vi33;
-
-			//std::cout << vi11 << " " << vi12 << " " << vi13 << " \n";
-
-			processVertex(vi11, vi12, vi13, indices, textures, normals, texturesArray, normalsArray);
-			processVertex(vi21, vi22, vi23, indices, textures, normals, texturesArray, normalsArray);
-			processVertex(vi31, vi32, vi33, indices, textures, normals, texturesArray, normalsArray);
+			for(int i = 0; i < 3; i++)
+			{
+				int vi11 = 0, vi12 = 0, vi13 = 0;
+				lineSS >> vi11;
+				c = lineSS.peek();
+				if(c == '/')
+				{
+					// ignore the '/' character
+					lineSS.ignore(1);
+					c = lineSS.peek();
+					if(c != '/')
+					{
+						lineSS >> vi12;
+					}
+						
+					c = lineSS.peek();
+					if (c == '/')
+					{
+						// ignore the '/' character
+						lineSS.ignore(1);
+						lineSS >> vi13;
+					}
+				}
+				processVertex(vi11, vi12, vi13, indices, textures, normals, texturesArray, normalsArray);
+			}
 
 			getline(file, line);
-
 		}
-
-
-
 	}
 	else {
 		std::cerr << "File Load Fail " << fileName << std::endl;
@@ -166,18 +173,21 @@ void OBJLoader::processVertex(int vi1, int vi2, int vi3, std::vector<int>& indic
 	int currentVertexIndex = vi1 - 1;
 	indices.push_back(currentVertexIndex);
 
+	if (vi2 > 0)
+	{
+		glm::vec2 currentTex = textures[vi2 - 1];
 
-	glm::vec2 currentTex = textures[vi2 - 1];
 
+		texturesArray[currentVertexIndex * 2] = currentTex.x;
+		texturesArray[currentVertexIndex * 2 + 1] = 1 - currentTex.y;
+	}
 
-	texturesArray[currentVertexIndex * 2] = currentTex.x;
-	texturesArray[currentVertexIndex * 2+1] = 1 - currentTex.y;
+	if (vi3 > 0)
+	{
+		glm::vec3 currentNorm = normals[vi3 - 1];
 
-	///*
-	glm::vec3 currentNorm = normals[vi3 - 1];
-
-	normalsArray[currentVertexIndex * 3] = currentNorm.x;
-	normalsArray[currentVertexIndex * 3 + 1] = currentNorm.y;
-	normalsArray[currentVertexIndex * 3 + 2] = currentNorm.z;
-	//*/
+		normalsArray[currentVertexIndex * 3] = currentNorm.x;
+		normalsArray[currentVertexIndex * 3 + 1] = currentNorm.y;
+		normalsArray[currentVertexIndex * 3 + 2] = currentNorm.z;
+	}
 }

@@ -18,6 +18,7 @@ public:
 	void bindAttribute(int attribute, std::string variableName);
 	void loadFloat(int location, float value);
 	void loadInt(int location, int value);
+	void loadVector(int location, glm::vec4 vector);
 	void loadVector(int location, glm::vec3 vector);
 	void loadVector(int location, glm::vec2 vector);
 	void loadBool(int location, bool value);

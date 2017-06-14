@@ -19,7 +19,7 @@ TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix, World &world) : m_s
 
 	m_shader.stop();
 //For fast loading
-#if 1
+#if 0
 	m_grass = Loader::loadTexture("ground2048");
 	m_rock = Loader::loadTexture("rock");
 	m_stones = Loader::loadTexture("stones");
@@ -56,8 +56,8 @@ void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projecti
 	m_shader.loadTextures();
 
 	//Bind textures
-    //glActiveTexture(GL_TEXTURE0);
-    //m_grass->bind();
+	//glActiveTexture(GL_TEXTURE0);
+	//m_grass->bind();
 
 	glActiveTexture(GL_TEXTURE1);
 	m_grass->bind();
