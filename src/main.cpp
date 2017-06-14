@@ -23,6 +23,7 @@
 #include "TerrainRenderer.hpp"
 #include "_WaterRenderer.hpp"
 #include "World.hpp"
+#include "MousePicker.hpp"
 
 #include "Frustum.hpp"
 #include "WaterRenderer.hpp"
@@ -39,6 +40,8 @@ static const float zfar = 2000.0f;
 bool leftMouseDown = false;
 glm::vec2 mousePosition = glm::vec2(0.0, 0.0);
 glm::vec2 lastMousePosition = glm::vec2(0.0, 0.0);
+
+glm::vec2 currentWaterTexturePoint = glm::vec2(0.0, 0.0);
 
 bool hasWindowFocus = true;
 Camera camera;
@@ -90,7 +93,7 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 		leftMouseDown = (action == GLFW_PRESS);
 		if (action == 0)
 		{
-			_waterRendere->addDrop();
+			_waterRendere->addDrop(currentWaterTexturePoint.x, currentWaterTexturePoint.y);
 		}
 	}
 }
@@ -203,9 +206,11 @@ int main(int argc, char **argv) {
 
 	World world;
 	//TriangleRenderer triangleRenderer;
-	//ModelRenderer modelRenderer(projection);
+	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
+
+	MousePicker mousePicker(world, *world.findTerrainAt(0,0));
 	
 	//WaterRenderer_Old waterRenderer(projection);
 	glm::vec3 lightPos = glm::vec3(0, 10, 0);
@@ -330,16 +335,14 @@ int main(int argc, char **argv) {
 		projection = glm::perspective(90.0f, (float)width / (float)height, 0.5f, 2000.0f);
 
 
-		//glDisable(GL_CULL_FACE);
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-
-
-		
-
 		//////////////////////////////////////////////////////
 		glm::mat4 view;
 		view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFront(), camera.getUp());
+
+		mousePicker.update(width, height, mousePosition.x, mousePosition.y, projection, view, cameraPos);
+		currentWaterTexturePoint = mousePicker.m_currentWaterTexturePoint;
+		//glm::vec3 ray = mousePicker.getCurrentRay();
+		//std::cout << ray.x << " " << ray.y << " " << ray.z << "\n";
 
 		Frustum frustum(view, projection);
 
@@ -349,9 +352,14 @@ int main(int argc, char **argv) {
 		
 
 		glm::mat4 model(1);
+
+		glm::mat4 boxModel(1);
 		
 		//skyboxRenderer.render(view, model);
 		//glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
 		
 		skydomeRenderer.render(view, model);
 		glClear(GL_DEPTH_BUFFER_BIT); // Everything goes on top of sky
@@ -370,7 +378,12 @@ int main(int argc, char **argv) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		//modelRenderer.render(view, model, projection, mesh);
+		//boxModel = glm::translate(boxModel, glm::vec3(25, world.heightAt(25, 25), 25));
+		
+		//boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
+		boxModel = glm::translate(boxModel, mousePicker.getCurrentWaterPoint());
+		boxModel = glm::scale(boxModel, glm::vec3(0.1, 0.1, 0.1));
+		modelRenderer.render(view, boxModel, projection, mesh);
 
 		glEnable(GL_BLEND); // Water can be transparent
 		//waterRenderer.render(view, model, projection, cameraPos);

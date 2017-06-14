@@ -32,6 +32,7 @@ SET(headers
 	"WaterNormalShader.hpp"
 	"WaterAddDropShader.hpp"
 	"FrameBufObj.hpp"
+	"MousePicker.hpp"
 )
 
 
@@ -69,6 +70,7 @@ SET(sources
 	"WaterNormalShader.cpp"
 	"WaterAddDropShader.cpp"
 	"FrameBufObj.cpp"
+	"MousePicker.cpp"
 )
 
 #Add executable target
