@@ -45,7 +45,11 @@ glm::vec2 currentWaterTexturePoint = glm::vec2(0.0, 0.0);
 
 bool hasWindowFocus = true;
 Camera camera;
+
+// Water related fields
 WaterRenderer* _waterRendere;
+float dropSize = 0.5;
+float rainIntensity = 0.6;
 
 bool showMenu = true;
 bool isFlying = false;
@@ -76,7 +80,9 @@ void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
 	lastMousePosition = mousePosition;
 
 	if (leftMouseDown)
+	{
 		camera.rotate(xoffset, -yoffset);
+	}
 }
 
 
@@ -93,7 +99,7 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 		leftMouseDown = (action == GLFW_PRESS);
 		if (action == 0)
 		{
-			_waterRendere->addDrop(currentWaterTexturePoint.x, currentWaterTexturePoint.y);
+			_waterRendere->addDrop(currentWaterTexturePoint.x, currentWaterTexturePoint.y, dropSize);
 		}
 	}
 }
@@ -390,7 +396,7 @@ int main(int argc, char **argv) {
 		glDisable(GL_BLEND);
 
 		glDisable(GL_CULL_FACE);
-		_waterRendere->render(view, model, projection, cameraPos);
+		_waterRendere->render(view, model, projection, cameraPos, dropSize, rainIntensity);
 		glEnable(GL_CULL_FACE);
 		//triangleRenderer.render();
 
@@ -468,6 +474,10 @@ int main(int argc, char **argv) {
 				ImGui::SliderFloat("Terrain blendMap", &showBlendMap, 0.0f, 1.0f, "%.3f");
 				ImGui::SliderFloat("Snow coverage", &snowCoverage, 0.0f, 1.0f, "%.3f");
 				ImGui::Checkbox("Update frustum", &updateFrustum);
+
+				ImGui::Text("Water Settings");
+				ImGui::SliderFloat("Rain intensity", &rainIntensity, 0.0f, 1.0f, "%.3f");
+				ImGui::SliderFloat("Drop size", &dropSize, 0.4f, 1.0f, "%.3f");
 			}
 
 			ImGui::End();
