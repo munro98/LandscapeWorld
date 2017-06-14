@@ -1,21 +1,13 @@
 #pragma once
 #include "WaterShader.hpp"
-#include "Texture.hpp"
 #include "WaterHeightShader.hpp"
 #include "WaterNormalShader.hpp"
 #include "WaterAddDropShader.hpp"
 #include "FrameBufObj.hpp"
 
-#define WMR 128 // water mesh resolution
-#define WHMR_W 128 // water height map resolution
-#define WHMR_H 128 // water height map resolution
-#define WNMR_W 256 // water normal map resolution
-#define WNMR_H 256 // water normal map resolution
-
 class WaterRenderer
 {
 public:
-	//WaterRenderer(glm::mat4& projectionMatrix);
 	WaterRenderer(glm::vec3& lightPosition);
 	~WaterRenderer();
 
@@ -23,25 +15,31 @@ public:
 	void addDrop();
 
 private:
-	WaterShader m_waterShader;
-	WaterHeightShader m_waterHightShader;
-	WaterNormalShader m_waterNormalShader;
-	WaterAddDropShader m_waterAddDropShader;
+	const int WaterMeshResolution_Width = 128;
+	const int WaterHeightMapResolution_Width = 128;
+	const int WaterHeightMapResolution_Height = 128;
+	const int WaterNormalMapResolution_Width = 256;
+	const int WaterNormalMapResolution_Height = 256;
+
+	WaterShader _waterShader;
+	WaterHeightShader _waterHeightShader;
+	WaterNormalShader _waterNormalShader;
+	WaterAddDropShader _waterAddDropShader;
 
 	float _diff = 0;
 	float _lastTime = 0;
 
 	//Mesh* m_mesh;
 	//Texture* m_texture;
-	GLuint WaterHeightMapTextures[2];
-	FrameBufObj WaterHeightMapFrameBuffers[2];
+	GLuint _waterHeightMapTextures[2];
+	FrameBufObj _waterHeightMapFrameBuffers[2];
 
-	GLuint WaterNormalMapTexture;
-	FrameBufObj WaterNormaMapFrameBuffer;
+	GLuint _waterNormalMapTexture;
+	FrameBufObj _waterNormaMapFrameBuffer;
 
-	GLuint WaterVBO;
-	GLuint WHMID = 0;
-	GLuint mQuadVAO = 0;
+	GLuint _waterPlaneBuffId;
+	GLuint _waterHeightMapId = 0;
+	GLuint _squareBuffId = 0;
 
 	int _triangleVerticesCount = 0;
 

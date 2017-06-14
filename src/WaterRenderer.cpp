@@ -1,18 +1,16 @@
 #include "WaterRenderer.hpp"
 #include "WaterShader.hpp"
 #include "OBJLoader.hpp"
-#include "Texture.hpp"
-#include "Loader.hpp"
 #include <glm/gtc/matrix_transform.inl>
 #include "GLFW/glfw3.h"
 
 using namespace glm;
 
 WaterRenderer::WaterRenderer(vec3& lightPosition) :
-	m_waterShader(WaterShader("waterShader")),
-	m_waterHightShader(WaterHeightShader("waterHeightMap")),
-	m_waterNormalShader(WaterNormalShader("waterNormalMap")),
-	m_waterAddDropShader(WaterAddDropShader("waterAddDrop"))
+	_waterShader(WaterShader("waterShader")),
+	_waterHeightShader(WaterHeightShader("waterHeightMap")),
+	_waterNormalShader(WaterNormalShader("waterNormalMap")),
+	_waterAddDropShader(WaterAddDropShader("waterAddDrop"))
 {
 	// Initialize the three different maps
 	//  - the plane
@@ -24,26 +22,26 @@ WaterRenderer::WaterRenderer(vec3& lightPosition) :
 
 	// Initializes the shaders
 	//  - the water shader, wich is responsible to draw the water and its colours
-	m_waterShader.use();
-	m_waterShader.loadWaterHightMap(0);
-	m_waterShader.loadWaterNormalMap(1);
-	m_waterShader.loadLightPosition(lightPosition);
+	_waterShader.use();
+	_waterShader.loadWaterHightMap(0);
+	_waterShader.loadWaterNormalMap(1);
+	_waterShader.loadLightPosition(lightPosition);
 	vec4 waterColor = vec4(112.0 / 255.0, 143.0 / 255.0, 184.0 / 255.0, 1.0);
-	m_waterShader.loadWaterColor(waterColor);
-	m_waterShader.stop();
+	_waterShader.loadWaterColor(waterColor);
+	_waterShader.stop();
 
 	//  - the water hight shader, wich will update the hight map
-	m_waterHightShader.use();
-	m_waterHightShader.loadODWHMR(1.0f / WHMR_W);
-	m_waterHightShader.stop();
+	_waterHeightShader.use();
+	_waterHeightShader.loadODWHMR(1.0f / WaterHeightMapResolution_Width);
+	_waterHeightShader.stop();
 
 	//  - the water normal shader, wich will update the normal map
-	m_waterNormalShader.use();
-	m_waterNormalShader.loadODWNMR(1.0f / WNMR_W);
-	m_waterNormalShader.loadWMSDWNMRM2(2.0f / WNMR_W * 2);
-	m_waterNormalShader.stop();
+	_waterNormalShader.use();
+	_waterNormalShader.loadODWNMR(1.0f / WaterNormalMapResolution_Width);
+	_waterNormalShader.loadWMSDWNMRM2(2.0f / WaterNormalMapResolution_Width * 2);
+	_waterNormalShader.stop();
 
-	initSquareGeometry(&mQuadVAO);
+	initSquareGeometry(&_squareBuffId);
 }
 
 WaterRenderer::~WaterRenderer()
@@ -76,38 +74,38 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		glGetIntegerv(GL_VIEWPORT, origViewport);
 
 		// Set viewport to exactly the hight and width of the WaterHeightMap resolution
-		glViewport(0, 0, WHMR_W, WHMR_H);
+		glViewport(0, 0, WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
 		
 		// Get the next id for the water hight buffer
-		GLuint nextId = (WHMID + 1) % 2;
+		GLuint nextId = (_waterHeightMapId + 1) % 2;
 
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 
 		// Bind the water hight map, use the HightMapShader and draw
 		// a square to update the water hight map and unbind everything
-		WaterHeightMapFrameBuffers[nextId].bind();
-		m_waterHightShader.use();
-		WaterHeightMapFrameBuffers[WHMID].bindColourTarget(0);
+		_waterHeightMapFrameBuffers[nextId].bind();
+		_waterHeightShader.use();
+		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
 
-		drawSquare(mQuadVAO);
-		m_waterHightShader.stop();
+		drawSquare(_squareBuffId);
+		_waterHeightShader.stop();
 
 		FrameBufObj::resetBinding();
 
 		// Set the next buffer
-		WHMID = nextId;
+		_waterHeightMapId = nextId;
 
 		// Set viewport to exactly the hight and width of the WaterNormalMap resolution
-		glViewport(0, 0, WNMR_W, WNMR_H);
+		glViewport(0, 0, WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
 
 		// Bind the WaterNormalMap to write into, use the WaterNormalShader and bind
 		// the current heightMap to calculate the normals and then unbind everything
-		WaterNormaMapFrameBuffer.bind();
-		m_waterNormalShader.use();
-		WaterHeightMapFrameBuffers[WHMID].bindColourTarget(0);
-		drawSquare(mQuadVAO);
-		m_waterNormalShader.stop();
+		_waterNormaMapFrameBuffer.bind();
+		_waterNormalShader.use();
+		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
+		drawSquare(_squareBuffId);
+		_waterNormalShader.stop();
 
 		FrameBufObj::resetBinding();
 
@@ -117,23 +115,23 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 
 	// Actual rendering
 	// use the water shader and pass in the appropriate matrices
-	m_waterShader.use();
-	m_waterShader.loadProjectionMatrix(projection);
-	m_waterShader.loadModelMatrix(waterModel);
-	m_waterShader.loadViewMatrix(view);
-	m_waterShader.loadCameraPosition(cameraPosition);
+	_waterShader.use();
+	_waterShader.loadProjectionMatrix(projection);
+	_waterShader.loadModelMatrix(waterModel);
+	_waterShader.loadViewMatrix(view);
+	_waterShader.loadCameraPosition(cameraPosition);
 
 	// Bind the WaterHeightMap and the WaterNormalMap for the shaders use
 	glActiveTexture(GL_TEXTURE0);
-	WaterHeightMapFrameBuffers[WHMID].bindColourTarget(0);
+	_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
 	glActiveTexture(GL_TEXTURE1);
-	WaterNormaMapFrameBuffer.bindColourTarget(0);
+	_waterNormaMapFrameBuffer.bindColourTarget(0);
 
 	// Draw the actual plane
-	glBindVertexArray(WaterVBO);
+	glBindVertexArray(_waterPlaneBuffId);
 	glDrawArrays(GL_TRIANGLES, 0, _triangleVerticesCount);
 	glBindVertexArray(0);
-	m_waterShader.stop();
+	_waterShader.stop();
 
 	// Unbind everything
 	glActiveTexture(GL_TEXTURE1);
@@ -151,32 +149,32 @@ void WaterRenderer::addDrop()
 		glGetIntegerv(GL_VIEWPORT, origViewport);
 
 		// Set Viewport to with and height of the Water Map
-		glViewport(0, 0, WMR, WMR);
+		glViewport(0, 0, WaterMeshResolution_Width, WaterMeshResolution_Width);
 
 		// Calculate the next ID for the WaterHightMap
-		GLuint nextId = (WHMID + 1) % 2;
+		GLuint nextId = (_waterHeightMapId + 1) % 2;
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 
 		// Bind the next WaterHeightMap to write into
-		WaterHeightMapFrameBuffers[nextId].bind();
+		_waterHeightMapFrameBuffers[nextId].bind();
 		// Use the WaterDropShader and pass in the apropriate values
-		m_waterAddDropShader.use();
-		m_waterAddDropShader.loadDropRadius(0.05);
+		_waterAddDropShader.use();
+		_waterAddDropShader.loadDropRadius(0.05);
 		vec2 dropPosition = vec2(0.5, 0.5);
-		m_waterAddDropShader.loadPosition(dropPosition);
+		_waterAddDropShader.loadPosition(dropPosition);
 		// Load the current WaterHeightMap to read from
-		WaterHeightMapFrameBuffers[WHMID].bindColourTarget(0);
+		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
 
 		// Draw a square on the screen to update the WaterHeightMap
-		drawSquare(mQuadVAO);
+		drawSquare(_squareBuffId);
 
 		// Unbind Shader and textures
-		m_waterAddDropShader.stop();
+		_waterAddDropShader.stop();
 		FrameBufObj::resetBinding();
 
 		// Change WaterHeightMap buffers
-		WHMID = nextId;
+		_waterHeightMapId = nextId;
 
 		// Reset Viewprot to the original values
 		glViewport(origViewport[0], origViewport[1], origViewport[2], origViewport[3]);
@@ -185,15 +183,15 @@ void WaterRenderer::addDrop()
 
 void WaterRenderer::initWaterPlane()
 {
-	int WMRP1 = WMR + 1;
+	int WMRP1 = WaterMeshResolution_Width + 1;
 	vec3 *Vertices = new vec3[WMRP1 * WMRP1];
 	
-	float WMSDWMR = 2.0f / static_cast<float>(WMR);
+	float WMSDWMR = 2.0f / static_cast<float>(WaterMeshResolution_Width);
 	
 	// Create triangel points
-	for (int y = 0; y <= WMR; y++)
+	for (int y = 0; y <= WaterMeshResolution_Width; y++)
 	{
-		for (int x = 0; x <= WMR; x++)
+		for (int x = 0; x <= WaterMeshResolution_Width; x++)
 		{
 			Vertices[WMRP1 * y + x].x = x * WMSDWMR - 1.0f;
 			Vertices[WMRP1 * y + x].y = 0.0f;
@@ -204,11 +202,11 @@ void WaterRenderer::initWaterPlane()
 	std::vector<GLfloat> triangles;
 
 	// draw the actual triangles
-	for (int y = 0; y < WMR; y++)
+	for (int y = 0; y < WaterMeshResolution_Width; y++)
 	{
 		int yp1 = y + 1;
 	
-		for (int x = 0; x < WMR; x++)
+		for (int x = 0; x < WaterMeshResolution_Width; x++)
 		{
 			int xp1 = x + 1;
 	
@@ -240,15 +238,15 @@ void WaterRenderer::initWaterPlane()
 	}
 
 	// bind the triangles to the buffers
-	glGenVertexArrays(1, &WaterVBO);
-	glBindVertexArray(WaterVBO);
+	glGenVertexArrays(1, &_waterPlaneBuffId);
+	glBindVertexArray(_waterPlaneBuffId);
 
 	GLuint t;
 	glGenBuffers(1, &t);
 	glBindBuffer(GL_ARRAY_BUFFER, t);
 	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 4, triangles.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), static_cast<GLvoid*>(0));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), static_cast<GLvoid*>(nullptr));
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
@@ -269,17 +267,17 @@ void WaterRenderer::initWaterHeightMaps()
 	glGetIntegerv(GL_VIEWPORT, view);
 
 	// New viewport
-	glViewport(0, 0, WHMR_W, WHMR_H);
+	glViewport(0, 0, WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
 
 	for (int i = 0; i < 2; i++)
 	{
 		// Setup the WaterHeightMapTextures and buffers
-		WaterHeightMapTextures[i] = createEmptyTexture(WHMR_W, WHMR_H);
+		_waterHeightMapTextures[i] = createEmptyTexture(WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
 
-		WaterHeightMapFrameBuffers[i].createAndBind();
-		WaterHeightMapFrameBuffers[i].attachTexture(0, WaterHeightMapTextures[i], WHMR_W, WHMR_H);
-		WaterHeightMapFrameBuffers[i].setDrwaBuff();
-		WaterHeightMapFrameBuffers[i].check();
+		_waterHeightMapFrameBuffers[i].createAndBind();
+		_waterHeightMapFrameBuffers[i].attachTexture(0, _waterHeightMapTextures[i], WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
+		_waterHeightMapFrameBuffers[i].setDrwaBuff();
+		_waterHeightMapFrameBuffers[i].check();
 	}
 
 	// Unbind all the textures and buffers
@@ -297,14 +295,14 @@ void WaterRenderer::initWaterNormalMap()
 	glGetIntegerv(GL_VIEWPORT, view);
 
 	// New viewport
-	glViewport(0, 0, WNMR_W, WNMR_H);
+	glViewport(0, 0, WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
 
 	// Setup the WaterNormalMapTexture and buffer
-	WaterNormalMapTexture = createEmptyTexture(WNMR_W, WNMR_H);
-	WaterNormaMapFrameBuffer.createAndBind();
-	WaterNormaMapFrameBuffer.attachTexture(0, WaterNormalMapTexture, WNMR_W, WNMR_H);
-	WaterNormaMapFrameBuffer.setDrwaBuff();
-	WaterNormaMapFrameBuffer.check();
+	_waterNormalMapTexture = createEmptyTexture(WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
+	_waterNormaMapFrameBuffer.createAndBind();
+	_waterNormaMapFrameBuffer.attachTexture(0, _waterNormalMapTexture, WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
+	_waterNormaMapFrameBuffer.setDrwaBuff();
+	_waterNormaMapFrameBuffer.check();
 
 	// Unbind all the textures and buffers
 	FrameBufObj::resetBinding();
@@ -326,7 +324,7 @@ GLuint WaterRenderer::createEmptyTexture(GLuint w, GLuint h)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
 
 	return texId;
 }
@@ -363,7 +361,7 @@ void WaterRenderer::initSquareGeometry(GLuint* buffId)
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE, nullptr);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, STRIDE, reinterpret_cast<const void *>(sizeof(float) * 3));
 
