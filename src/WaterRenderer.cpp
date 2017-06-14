@@ -69,20 +69,29 @@ WaterRenderer::~WaterRenderer()
 	//WaterNormaMapFrameBuffer.destroy();
 }
 
-void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& cameraPosition)
+void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& cameraPosition, float dropSize, float rainIntensity)
 {
-	mat4 waterModel = mat4();
-	//waterModel = rotate(waterModel, -45.0f, vec3(1, 0, 0));
-	waterModel = translate(waterModel, vec3(50, 9.6, 50));
+	mat4 waterModel;// = model;
+	waterModel = translate(model, vec3(0, 1, 0));
 	waterModel = scale(waterModel, vec3(2, 2, 2));
 
 	double currentTime = glfwGetTime();
-	_diff += _lastTime == 0 ? 0 : currentTime - _lastTime;
+	float timeDiff = _lastTime == 0 ? 0 : currentTime - _lastTime;
+	_rainDiff += timeDiff;
+	_updateDiff += timeDiff;
 	_lastTime = currentTime;
 
-	if (_diff > 0.016)
+	if(rainIntensity > 0.001 && _rainDiff > (1-rainIntensity))
 	{
-		_diff = 0;
+		_rainDiff = 0;
+		float x = (rand() % 101) / 100.0;
+		float y = (rand() % 101) / 100.0;
+		addDrop(x, y, dropSize);
+	}
+
+	if (_updateDiff > 0.016)
+	{
+		_updateDiff = 0;
 
 		// Save current viewport settings
 		int origViewport[4];
@@ -160,9 +169,8 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	renderBathtub(view, waterModel, projection);
 }
 
-void WaterRenderer::addDrop(float x, float y)
+void WaterRenderer::addDrop(float x, float y, float dropRadius)
 {
-	//if (x >= -1.0f && x <= 1.0f && y >= -1.0f && y <= 1.0f)
 	if (x >= 0 && x <= 1.0f && y >= 0 && y <= 1.0f)
 	{
 		// Save the current viewport
@@ -181,8 +189,7 @@ void WaterRenderer::addDrop(float x, float y)
 		_waterHeightMapFrameBuffers[nextId].bind();
 		// Use the WaterDropShader and pass in the apropriate values
 		_waterAddDropShader.use();
-		_waterAddDropShader.loadDropRadius(0.1);
-		//vec2 dropPosition = vec2(0.25, 0.5);
+		_waterAddDropShader.loadDropRadius(0.02 * dropRadius);
 		vec2 dropPosition = vec2(x, 1.0f-y);
 		_waterAddDropShader.loadPosition(dropPosition);
 		// Load the current WaterHeightMap to read from
@@ -200,6 +207,8 @@ void WaterRenderer::addDrop(float x, float y)
 
 		// Reset Viewprot to the original values
 		glViewport(origViewport[0], origViewport[1], origViewport[2], origViewport[3]);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
 	}
 }
 

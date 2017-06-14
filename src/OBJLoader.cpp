@@ -99,7 +99,7 @@ Mesh* OBJLoader::loadObjModel(const std::string& fileName)
 			}
 		}
 
-		std::cout << vertices.size() << " " << textures.size() << " " << normals.size() << " " << indices.size() << " \n";
+//		std::cout << vertices.size() << " " << textures.size() << " " << normals.size() << " " << indices.size() << " \n";
 
 		while (file.good()) {
 			output.append(line + "\n");

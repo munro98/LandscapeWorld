@@ -15,12 +15,10 @@ public:
 	~WaterRenderer();
 
 	// renders the actual scene
-	void render(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3 & cameraPosition);
+	void render(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3 & cameraPosition, float dropSize, float rainIntensity);
 
-	void addDrop(float x, float y);
-	
 	// adds a drop on to the plane
-	void addDrop();
+	void addDrop(float x, float y, float dropRadius);
 
 private:
 	// The water mesh resolution
@@ -55,7 +53,8 @@ private:
 
 	// Variables to keep track of time for constant update 
 	// of the height and normal map to maintain constant speed
-	float _diff = 0;
+	float _updateDiff = 0;
+	float _rainDiff = 0;
 	float _lastTime = 0;
 
 	// WaterHeightMapp uses double buffering, this holds the index of the active buffer
