@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
 	SkydomeRenderer skydomeRenderer(projection);
 	
 	WaterRenderer_Old waterRenderer(projection);
-	glm::vec3 lightPos = glm::vec3(0, 1, 0);
+	glm::vec3 lightPos = glm::vec3(0, 10, 0);
 	_waterRendere = new WaterRenderer(lightPos);
 	//WaterRenderer movingWaterRenderer(projection);
 

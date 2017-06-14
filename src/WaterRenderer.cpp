@@ -25,6 +25,8 @@ WaterRenderer::WaterRenderer(vec3& lightPosition) :
 	m_waterShader.loadWaterHightMap(0);
 	m_waterShader.loadWaterNormalMap(1);
 	m_waterShader.loadLightPosition(lightPosition);
+	vec4 waterColor = vec4(112.0 / 255.0, 143.0 / 255.0, 184.0 / 255.0, 1.0);
+	m_waterShader.loadWaterColor(waterColor);
 	m_waterShader.stop();
 
 	m_waterHightShader.use();
@@ -290,7 +292,7 @@ void WaterRenderer::addDrop()
 
 		WaterHeightMapFrameBuffers[nextId].bind();
 		m_waterAddDropShader.use();
-		m_waterAddDropShader.loadDropRadius(0.1);
+		m_waterAddDropShader.loadDropRadius(0.05);
 		vec2 p = vec2(0.5, 0.5);
 		m_waterAddDropShader.loadPosition(p);
 		//WaterHeightMapsFrameBuffer[nextId].bindColorTargetAsTexture(0);

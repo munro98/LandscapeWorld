@@ -77,6 +77,10 @@ void Shader::loadInt(int location, int value) {
 	glUniform1i(location, value);
 }
 
+void Shader::loadVector(int location, glm::vec4 vector) {
+	glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
+}
+
 void Shader::loadVector(int location, glm::vec3 vector) {
 	glUniform3f(location, vector.x, vector.y, vector.z);
 }
