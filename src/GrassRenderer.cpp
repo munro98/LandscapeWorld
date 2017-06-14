@@ -15,9 +15,9 @@ GrassRenderer::GrassRenderer(World &world) : m_shader(GrassShader("grassShader")
 
 	std::mt19937 rng; //random number generator
 	rng.seed(std::random_device()());
-	std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+	std::uniform_real_distribution<float> dist(-0.6f, 0.6f);
 
-	for(int i = 0; i<DENSITY*3;i=i+3){ //create DENSITY grass coordinates in a 1 by 1 area at the origin
+	for(int i = 0; i<DENSITY*3;i=i+3){ //create DENSITY grass coordinates in a 1.0 by 1.0 area at the origin
 		vertices[i] = dist(rng);
 		vertices[i+1] = 0;
 		vertices[i+2] = dist(rng);

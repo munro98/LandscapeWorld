@@ -9,5 +9,5 @@ uniform mat4 projection;
 uniform vec3 camPos;
 
 void main() {
-	gl_Position = projection*view*model*vec4(position+offset, 1.0);
+	gl_Position = vec4(position+offset, 1.0);
 }
