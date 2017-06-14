@@ -11,7 +11,7 @@ out vec3 fColor;
 
 //TODO take a rotation
 
-//TODO output normals
+//TODO normals
 
 void grass_blade(vec4 position){
     fColor = gs_in[0].color; // gs_in[0] since there's only one input vertex

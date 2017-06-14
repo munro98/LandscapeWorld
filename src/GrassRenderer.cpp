@@ -64,6 +64,9 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 
 	exit_label:;
 	
+	//TODO perform 2 pass rendering with  the first pass using culling shaders
+
+
 	//render
 	m_shader.use();
 
