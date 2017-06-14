@@ -41,16 +41,15 @@ private:
 
 	GLuint WaterVBO;
 	GLuint WHMID = 0;
-	GLuint FBO;
 	GLuint mQuadVAO = 0;
 
-	int QuadsVerticesCount = 0;
+	int _triangleVerticesCount = 0;
 
-	void initTriangles();
+	void initWaterPlane();
 	void initWaterHeightMaps();
 	void initWaterNormalMap();
-	GLuint createEmptyTexture2D(GLuint w, GLuint h);
-	void initQuadGeometry(GLuint* vao);
-	void drawQuad(GLuint);
+	static GLuint createEmptyTexture(GLuint w, GLuint h);
+	static void initSquareGeometry(GLuint* vao);
+	static void drawSquare(GLuint);
 };
 

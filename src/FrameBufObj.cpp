@@ -116,7 +116,6 @@ void FrameBufObj::attachTexture(GLuint destId, GLuint texId, int w, int h)
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+destId, GL_TEXTURE_2D, texId, 0);
 
-	// get W & H:
 	_width = w;
 	_height = h;
 }
@@ -131,24 +130,24 @@ bool FrameBufObj::check()
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
-		cerr << "status != GL_FRAMEBUFFER_COMPLETE" << endl;
+		cerr << "glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE" << endl;
 
 		switch (status)
 		{
 		case GL_FRAMEBUFFER_UNSUPPORTED:
-			cerr << "Unsupported framebuffer format" << endl;
+			cerr << "Unsupported framebuffer format." << endl;
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-			cerr << "Framebuffer incomplete attachment" << endl;
+			cerr << "FrameBuffer incomplete attachment." << endl;
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-			cerr << "Framebuffer incomplete, missing attachment" << endl;
+			cerr << "FrameBuffer incomplete, missing attachment." << endl;
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-			cerr << "Framebuffer incomplete, missing draw buffer" << endl;
+			cerr << "FrameBuffer incomplete, missing draw buffer." << endl;
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-			cerr << "Framebuffer incomplete, missing read buffer" << endl;
+			cerr << "FrameBuffer incomplete, missing read buffer." << endl;
 			break;
 		default:
 			cerr << "Unknown error " << status << endl;
