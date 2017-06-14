@@ -160,9 +160,10 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	renderBathtub(view, waterModel, projection);
 }
 
-void WaterRenderer::addDrop()
+void WaterRenderer::addDrop(float x, float y)
 {
 	//if (x >= -1.0f && x <= 1.0f && y >= -1.0f && y <= 1.0f)
+	if (x >= 0 && x <= 1.0f && y >= 0 && y <= 1.0f)
 	{
 		// Save the current viewport
 		int origViewport[4];
@@ -181,7 +182,8 @@ void WaterRenderer::addDrop()
 		// Use the WaterDropShader and pass in the apropriate values
 		_waterAddDropShader.use();
 		_waterAddDropShader.loadDropRadius(0.1);
-		vec2 dropPosition = vec2(0.25, 0.5);
+		//vec2 dropPosition = vec2(0.25, 0.5);
+		vec2 dropPosition = vec2(x, 1.0f-y);
 		_waterAddDropShader.loadPosition(dropPosition);
 		// Load the current WaterHeightMap to read from
 		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);

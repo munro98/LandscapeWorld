@@ -16,6 +16,8 @@ public:
 
 	// renders the actual scene
 	void render(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3 & cameraPosition);
+
+	void addDrop(float x, float y);
 	
 	// adds a drop on to the plane
 	void addDrop();
