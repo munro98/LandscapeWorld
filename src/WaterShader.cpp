@@ -26,7 +26,7 @@ void WaterShader::getAllUniformLocations()
 	m_location_view = getUniformLocation("view");
 	m_location_projection = getUniformLocation("projection");
 	m_location_cameraPosition = getUniformLocation("cameraPosition");
-	m_location_WaterHightMap = getUniformLocation("WaterHeightMap");
+	m_location_WaterHeightMap = getUniformLocation("WaterHeightMap");
 	m_location_WaterNormalMap = getUniformLocation("WaterNormalMap");
 	m_location_LightPosition = getUniformLocation("LightPosition");
 	m_location_WaterColor = getUniformLocation("waterColor");
@@ -57,9 +57,9 @@ void WaterShader::loadLightPosition(vec3& p)
 	loadVector(m_location_LightPosition, p);
 }
 
-void WaterShader::loadWaterHightMap(GLuint i)
+void WaterShader::loadWaterHeightMap(GLuint i)
 {
-	loadInt(m_location_WaterHightMap, i);
+	loadInt(m_location_WaterHeightMap, i);
 }
 
 void WaterShader::loadWaterNormalMap(GLuint i)

@@ -37,7 +37,7 @@ private:
 
 	// The WaterNormalMap texture and buffer
 	GLuint _waterNormalMapTexture;
-	FrameBufObj _waterNormaMapFrameBuffer;
+	FrameBufObj _waterNormalMapFrameBuffer;
 
 	// The Shaders
 	WaterShader _waterShader;
@@ -46,7 +46,7 @@ private:
 	WaterAddDropShader _waterAddDropShader;
 
 	// Variables to keep track of time for constant update 
-	// of the hight and normal map to maintain constant speed
+	// of the height and normal map to maintain constant speed
 	float _diff = 0;
 	float _lastTime = 0;
 
@@ -73,7 +73,7 @@ private:
 	static GLuint createEmptyTexture(GLuint w, GLuint h);
 
 	// Sets um a simple square to be drwan over the whole screen. This
-	// is mainly used to trigger the update of the hight maps
+	// is mainly used to trigger the update of the height maps
 	static void initSquareGeometry(GLuint* vao);
 
 	// Actually draws the square on to the screen
