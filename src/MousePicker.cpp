@@ -27,7 +27,7 @@ void MousePicker::update(int width, int height, int mouseX, int mouseY, glm::mat
 		m_currentWaterTexturePoint.x /= 4.0f;
 		m_currentWaterTexturePoint.y /= 4.0f;
 
-		std::cout << m_currentWaterTexturePoint.x << " " << m_currentWaterTexturePoint.y << "\n";
+		//std::cout << m_currentWaterTexturePoint.x << " " << m_currentWaterTexturePoint.y << "\n";
 
 		//m_currentTerrainPoint = stepSearch(m_currentRay);
 	//m_currentTerrainPoint = getPointOnRay(m_currentRay, 10.0f, cameraPosition);

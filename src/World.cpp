@@ -405,7 +405,7 @@ float World::heightAt(float worldX, float worldZ)
 	auto chunkIt = m_terrains.find(terrainPos);
 	if (chunkIt == m_terrains.end())
 	{
-		return std::numeric_limits<float>::min();
+		return 0;
 	}
 
 	float terrainX = worldX - (x * TERRAIN_SIZE);
