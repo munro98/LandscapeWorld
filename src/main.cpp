@@ -23,6 +23,7 @@
 #include "TerrainRenderer.hpp"
 #include "_WaterRenderer.hpp"
 #include "World.hpp"
+#include "GrassRenderer.hpp"
 #include "MousePicker.hpp"
 
 #include "Frustum.hpp"
@@ -211,7 +212,9 @@ int main(int argc, char **argv) {
 	float snowCoverage = 0.99f;
 
 	World world;
+	
 	//TriangleRenderer triangleRenderer;
+	GrassRenderer grassRenderer(world);
 	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
@@ -402,6 +405,8 @@ int main(int argc, char **argv) {
 		_waterRendere->render(view, model, projection, cameraPos, dropSize, rainIntensity);
 		glEnable(GL_CULL_FACE);
 		//triangleRenderer.render();
+		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
+		grassRenderer.render(view, grassModel, projection, cameraPos);
 
 		// Render GUI on top
 		/*

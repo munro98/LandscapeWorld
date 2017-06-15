@@ -33,6 +33,8 @@ SET(headers
 	"WaterAddDropShader.hpp"
 	"FrameBufObj.hpp"
 	"MousePicker.hpp"
+	"GrassRenderer.hpp"
+	"GrassShader.hpp"
 )
 
 
@@ -71,6 +73,8 @@ SET(sources
 	"WaterAddDropShader.cpp"
 	"FrameBufObj.cpp"
 	"MousePicker.cpp"
+	"GrassRenderer.cpp"
+	"GrassShader.cpp"
 )
 
 #Add executable target
