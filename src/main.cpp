@@ -308,27 +308,6 @@ int main(int argc, char **argv) {
 
 
 		}
-		
-
-		if (glfwGetKey(window, GLFW_KEY_F))
-		{
-			camera.left(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_H))
-		{
-			camera.right(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_T))
-		{
-			camera.forward(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_G))
-		{
-			camera.backward(deltaFrame);
-		}
 
 
 		glm::vec3 cameraPos = camera.getPosition();
@@ -361,7 +340,6 @@ int main(int argc, char **argv) {
 
 		glm::mat4 boxModel(1);
 		
-		//skyboxRenderer.render(view, model);
 		//glDisable(GL_DEPTH_TEST);
 
 		glEnable(GL_CULL_FACE);

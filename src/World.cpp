@@ -9,6 +9,7 @@ World::World() : m_isRunning(true)
 	terrain->sendToGPU();
 	m_terrains.insert({ terrainPos,  terrain });
 
+	//Spawn worker pool for making terrains
 	for (int i = 0; i < THREADS; ++i)
 	{
 		m_threads[i] = new std::thread(&World::threadUpdateTerrains, this);
@@ -55,6 +56,7 @@ World::~World()
 	//*/
 }
 
+//Delete all terrain and start over
 void World::applyNewSeed(int newSeed) {
 	m_isRunning = false;
 
@@ -109,6 +111,7 @@ void World::applyNewSeed(int newSeed) {
 
 }
 
+//Queue new terrains/ delete far terrains as camera moves around the world
 void World::update(float playerX, float playerZ)
 {	
 	///*
@@ -331,7 +334,7 @@ void World::checkTerrainInFrustum(Frustum &frustum)
 	}
 }
 
-void World::render(float playerX, float playerZ)
+void World::render()
 {
 	for (auto it = m_terrains.begin(); it != m_terrains.end(); ++it) {
 		//int terrainX = it->second->getX();
