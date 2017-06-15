@@ -4,7 +4,7 @@
 #include "WaterNormalShader.hpp"
 #include "WaterAddDropShader.hpp"
 #include "FrameBufObj.hpp"
-#include "ModelShader.hpp"
+#include "PhongShader.hpp"
 
 class WaterRenderer
 {
@@ -42,7 +42,7 @@ private:
 	FrameBufObj _waterNormalMapFrameBuffer;
 
 	// The Shaders
-	ModelShader _modelShader;
+	PhongShader _modelShader;
 	WaterShader _waterShader;
 	WaterHeightShader _waterHeightShader;
 	WaterNormalShader _waterNormalShader;
@@ -76,7 +76,7 @@ private:
 	// Initializes the WaterNormalMap
 	void initWaterNormalMap();
 
-	void renderBathtub(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection);
+	void renderBathtub(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3& cameraPosition);
 
 	// Generates an TextureID and creates an empty thexture for later updates by the shaders
 	static GLuint createEmptyTexture(GLuint w, GLuint h);

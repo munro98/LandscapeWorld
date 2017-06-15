@@ -21,7 +21,7 @@ void main()
 	vec3 Normal = normalize(texture(WaterNormalMap, vVaryingTexCoord0.st).rgb);
 	
 	vec3 eye = normalize(CameraPosition - Position);
-	vec3 light = normalize(LightPosition);
+	vec3 light = normalize(LightPosition.xyz);
 	vec3 halfVec = normalize(eye + light);
 	// diffuse
 	float diff = max(0.0, dot(Normal, light));

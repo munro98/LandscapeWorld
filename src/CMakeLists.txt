@@ -32,6 +32,7 @@ SET(headers
 	"WaterNormalShader.hpp"
 	"WaterAddDropShader.hpp"
 	"FrameBufObj.hpp"
+	"PhongShader.hpp"
 	"MousePicker.hpp"
 )
 
@@ -70,6 +71,7 @@ SET(sources
 	"WaterNormalShader.cpp"
 	"WaterAddDropShader.cpp"
 	"FrameBufObj.cpp"
+	"PhongShader.cpp"
 	"MousePicker.cpp"
 )
 

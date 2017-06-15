@@ -255,8 +255,8 @@ int main(int argc, char **argv) {
 	MousePicker mousePicker(world, *world.findTerrainAt(0,0));
 	
 	//WaterRenderer_Old waterRenderer(projection);
-	glm::vec3 lightPos = glm::vec3(0, 10, 0);
-	_waterRendere = new WaterRenderer(projection, lightPos);
+	glm::vec3 lightDir = glm::vec3(0, 1, 0);
+	_waterRendere = new WaterRenderer(projection, lightDir);
 	_waterPosition = glm::vec3(40, 0, 40);
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");

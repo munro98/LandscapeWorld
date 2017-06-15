@@ -3,11 +3,12 @@
 #include "OBJLoader.hpp"
 #include <glm/gtc/matrix_transform.inl>
 #include "GLFW/glfw3.h"
+#include "PhongShader.hpp"
 
 using namespace glm;
 
 WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
-	_modelShader(ModelShader("modelShader")),
+	_modelShader(PhongShader("phongShader")),
 	_waterShader(WaterShader("waterShader")),
 	_waterHeightShader(WaterHeightShader("waterHeightMapShader")),
 	_waterNormalShader(WaterNormalShader("waterNormalMapShader")),
@@ -29,6 +30,7 @@ WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
 	_waterShader.loadLightPosition(lightPosition);
 	_waterShader.loadProjectionMatrix(projection);
 	//vec4 waterColor = vec4(1, 0, 0, 1.0);
+	//vec4 waterColor = vec4(0.564, 0.682, 0.831, 1.0);
 	vec4 waterColor = vec4(112.0 / 255.0, 143.0 / 255.0, 184.0 / 255.0, 1.0);
 	_waterShader.loadWaterColor(waterColor);
 	_waterShader.stop();
@@ -56,6 +58,16 @@ WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
 	// Init model Shader
 	_modelShader.use();
 	_modelShader.loadProjectionMatrix(projection);
+	_modelShader.loadLightDirection(lightPosition);
+	auto lightColor = vec3(1, 1, 1);
+	_modelShader.loadLightColor(lightColor);
+	auto ambient = vec3(0.2, 0.2, 0.2);
+	_modelShader.loadMaterialAmbient(ambient);
+	auto diffuse = vec3(0.8, 0.8, 0.89);
+	_modelShader.loadMaterialDiffuse(diffuse);
+	auto specular = vec3(0.3, 0.3, 0.3);
+	_modelShader.loadMaterialSpecular(specular);
+	_modelShader.loadMaterialShininess(0.088 * 128);
 	_modelShader.stop();
 }
 
@@ -166,7 +178,7 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	FrameBufObj::resetBinding();
 
 	waterModel = translate(waterModel, vec3(0, -1.1, 0));
-	renderBathtub(view, waterModel, projection);
+	renderBathtub(view, waterModel, projection, cameraPosition);
 }
 
 void WaterRenderer::addDrop(float x, float y, float dropRadius)
@@ -410,13 +422,14 @@ void WaterRenderer::drawSquare(GLuint buffId)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void WaterRenderer::renderBathtub(mat4& view, glm::mat4& model, glm::mat4& projection)
+void WaterRenderer::renderBathtub(mat4& view, mat4& model, mat4& projection, vec3& cameraPosition)
 {
 	_modelShader.use();
 	//Update uniforms
 	_modelShader.loadModelMatrix(model);
 	_modelShader.loadViewMatrix(view);
 	_modelShader.loadProjectionMatrix(projection);
+	_modelShader.loadCameraPosition(cameraPosition);
 
 	glBindVertexArray(_bathtubMesh->getVaoID());
 
