@@ -93,8 +93,10 @@ Shader::Shader(std::string name)
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	
-	glDeleteShader(geometryShader);
-	
+	if (useGeometryShader)
+	{
+		glDeleteShader(geometryShader);
+	}
 }
 
 
