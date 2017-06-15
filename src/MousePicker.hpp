@@ -44,6 +44,8 @@ public:
 	glm::vec3 getCurrentWaterPoint();
 	glm::vec3 getCurrentRay();
 
+	void SetWaterPosition(glm::vec3 position);
+
 private:
 	glm::vec3 m_currentRay;
 
@@ -54,15 +56,21 @@ private:
 
 	glm::vec3 m_currentWaterPoint;
 	
-
 	bool isUnderGround(glm::vec3 testPoint);
 
 	glm::vec3 binarySearchWater(int count, float start, float finish, glm::vec3 ray, glm::vec3 cameraPosition);
 
 	bool intersectionInRangeWater(float start, float finish, glm::vec3 ray, glm::vec3 cameraPosition);
 
-	bool isUnderWater(glm::vec3 testPoint);
-
+	
 	Terrain getTerrain(float worldX, float worldZ);
 
+	// -- water specific section ---
+	// the position of the bathtube
+	glm::vec3 m_waterPosition;
+
+	// the scale factor of the water
+	const float m_waterScaleFactor = 2;
+
+	bool isUnderWater(glm::vec3 testPoint);
 };

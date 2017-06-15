@@ -377,7 +377,10 @@ int main(int argc, char **argv) {
 		//model = glm::translate(model, glm::vec3(camera.getPosition().x, heightAt, camera.getPosition().z));
 
 		float heightAt = world.heightAt(50, 50);
-		model = glm::translate(model, glm::vec3(50, heightAt, 50));
+		// Set the waterline height: the hight plus 1 (translated in waterRenderer)
+		auto position = glm::vec3(50, heightAt, 50);
+		mousePicker.SetWaterPosition(position);
+		model = glm::translate(model, position);
 		Terrain *t = world.findTerrainAt(0, 0);
 		glm::vec3 v;
 		if (t != nullptr) {

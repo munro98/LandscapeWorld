@@ -17,9 +17,8 @@ World::World() : m_isRunning(true)
 
 World::~World()
 {
-    
 	m_isRunning = false;
-    
+	
 	m_threadVariable.notify_all();
 
 	for (int i = 0; i < THREADS; ++i)
@@ -406,7 +405,7 @@ float World::heightAt(float worldX, float worldZ)
 	auto chunkIt = m_terrains.find(terrainPos);
 	if (chunkIt == m_terrains.end())
 	{
-		return 0;
+		return std::numeric_limits<float>::min();
 	}
 
 	float terrainX = worldX - (x * TERRAIN_SIZE);
