@@ -11,16 +11,19 @@ GrassRenderer::GrassRenderer(World &world) : m_shader(GrassShader("grassShader")
 	m_shader.stop();
 
 	//generate an area of grass to instance over the scene
-	static GLfloat vertices[DENSITY*3];
+	static GLfloat vertices[DENSITY*4];
 
 	std::mt19937 rng; //random number generator
 	rng.seed(std::random_device()());
 	std::uniform_real_distribution<float> dist(-0.6f, 0.6f);
+	std::uniform_real_distribution<float> anglDist(-45.0f, 45.0f);
 
-	for(int i = 0; i<DENSITY*3;i=i+3){ //create DENSITY grass coordinates in a 1.0 by 1.0 area at the origin
+	for(int i = 0; i<DENSITY*4;i=i+4){ //create DENSITY grass coordinates in a 1.0 by 1.0 area at the origin
 		vertices[i] = dist(rng);
 		vertices[i+1] = 0;
 		vertices[i+2] = dist(rng);
+		vertices[i+3] = anglDist(rng);//store an angle in the 4th parameter
+		
 	}
 
 	glGenVertexArrays(1, &m_VAO);
@@ -30,7 +33,7 @@ GrassRenderer::GrassRenderer(World &world) : m_shader(GrassShader("grassShader")
 	glGenBuffers(1, &m_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
@@ -79,7 +82,7 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
     	glGenBuffers(1, &instanceVBO); //Nigel:  Memory leak here!////////////////////////////////////////////////////////////////////////////
     	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 10000, &translations[0], GL_STATIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 3, translations.data(), GL_STATIC_DRAW); //Nigel: now using data contained in vector
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 3, translations.data(), GL_STATIC_DRAW); //Nigel: now using data contained in vector
 													//sizeof(GLfloat) * 10000 * 3
     	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
