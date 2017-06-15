@@ -60,14 +60,20 @@ WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
 	_modelShader.loadProjectionMatrix(projection);
 	_modelShader.loadLightDirection(lightPosition);
 	auto lightColor = vec3(1, 1, 1);
+	auto matAmbient = vec3(0.2, 0.2, 0.2);
+	auto matDiffuse = vec3(0.8, 0.8, 0.8);
+	auto matSpecular = vec3(0.3, 0.3, 0.3);
+	auto lightAmbient = vec3(0.3, 0.3, 0.3);
+	auto lightDiffuse = vec3(0.6, 0.6, 0.6);
+	auto lightSpecular = vec3(0.8, 0.8, 0.8);
 	_modelShader.loadLightColor(lightColor);
-	auto ambient = vec3(0.2, 0.2, 0.2);
-	_modelShader.loadMaterialAmbient(ambient);
-	auto diffuse = vec3(0.8, 0.8, 0.89);
-	_modelShader.loadMaterialDiffuse(diffuse);
-	auto specular = vec3(0.3, 0.3, 0.3);
-	_modelShader.loadMaterialSpecular(specular);
+	_modelShader.loadMaterialAmbient(matAmbient);
+	_modelShader.loadMaterialDiffuse(matDiffuse);
+	_modelShader.loadMaterialSpecular(matSpecular);
 	_modelShader.loadMaterialShininess(0.088 * 128);
+	_modelShader.loadLightAmbient(lightAmbient);
+	_modelShader.loadLightDiffuse(lightDiffuse);
+	_modelShader.loadLightSpecular(lightSpecular);
 	_modelShader.stop();
 }
 

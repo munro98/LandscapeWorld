@@ -21,13 +21,13 @@ public:
 	void loadLightColor(glm::vec3 &p);
 	void loadCameraPosition(glm::vec3 &p);
 	void loadLightDirection(glm::vec3 &p);
-	//void loadWaterHeightMap(GLuint);
-	//void loadWaterNormalMap(GLuint);
 	void loadMaterialAmbient(glm::vec3 &p);
 	void loadMaterialDiffuse(glm::vec3 &p);
 	void loadMaterialSpecular(glm::vec3 &p);
 	void loadMaterialShininess(float shinines);
-
+	void loadLightAmbient(glm::vec3 &p);
+	void loadLightDiffuse(glm::vec3 &p);
+	void loadLightSpecular(glm::vec3 &p);
 private:
 	GLuint m_location_model;
 	GLuint m_location_view;
@@ -35,11 +35,12 @@ private:
 	GLuint m_location_lightDirection;
 	GLuint m_location_cameraPosition;
 	GLuint m_location_lightColor;
-	//GLuint m_location_WaterHeightMap;
-	//GLuint m_location_WaterNormalMap;
 	GLuint m_location_materila_ambient;
 	GLuint m_location_materila_diffuse;
 	GLuint m_location_materila_specular;
 	GLuint m_location_materila_shininess;
+	GLuint m_location_light_ambient;
+	GLuint m_location_light_diffuse;
+	GLuint m_location_light_specular;
 };
 

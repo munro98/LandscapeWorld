@@ -27,13 +27,14 @@ void PhongShader::getAllUniformLocations()
 	m_location_projection = getUniformLocation("projection");
 	m_location_lightColor = getUniformLocation("lightColor");
 	m_location_cameraPosition = getUniformLocation("cameraPosition");
-	//m_location_WaterHeightMap = getUniformLocation("WaterHeightMap");
-	//m_location_WaterNormalMap = getUniformLocation("WaterNormalMap");
 	m_location_lightDirection = getUniformLocation("lightPos");
 	m_location_materila_ambient = getUniformLocation("material.ambient");
 	m_location_materila_diffuse = getUniformLocation("material.diffuse");
 	m_location_materila_specular = getUniformLocation("material.specular");
 	m_location_materila_shininess = getUniformLocation("material.shininess");
+	m_location_light_ambient = getUniformLocation("light.ambient");
+	m_location_light_diffuse = getUniformLocation("light.diffuse");
+	m_location_light_specular = getUniformLocation("light.specular");
 }
 
 void PhongShader::loadModelMatrix(mat4 mat)
@@ -60,17 +61,7 @@ void PhongShader::loadLightDirection(vec3& p)
 {
 	loadVector(m_location_lightDirection, p);
 }
-//
-//void PhongShader::loadWaterHeightMap(GLuint i)
-//{
-//	loadInt(m_location_WaterHeightMap, i);
-//}
-//
-//void PhongShader::loadWaterNormalMap(GLuint i)
-//{
-//	loadInt(m_location_WaterNormalMap, i);
-//}
-//
+
 void PhongShader::loadMaterialAmbient(vec3 &p)
 {
 	loadVector(m_location_materila_ambient, p);
@@ -94,4 +85,19 @@ void PhongShader::loadMaterialShininess(float shinines)
 void PhongShader::loadCameraPosition(vec3 &p)
 {
 	loadVector(m_location_cameraPosition, p);
+}
+
+void PhongShader::loadLightAmbient(vec3 &p)
+{
+	loadVector(m_location_light_ambient, p);
+}
+
+void PhongShader::loadLightDiffuse(vec3 &p)
+{
+	loadVector(m_location_light_diffuse, p);
+}
+
+void PhongShader::loadLightSpecular(vec3 &p)
+{
+	loadVector(m_location_light_specular, p);
 }
