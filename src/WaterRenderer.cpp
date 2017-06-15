@@ -127,7 +127,7 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		// a square to update the water height map and unbind everything
 		_waterHeightMapFrameBuffers[nextId].bind();
 		_waterHeightShader.use();
-		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
+		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget();
 
 		drawSquare(_squareBuffId);
 		_waterHeightShader.stop();
@@ -144,7 +144,7 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		// the current heightMap to calculate the normals and then unbind everything
 		_waterNormalMapFrameBuffer.bind();
 		_waterNormalShader.use();
-		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
+		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget();
 		drawSquare(_squareBuffId);
 		_waterNormalShader.stop();
 
@@ -166,9 +166,9 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 
 	// Bind the WaterHeightMap and the WaterNormalMap for the shaders use
 	glActiveTexture(GL_TEXTURE0);
-	_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
+	_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget();
 	glActiveTexture(GL_TEXTURE1);
-	_waterNormalMapFrameBuffer.bindColourTarget(0);
+	_waterNormalMapFrameBuffer.bindColourTarget();
 
 	// Draw the actual plane
 	glBindVertexArray(_waterPlaneBuffId);
@@ -210,7 +210,7 @@ void WaterRenderer::addDrop(float x, float y, float dropRadius)
 		vec2 dropPosition = vec2(x, 1.0f-y);
 		_waterAddDropShader.loadPosition(dropPosition);
 		// Load the current WaterHeightMap to read from
-		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget(0);
+		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget();
 
 		// Draw a square on the screen to update the WaterHeightMap
 		drawSquare(_squareBuffId);
@@ -235,7 +235,6 @@ void WaterRenderer::initWaterPlane()
 	vec3 *Vertices = new vec3[WMRP1 * WMRP1];
 	
 	float WMSDWMR_W = 2.0f / static_cast<float>(WaterMeshResolution_Width);
-	float WMSDWMR_H = 2.0f / static_cast<float>(WaterMeshResolution_Height);
 	
 	// Create triangel points
 	for (int y = 0; y <= WaterMeshResolution_Width; y++)
@@ -322,7 +321,7 @@ void WaterRenderer::initWaterHeightMaps()
 	{
 		// Setup the WaterHeightMapTextures and buffers
 		_waterHeightMapTextures[i] = createEmptyTexture(WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
-		_waterHeightMapFrameBuffers[i].createAndBind(0, _waterHeightMapTextures[i]);
+		_waterHeightMapFrameBuffers[i].createAndBind(_waterHeightMapTextures[i]);
 	}
 
 	// Unbind all the textures and buffers
@@ -344,7 +343,7 @@ void WaterRenderer::initWaterNormalMap()
 
 	// Setup the WaterNormalMapTexture and buffer
 	_waterNormalMapTexture = createEmptyTexture(WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
-	_waterNormalMapFrameBuffer.createAndBind(0, _waterNormalMapTexture);
+	_waterNormalMapFrameBuffer.createAndBind(_waterNormalMapTexture);
 
 	// Unbind all the textures and buffers
 	FrameBufObj::resetBinding();

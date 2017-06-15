@@ -9,8 +9,8 @@ class FrameBufObj
 private:
 	GLuint _frameBuffObjId = 0;
 
-	std::vector<GLuint> _targets;
-	std::vector<GLenum> _drawBuffers;
+	GLuint _colorBuff;
+	GLenum _drawBuff;
 
 	bool _isBound = false;
 
@@ -30,16 +30,16 @@ public:
 
 	// creates Frame Buffer object
 	bool createAndBind();
-	bool createAndBind(GLuint, GLuint);
+	bool createAndBind(GLuint);
 
 	// bind framebuffer
 	bool bind();
 
 	// simplifies process of binding texture from color target
-	void bindColourTarget(GLuint);
+	void bindColourTarget() const;
 
 	// attaches texture
-	void attachTexture(GLuint, GLuint);
+	void attachTexture(GLuint);
 
 	// checks its completness
 	static bool check();

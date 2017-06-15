@@ -13,19 +13,15 @@ FrameBufObj::FrameBufObj()
 FrameBufObj::~FrameBufObj() 
 {
 	destroy();
-
-	_targets.clear();
-	_drawBuffers.clear();
 }
 
 void FrameBufObj::destroy()
 {
-	if (_targets.size() > 0 && _frameBuffObjId != 0)
+	if (_frameBuffObjId != 0)
 	{
 		glDeleteFramebuffers(1, &_frameBuffObjId);
 		_frameBuffObjId = 0;
 	}
-	_targets.clear();
 }
 
 void FrameBufObj::resetBinding()
@@ -44,15 +40,16 @@ void FrameBufObj::resetBinding()
 
 bool FrameBufObj::createAndBind()
 {
-	int maxColAtt = 0;
-	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColAtt);
+	// get the amount of color attachments
+	//int maxColAtt = 0;
+	//glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColAtt);
 
-	// add mx num of draw buffers to targets array
-	_targets.clear();
-	for (GLuint i = 0; i < maxColAtt; ++i)
-	{
-		_targets.push_back(0);
-	}
+	//// add mx num of draw buffers to targets array
+	//_targets.clear();
+	//for (GLuint i = 0; i < maxColAtt; ++i)
+	//{
+	//	_targets.push_back(0);
+	//}
 
 	if (CurentBinding != nullptr && CurentBinding != this)
 	{
@@ -68,10 +65,10 @@ bool FrameBufObj::createAndBind()
 	return true;
 }
 
-bool FrameBufObj::createAndBind(GLuint destId, GLuint texId)
+bool FrameBufObj::createAndBind(GLuint texId)
 {
 	createAndBind();
-	attachTexture(destId, texId);
+	attachTexture(texId);
 	return check();
 }
 
@@ -92,20 +89,20 @@ bool FrameBufObj::bind()
 	return true;
 }
 
-void FrameBufObj::bindColourTarget(GLuint colourTargetId)
+void FrameBufObj::bindColourTarget() const
 {
-	glBindTexture(GL_TEXTURE_2D, _targets[colourTargetId]);
+	glBindTexture(GL_TEXTURE_2D, _colorBuff);
 }
 
-void FrameBufObj::attachTexture(GLuint destId, GLuint texId)
+void FrameBufObj::attachTexture(GLuint texId)
 {
-	_drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + destId);
+	_drawBuff = GL_COLOR_ATTACHMENT0;
 
-	_targets[destId] = texId;
+	_colorBuff = texId;
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+destId, GL_TEXTURE_2D, texId, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0);
 
-	glDrawBuffers(static_cast<GLsizei>(_drawBuffers.size()), static_cast<const GLenum *>(&_drawBuffers[0]));
+	glDrawBuffers(1, static_cast<const GLenum *>(&_drawBuff));
 }
 
 bool FrameBufObj::check()
