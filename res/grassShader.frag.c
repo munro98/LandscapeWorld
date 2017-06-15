@@ -12,7 +12,7 @@ const vec3 grass_colour = vec3(0.0,1.0,0.0);
 //TODO 
 
 void main() {
-	//vec3 ambientLight = ambient*light_colour;
+	//vec3 ambientLight = ambient*light_colour
 
 	float diffuse = dot(normalize(normal_out), normalize(light_direction));
 
