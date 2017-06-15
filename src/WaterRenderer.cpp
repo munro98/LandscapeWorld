@@ -54,7 +54,6 @@ WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
 	// Init Bathtub mesh
 	//_bathtubMesh = OBJLoader::loadObjModel("box");
 	_bathtubMesh = OBJLoader::loadObjModel("bathtub");
-	_texture = Loader::loadTexture("white");
 	// Init model Shader
 	_modelShader.use();
 	_modelShader.loadProjectionMatrix(projection);
@@ -99,7 +98,7 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	_updateDiff += timeDiff;
 	_lastTime = currentTime;
 
-	if(rainIntensity > 0.001 && _rainDiff > (1-rainIntensity))
+	if(rainIntensity > 0.001 && _rainDiff > (1 - rainIntensity))
 	{
 		_rainDiff = 0;
 		float x = (rand() % 101) / 100.0;
@@ -323,11 +322,7 @@ void WaterRenderer::initWaterHeightMaps()
 	{
 		// Setup the WaterHeightMapTextures and buffers
 		_waterHeightMapTextures[i] = createEmptyTexture(WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
-
-		_waterHeightMapFrameBuffers[i].createAndBind();
-		_waterHeightMapFrameBuffers[i].attachTexture(0, _waterHeightMapTextures[i], WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
-		_waterHeightMapFrameBuffers[i].setDrwaBuff();
-		_waterHeightMapFrameBuffers[i].check();
+		_waterHeightMapFrameBuffers[i].createAndBind(0, _waterHeightMapTextures[i]);
 	}
 
 	// Unbind all the textures and buffers
@@ -349,10 +344,7 @@ void WaterRenderer::initWaterNormalMap()
 
 	// Setup the WaterNormalMapTexture and buffer
 	_waterNormalMapTexture = createEmptyTexture(WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
-	_waterNormalMapFrameBuffer.createAndBind();
-	_waterNormalMapFrameBuffer.attachTexture(0, _waterNormalMapTexture, WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
-	_waterNormalMapFrameBuffer.setDrwaBuff();
-	_waterNormalMapFrameBuffer.check();
+	_waterNormalMapFrameBuffer.createAndBind(0, _waterNormalMapTexture);
 
 	// Unbind all the textures and buffers
 	FrameBufObj::resetBinding();
@@ -443,12 +435,7 @@ void WaterRenderer::renderBathtub(mat4& view, mat4& model, mat4& projection, vec
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
-	//Bind texture
-	glActiveTexture(GL_TEXTURE0);
-	_texture->bind();
-
-	glDrawElements(GL_TRIANGLES, _bathtubMesh->getVertexCount(), GL_UNSIGNED_INT, 0);
-	Texture::unbind();
+	glDrawElements(GL_TRIANGLES, _bathtubMesh->getVertexCount(), GL_UNSIGNED_INT, nullptr);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);

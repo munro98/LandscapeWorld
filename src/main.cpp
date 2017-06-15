@@ -21,7 +21,6 @@
 #include "ModelRenderer.hpp"
 #include "SkydomeRenderer.hpp"
 #include "TerrainRenderer.hpp"
-#include "_WaterRenderer.hpp"
 #include "World.hpp"
 #include "MousePicker.hpp"
 

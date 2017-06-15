@@ -49,7 +49,6 @@ private:
 	WaterAddDropShader _waterAddDropShader;
 
 	Mesh* _bathtubMesh;
-	Texture* _texture;
 
 	// Variables to keep track of time for constant update 
 	// of the height and normal map to maintain constant speed

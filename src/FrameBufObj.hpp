@@ -7,29 +7,15 @@
 class FrameBufObj 
 {
 private:
-	struct Target 
-	{
-		Target() { _object = 0; _type = 0; _active = false; }
-		GLuint _object;
-		GLenum _type;
-		bool _active;
-	};
+	GLuint _frameBuffObjId = 0;
 
-	GLuint _fboId = 0;
-
-	std::vector<Target> _targets;
-	Target _depthTarget;
+	std::vector<GLuint> _targets;
 	std::vector<GLenum> _drawBuffers;
 
 	bool _isBound = false;
 
-	int _width = 0;
-	int _height = 0;
-
 	void unbind();
 
-	static GLuint MaxColourTargets;
-	static GLuint MaxRenderbuffSize;
 	static FrameBufObj *CurentBinding;
 
 public:
@@ -44,6 +30,7 @@ public:
 
 	// creates Frame Buffer object
 	bool createAndBind();
+	bool createAndBind(GLuint, GLuint);
 
 	// bind framebuffer
 	bool bind();
@@ -52,11 +39,8 @@ public:
 	void bindColourTarget(GLuint);
 
 	// attaches texture
-	void attachTexture(GLuint, GLuint, int, int);
-
-	// selects buffers to draw by the openGL
-	void setDrwaBuff();
+	void attachTexture(GLuint, GLuint);
 
 	// checks its completness
-	bool check();
+	static bool check();
 };

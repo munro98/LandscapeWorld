@@ -6,9 +6,6 @@ using namespace std;
 
 FrameBufObj *FrameBufObj::CurentBinding = nullptr;
 
-GLuint FrameBufObj::MaxColourTargets = 0;
-GLuint FrameBufObj::MaxRenderbuffSize = 0;
-
 FrameBufObj::FrameBufObj()
 {
 }
@@ -23,15 +20,10 @@ FrameBufObj::~FrameBufObj()
 
 void FrameBufObj::destroy()
 {
-	if (_targets.size() > 0 && _fboId != 0)
+	if (_targets.size() > 0 && _frameBuffObjId != 0)
 	{
-		if (_depthTarget._active == true && _depthTarget._type == GL_RENDERBUFFER)
-		{
-			glDeleteRenderbuffers(1, &_depthTarget._object);
-		}
-
-		glDeleteFramebuffers(1, &_fboId);
-		_fboId = 0;
+		glDeleteFramebuffers(1, &_frameBuffObjId);
+		_frameBuffObjId = 0;
 	}
 	_targets.clear();
 }
@@ -52,22 +44,14 @@ void FrameBufObj::resetBinding()
 
 bool FrameBufObj::createAndBind()
 {
-	// calculate max values if this is first FBO...
-	if (MaxColourTargets == 0 && MaxRenderbuffSize == 0)
-	{
-		int t = 0;
-		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &t);
-		MaxColourTargets = static_cast<GLuint>(t);
-
-		glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &t);
-		MaxRenderbuffSize = static_cast<GLuint>(t);
-	}
+	int maxColAtt = 0;
+	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColAtt);
 
 	// add mx num of draw buffers to targets array
 	_targets.clear();
-	for (GLuint i = 0; i < MaxColourTargets; ++i)
+	for (GLuint i = 0; i < maxColAtt; ++i)
 	{
-		_targets.push_back(Target());
+		_targets.push_back(0);
 	}
 
 	if (CurentBinding != nullptr && CurentBinding != this)
@@ -75,13 +59,20 @@ bool FrameBufObj::createAndBind()
 		CurentBinding->unbind();
 	}
 
-	glGenFramebuffers(1, &_fboId);
+	glGenFramebuffers(1, &_frameBuffObjId);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, _fboId);
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffObjId);
 	_isBound = true;
 	CurentBinding = this;
 
 	return true;
+}
+
+bool FrameBufObj::createAndBind(GLuint destId, GLuint texId)
+{
+	createAndBind();
+	attachTexture(destId, texId);
+	return check();
 }
 
 bool FrameBufObj::bind()
@@ -93,7 +84,7 @@ bool FrameBufObj::bind()
 		CurentBinding->unbind();
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, _fboId);
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffObjId);
 
 	_isBound = true;
 	CurentBinding = this;
@@ -103,25 +94,17 @@ bool FrameBufObj::bind()
 
 void FrameBufObj::bindColourTarget(GLuint colourTargetId)
 {
-	glBindTexture(GL_TEXTURE_2D, _targets[colourTargetId]._object);
+	glBindTexture(GL_TEXTURE_2D, _targets[colourTargetId]);
 }
 
-void FrameBufObj::attachTexture(GLuint destId, GLuint texId, int w, int h)
+void FrameBufObj::attachTexture(GLuint destId, GLuint texId)
 {
 	_drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + destId);
 
-	_targets[destId]._active = true;
-	_targets[destId]._object = texId;
-	_targets[destId]._type = GL_TEXTURE_2D;
+	_targets[destId] = texId;
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+destId, GL_TEXTURE_2D, texId, 0);
 
-	_width = w;
-	_height = h;
-}
-
-void FrameBufObj::setDrwaBuff() 
-{
 	glDrawBuffers(static_cast<GLsizei>(_drawBuffers.size()), static_cast<const GLenum *>(&_drawBuffers[0]));
 }
 
@@ -135,7 +118,7 @@ bool FrameBufObj::check()
 		switch (status)
 		{
 		case GL_FRAMEBUFFER_UNSUPPORTED:
-			cerr << "Unsupported framebuffer format." << endl;
+			cerr << "Unsupported FrameBuffer format." << endl;
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
 			cerr << "FrameBuffer incomplete attachment." << endl;
