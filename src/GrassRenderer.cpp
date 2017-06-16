@@ -66,6 +66,7 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 			translations[index++] = translation.x;//Nigel:  since where store all x y z in single array
 			translations[index++] = translation.y;
 			translations[index++] = translation.z;
+			//glm::vec3 normal =  world.normalAt(float worldX, float worldZ) Nigel: could be useful for lighting
 		}
 	}
 
