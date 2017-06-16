@@ -38,6 +38,9 @@ GrassRenderer::GrassRenderer(World &world) : m_shader(GrassShader("grassShader")
 
 	glBindVertexArray(0);
 
+
+	glGenBuffers(1, &m_instanceVBO);
+
 }
 
 void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition) {
@@ -47,6 +50,7 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 
 	//Nigel: should use raw data when dealing with OpenGL
 	std::vector<GLfloat> translations(10000 * 3); //Nigel:  x3 make space for x, y, z components
+
 	int index =0;
 	for(int z = cameraPosition.z-50; z<cameraPosition.z+50;++z){ //create a 100x100 square around the cameraPosition
 		for (int x = cameraPosition.x-50; x<cameraPosition.x+50;++x){
@@ -78,18 +82,17 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 	m_shader.loadViewMatrix(view);
 	m_shader.loadCameraPosition(cameraPosition);
 
-    	unsigned int instanceVBO;//create the instance offset VBO
-    	glGenBuffers(1, &instanceVBO); //Nigel:  Memory leak here!////////////////////////////////////////////////////////////////////////////
-    	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    	//create the instance offset VBO
+    	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
     	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 10000, &translations[0], GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 3, translations.data(), GL_STATIC_DRAW); //Nigel: now using data contained in vector
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 3, translations.data(), GL_DYNAMIC_DRAW); //Nigel: now using data contained in vector
 													//sizeof(GLfloat) * 10000 * 3
     	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(m_VAO);
 
 	glEnableVertexAttribArray(1);
-    	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
+    	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO); // this attribute comes from a different vertex buffer
     	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
     	glBindBuffer(GL_ARRAY_BUFFER, 0);
     	glVertexAttribDivisor(1, 1); // tell OpenGL this is an instanced vertex attribute.

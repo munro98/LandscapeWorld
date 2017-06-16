@@ -19,5 +19,7 @@ private:
 	GrassShader m_shader;
 	GLuint m_VBO;
 	GLuint m_VAO;
+
+	GLuint m_instanceVBO;
 };
  
