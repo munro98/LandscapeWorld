@@ -6,7 +6,7 @@
 #include "World.hpp"
 
 
-#define DENSITY 50 //grass blades per sqaure unit
+#define DENSITY 100 //grass blades per sqaure unit
 class GrassRenderer
 {
 public:
