@@ -68,7 +68,7 @@ void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projecti
 	glActiveTexture(GL_TEXTURE4);
 	m_snow->bind();
 
-	m_world.render(0,0);
+	m_world.render();
 	Texture::unbind();
 
 	glBindVertexArray(0);

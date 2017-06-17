@@ -33,7 +33,7 @@ public:
 	void threadUpdateTerrains();
 	int chunkVisible(Frustum frustum, int terrainX, int terrainZ);
 	void checkTerrainInFrustum(Frustum & frustum);
-	void render(float x, float y);
+	void render();
 	void rayCastTerrain(glm::vec3 & start, glm::vec3 & forward);
 	Terrain * findTerrainAt(float worldX, float worldZ);
 	Terrain* findTerrainAt(int x, int z);

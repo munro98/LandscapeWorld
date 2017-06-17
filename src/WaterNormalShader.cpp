@@ -21,40 +21,22 @@ void WaterNormalShader::bindAttributes()
 
 void WaterNormalShader::getAllUniformLocations()
 {
-	m_location_model = getUniformLocation("model");
-	m_location_view = getUniformLocation("view");
-	m_location_projection = getUniformLocation("projection");
-	m_location_waterNormalMapResolution_W = getUniformLocation("waterNormalMapResolution_W");
-	m_location_waterNormalMapResolution_H = getUniformLocation("waterNormalMapResolution_H");
-	m_location_WMSDWNMRM2 = getUniformLocation("WMSDWNMRM2");
+	m_location_waterNormalMapDistance_W = getUniformLocation("waterNormalMapDistance_W");
+	m_location_waterNormalMapDistance_H = getUniformLocation("waterNormalMapDistance_H");
+	m_location_defaultHeight = getUniformLocation("defaultHeight");
 }
 
-void WaterNormalShader::loadModelMatrix(glm::mat4 mat)
+void WaterNormalShader::loadwaterNormMapDistWidth(float resolution)
 {
-	loadMatrix(m_location_model, mat);
+	loadFloat(m_location_waterNormalMapDistance_W, resolution);
 }
 
-void WaterNormalShader::loadViewMatrix(glm::mat4 mat)
+void WaterNormalShader::loadwaterNormMapDistHeight(float resolution)
 {
-	loadMatrix(m_location_view, mat);
+	loadFloat(m_location_waterNormalMapDistance_H, resolution);
 }
 
-void WaterNormalShader::loadProjectionMatrix(glm::mat4 mat)
+void WaterNormalShader::loadDefaultHeight(float p)
 {
-	loadMatrix(m_location_projection, mat);
-}
-
-void WaterNormalShader::loadwaterNormalMapResolutionWidth(float resolution)
-{
-	loadFloat(m_location_waterNormalMapResolution_W, resolution);
-}
-
-void WaterNormalShader::loadwaterNormalMapResolutionHeight(float resolution)
-{
-	loadFloat(m_location_waterNormalMapResolution_H, resolution);
-}
-
-void WaterNormalShader::loadWMSDWNMRM2(float p)
-{
-	loadFloat(m_location_WMSDWNMRM2, p);
+	loadFloat(m_location_defaultHeight, p);
 }

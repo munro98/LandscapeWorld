@@ -3,11 +3,15 @@
 using namespace glm;
 using namespace std;
 
-WaterShader::WaterShader(string name) : Shader(name)
+WaterShader::WaterShader(string name) : WaterShader(name, name)
 {
 	getAllUniformLocations();
 }
 
+WaterShader::WaterShader(string name, string fragmentName) : Shader(name, fragmentName)
+{
+	getAllUniformLocations();
+}
 
 WaterShader::~WaterShader()
 {
@@ -29,7 +33,8 @@ void WaterShader::getAllUniformLocations()
 	m_location_WaterHeightMap = getUniformLocation("WaterHeightMap");
 	m_location_WaterNormalMap = getUniformLocation("WaterNormalMap");
 	m_location_LightPosition = getUniformLocation("LightPosition");
-	m_location_WaterColor = getUniformLocation("waterColor");
+	m_location_WaterColour = getUniformLocation("waterColour");
+	m_location_ShowColour = getUniformLocation("useColour");
 }
 
 void WaterShader::loadModelMatrix(mat4 mat)
@@ -67,7 +72,13 @@ void WaterShader::loadWaterNormalMap(GLuint i)
 	loadInt(m_location_WaterNormalMap, i);
 }
 
-void WaterShader::loadWaterColor(vec4 &p)
+void WaterShader::loadWaterColour(vec4 &p)
 {
-	loadVector(m_location_WaterColor, p);
+	loadVector(m_location_WaterColour, p);
+}
+
+void WaterShader::loadShowColour(bool showColor)
+{
+	//loadBool(m_location_WaterColour, showColor);
+	loadInt(m_location_WaterColour, showColor ? 1: 0);
 }

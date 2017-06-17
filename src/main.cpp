@@ -21,7 +21,6 @@
 #include "ModelRenderer.hpp"
 #include "SkydomeRenderer.hpp"
 #include "TerrainRenderer.hpp"
-#include "_WaterRenderer.hpp"
 #include "World.hpp"
 #include "GrassRenderer.hpp"
 #include "MousePicker.hpp"
@@ -49,8 +48,9 @@ Camera camera;
 
 // Water related fields
 WaterRenderer* _waterRendere;
-float dropSize = 0.5;
-float rainIntensity = 0.6;
+float _dropSize = 0.5;
+float _rainIntensity = 0.6;
+glm::vec3 _waterPosition;
 
 bool showMenu = true;
 bool isFlying = false;
@@ -100,7 +100,7 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 		leftMouseDown = (action == GLFW_PRESS);
 		if (action == 0)
 		{
-			_waterRendere->addDrop(currentWaterTexturePoint.x, currentWaterTexturePoint.y, dropSize);
+			_waterRendere->addDrop(currentWaterTexturePoint.x, currentWaterTexturePoint.y, _dropSize);
 		}
 	}
 }
@@ -136,6 +136,41 @@ void charCallback(GLFWwindow *win, unsigned int c) {
 float deltaFrame = 0.0;
 float lastFrame = 0.0;
 
+void relocateWater(float centerX, float centerZ, World& world)
+{
+	const int initWidth = 201;
+	const int scaleFactor = 2;
+	float x = 0;
+	float z = 0;
+	float height = 0;
+
+	// Expanding search for a good location for the tub
+	for (int i = 1; i < 10; i++)
+	{
+		for(int j = 0; j < i*100; j++)
+		{
+			x = ((rand() % initWidth) - initWidth / 2) + centerX;
+			z = ((rand() % initWidth) - initWidth / 2) + centerZ;
+			height = world.heightAt(x, z);
+
+			// Check the height difference between the 4 edges of the tub. if bigger than 0.5, look for another place
+			float diff = abs(height - world.heightAt(x - scaleFactor, z - scaleFactor));
+			diff = max(diff, abs(height - world.heightAt(x, z - scaleFactor)));
+			diff = max(diff, abs(height - world.heightAt(x - scaleFactor, z)));
+			if(diff < 0.5)
+			{
+				i = 11;
+				j = 1000000;
+			}
+		}
+	}
+
+	// set the actual position
+	_waterPosition.x = x;
+	_waterPosition.y = height;
+	_waterPosition.z = z;
+}
+
 int main(int argc, char **argv) {
 	//Initialize the GLFW library
 	if (!glfwInit()) {
@@ -148,7 +183,7 @@ int main(int argc, char **argv) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
 	//Get the version for GLFW
@@ -210,6 +245,7 @@ int main(int argc, char **argv) {
 	bool updateFrustum = true;
 	float showBlendMap = 0.0f;
 	float snowCoverage = 0.99f;
+	bool showColour = true;
 
 	World world;
 	
@@ -222,9 +258,9 @@ int main(int argc, char **argv) {
 	MousePicker mousePicker(world, *world.findTerrainAt(0,0));
 	
 	//WaterRenderer_Old waterRenderer(projection);
-	glm::vec3 lightPos = glm::vec3(0, 10, 0);
-	_waterRendere = new WaterRenderer(projection, lightPos);
-	//WaterRenderer movingWaterRenderer(projection);
+	glm::vec3 lightDir = glm::vec3(0, 1, 0);
+	_waterRendere = new WaterRenderer(projection, lightDir);
+	_waterPosition = glm::vec3(40, 0, 40);
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");
 	
@@ -311,27 +347,6 @@ int main(int argc, char **argv) {
 
 
 		}
-		
-
-		if (glfwGetKey(window, GLFW_KEY_F))
-		{
-			camera.left(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_H))
-		{
-			camera.right(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_T))
-		{
-			camera.forward(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_G))
-		{
-			camera.backward(deltaFrame);
-		}
 
 
 		glm::vec3 cameraPos = camera.getPosition();
@@ -358,13 +373,11 @@ int main(int argc, char **argv) {
 		if (updateFrustum) {
 			world.checkTerrainInFrustum(frustum);
 		}
-		
 
 		glm::mat4 model(1);
 
 		glm::mat4 boxModel(1);
 		
-		//skyboxRenderer.render(view, model);
 		//glDisable(GL_DEPTH_TEST);
 
 		glEnable(GL_CULL_FACE);
@@ -379,32 +392,28 @@ int main(int argc, char **argv) {
 		//float heightAt = world.heightAt(camera.getPosition().x, camera.getPosition().z);
 		//model = glm::translate(model, glm::vec3(camera.getPosition().x, heightAt, camera.getPosition().z));
 
-		float heightAt = world.heightAt(50, 50);
-		// Set the waterline height: the hight plus 1 (translated in waterRenderer)
-		auto position = glm::vec3(50, heightAt, 50);
-		mousePicker.SetWaterPosition(position);
-		model = glm::translate(model, position);
+		if(_waterPosition.y == 0)
+		{
+			_waterPosition.y = world.heightAt(_waterPosition.x, _waterPosition.z);
+			mousePicker.SetWaterPosition(_waterPosition);
+		}
+
+		model = glm::translate(model, _waterPosition);
 		Terrain *t = world.findTerrainAt(0, 0);
 		glm::vec3 v;
 		if (t != nullptr) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		//boxModel = glm::translate(boxModel, glm::vec3(25, world.heightAt(25, 25), 25));
-		
-		//boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
 		boxModel = glm::translate(boxModel, mousePicker.getCurrentWaterPoint());
 		boxModel = glm::scale(boxModel, glm::vec3(0.1, 0.1, 0.1));
 		modelRenderer.render(view, boxModel, projection, mesh);
 
-		glEnable(GL_BLEND); // Water can be transparent
-		//waterRenderer.render(view, model, projection, cameraPos);
-		glDisable(GL_BLEND);
-
+		//glEnable(GL_BLEND); // Water can be transparent
 		glDisable(GL_CULL_FACE);
-		_waterRendere->render(view, model, projection, cameraPos, dropSize, rainIntensity);
+		_waterRendere->render(view, model, projection, cameraPos, _dropSize, _rainIntensity);
 		glEnable(GL_CULL_FACE);
-		//triangleRenderer.render();
+		//glDisable(GL_BLEND);
 		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
 		grassRenderer.render(view, grassModel, projection, cameraPos);
 
@@ -483,9 +492,20 @@ int main(int argc, char **argv) {
 				ImGui::SliderFloat("Snow coverage", &snowCoverage, 0.0f, 1.0f, "%.3f");
 				ImGui::Checkbox("Update frustum", &updateFrustum);
 
+				// Water settings
 				ImGui::Text("Water Settings");
-				ImGui::SliderFloat("Rain intensity", &rainIntensity, 0.0f, 1.0f, "%.3f");
-				ImGui::SliderFloat("Drop size", &dropSize, 0.4f, 1.0f, "%.3f");
+				ImGui::SliderFloat("Rain intensity", &_rainIntensity, 0.0f, 1.0f, "%.3f");
+				ImGui::SliderFloat("Drop size", &_dropSize, 0.4f, 1.0f, "%.3f");
+				if (ImGui::Button("Relocate Water"))
+				{
+					auto camPos = camera.getPosition();
+					relocateWater(camPos.x, camPos.z, world);
+				}
+
+				if(ImGui::Checkbox("Show Colour", &showColour))
+				{
+					_waterRendere->showColor(showColour);
+				}
 			}
 
 			ImGui::End();

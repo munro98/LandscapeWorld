@@ -1,25 +1,25 @@
-#version 330
+#version 330 core
 
-uniform sampler2D WaterHeightMap;
+uniform sampler2D WaterNormalMap;
 
-uniform float waterNormalMapResolution_W;
-uniform float waterNormalMapResolution_H;
-uniform float WMSDWNMRM2;
+uniform float waterNormalMapDistance_W;
+uniform float waterNormalMapDistance_H;
+uniform float defaultHeight;
 
-in vec2 vVaryingTexCoord0;
+in vec2 TexCoord;
 
 out vec4 vFragColor;
 
 void main()
 {
-	float y[4];
+	// get the neighbouring y coordinates (height)
+	float bottomHeight = texture(WaterNormalMap, TexCoord.st - vec2(waterNormalMapDistance_W, 0.0)).y;
+	float topHeight = texture(WaterNormalMap, TexCoord.st + vec2(waterNormalMapDistance_W, 0.0)).y;
+	float rightHeight = texture(WaterNormalMap, TexCoord.st + vec2(0.0, waterNormalMapDistance_H)).y;
+	float leftHeight = texture(WaterNormalMap, TexCoord.st - vec2(0.0, waterNormalMapDistance_H)).y;
 
-	y[0] = texture(WaterHeightMap, vVaryingTexCoord0.st + vec2(waterNormalMapResolution_W, 0.0)).g;
-	y[1] = texture(WaterHeightMap, vVaryingTexCoord0.st + vec2(0.0, waterNormalMapResolution_H)).g;
-	y[2] = texture(WaterHeightMap, vVaryingTexCoord0.st - vec2(waterNormalMapResolution_W, 0.0)).g;
-	y[3] = texture(WaterHeightMap, vVaryingTexCoord0.st - vec2(0.0, waterNormalMapResolution_H)).g;
-
-	vec3 Normal = normalize(vec3(y[2] - y[0], WMSDWNMRM2, y[1] - y[3]));
+	// Create new normal vector, averaging the top/bottom height (x), the defaultHeight (y) and the average of left/right (z)
+	vec3 Normal = normalize(vec3(bottomHeight - topHeight, defaultHeight, rightHeight - leftHeight));
 
 	vFragColor = vec4(Normal, 1.0);
 }

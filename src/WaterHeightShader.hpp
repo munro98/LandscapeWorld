@@ -14,18 +14,15 @@ public:
 	void bindAttributes();
 	void getAllUniformLocations();
 
-	void loadModelMatrix(glm::mat4 mat);
-	void loadViewMatrix(glm::mat4 mat);
-	void loadProjectionMatrix(glm::mat4 mat);
-
-	void loadwaterHeightMapResolutionWidth(float);
-	void loadwaterHeightMapResolutionHeight(float);
+	void loadWaterHeightMapDistWidth(float);
+	void loadWaterHeightMapDistHeight(float);
+	void loadSin45(float);
+	void loadAttenuation(float);
 
 private:
-	GLuint m_location_model;
-	GLuint m_location_view;
-	GLuint m_location_projection;
-	GLuint m_location_waterHeightMapResolution_W;
-	GLuint m_location_waterHeightMapResolution_H;
+	GLuint m_location_waterHeightMapDistance_W; 
+	GLuint m_location_waterHeightMapDistance_H;
+	GLuint m_location_sin45;
+	GLuint m_location_attenuation;
 };
 

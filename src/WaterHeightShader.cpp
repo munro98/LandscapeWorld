@@ -21,34 +21,28 @@ void WaterHeightShader::bindAttributes()
 
 void WaterHeightShader::getAllUniformLocations()
 {
-	m_location_model = getUniformLocation("model");
-	m_location_view = getUniformLocation("view");
-	m_location_projection = getUniformLocation("projection");
-	m_location_waterHeightMapResolution_W = getUniformLocation("waterHeightMapResolution_W");
-	m_location_waterHeightMapResolution_H = getUniformLocation("waterHeightMapResolution_H");
+	m_location_waterHeightMapDistance_W = getUniformLocation("waterHeightMapDistance_W");
+	m_location_waterHeightMapDistance_H = getUniformLocation("waterHeightMapDistance_H");
+	m_location_sin45 = getUniformLocation("sin45");
+	m_location_attenuation = getUniformLocation("attenuation");
 }
 
-void WaterHeightShader::loadModelMatrix(glm::mat4 mat)
+void WaterHeightShader::loadWaterHeightMapDistWidth(float resolution)
 {
-	loadMatrix(m_location_model, mat);
+	loadFloat(m_location_waterHeightMapDistance_W, resolution);
 }
 
-void WaterHeightShader::loadViewMatrix(glm::mat4 mat)
+void WaterHeightShader::loadWaterHeightMapDistHeight(float resolution)
 {
-	loadMatrix(m_location_view, mat);
+	loadFloat(m_location_waterHeightMapDistance_H, resolution);
 }
 
-void WaterHeightShader::loadProjectionMatrix(glm::mat4 mat)
+void WaterHeightShader::loadSin45(float value)
 {
-	loadMatrix(m_location_projection, mat);
+	loadFloat(m_location_sin45, value);
 }
 
-void WaterHeightShader::loadwaterHeightMapResolutionWidth(float resolution)
+void WaterHeightShader::loadAttenuation(float attenuation)
 {
-	Shader::loadFloat(m_location_waterHeightMapResolution_W, resolution);
-}
-
-void WaterHeightShader::loadwaterHeightMapResolutionHeight(float resolution)
-{
-	Shader::loadFloat(m_location_waterHeightMapResolution_H, resolution);
+	loadFloat(m_location_attenuation, attenuation);
 }

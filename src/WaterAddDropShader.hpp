@@ -19,13 +19,13 @@ public:
 	void loadProjectionMatrix(glm::mat4 mat);
 
 	void loadDropRadius(float);
-	void loadPosition(glm::vec2 &p);
+	void loadDropPosition(glm::vec2 &p);
 
 private:
 	GLuint m_location_model;
 	GLuint m_location_view;
 	GLuint m_location_projection;
 	GLuint m_location_dropRadius;
-	GLuint m_location_position;
+	GLuint m_location_dropPosition;
 };
 
