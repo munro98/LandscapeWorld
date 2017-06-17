@@ -25,9 +25,10 @@ Shader::Shader(std::string name, std::string fragmentName)
 
 	//optional geometry shader
 	const char *geometryShaderSource; //need to declare this outside the conditional in order to be recognised aparently
+	std::string output3 = ""; // needs to be declared outside as well, otherwise ther might be a dangeling pointer
 
 	if(useGeometryShader){
-		std::string output3 = loadShader("./LandscapeWorld/res/" + name + ".geo.c");
+		output3 = loadShader("./LandscapeWorld/res/" + name + ".geo.c");
 		geometryShaderSource = output3.c_str();
 		//std::cout << geometryShaderSource;
 	}
