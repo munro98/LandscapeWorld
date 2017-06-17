@@ -6,7 +6,7 @@ using namespace glm;
 
 WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
 	_phongShader(PhongShader("phongShader")),
-	_waterShader(WaterShader("waterShader")),
+	//_waterShader(WaterShader("waterShader")),
 	_waterHeightShader(WaterHeightShader("waterHeightMapShader")),
 	_waterNormalShader(WaterNormalShader("waterNormalMapShader")),
 	_waterAddDropShader(WaterAddDropShader("waterAddDropShader"))
@@ -17,7 +17,10 @@ WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
 	initWaterNormalMap();
 
 	// Initializes the shaders
-	initWaterShader(projection, lightPosition);
+	_waterShaders.push_back(WaterShader("waterShader"));
+	initWaterShader(_waterShaders[0], projection, lightPosition);
+	_waterShaders.push_back(WaterShader("waterShader", "waterShaderNoColor"));
+	initWaterShader(_waterShaders[1], projection, lightPosition);
 	initWaterHeightMapShader();
 	initWaterNormalMapShader();
 	initPhongShader(projection, lightPosition);
@@ -37,6 +40,33 @@ WaterRenderer::~WaterRenderer()
 	//}
 
 	//WaterNormaMapFrameBuffer.destroy();
+}
+
+void WaterRenderer::renderWaterPlain(WaterShader& shader, mat4& view, mat4& projection, vec3& cameraPosition, mat4 waterModel)
+{
+	shader.use();
+	shader.loadProjectionMatrix(projection);
+	shader.loadModelMatrix(waterModel);
+	shader.loadViewMatrix(view);
+	shader.loadCameraPosition(cameraPosition);
+
+	// Bind the WaterHeightMap and the WaterNormalMap for the shaders use
+	glActiveTexture(GL_TEXTURE0);
+	_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget();
+	glActiveTexture(GL_TEXTURE1);
+	_waterNormalMapFrameBuffer.bindColourTarget();
+
+	// Draw the actual plane
+	glBindVertexArray(_waterPlaneBuffId);
+	glDrawArrays(GL_TRIANGLES, 0, _triangleVerticesCount);
+	glBindVertexArray(0);
+	shader.stop();
+
+	// Unbind everything
+	glActiveTexture(GL_TEXTURE1);
+	FrameBufObj::resetBinding();
+	glActiveTexture(GL_TEXTURE0);
+	FrameBufObj::resetBinding();
 }
 
 void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& cameraPosition, float dropSize, float rainIntensity)
@@ -79,29 +109,7 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 
 	// Actual rendering
 	// use the water shader and pass in the appropriate matrices
-	_waterShader.use();
-	_waterShader.loadProjectionMatrix(projection);
-	_waterShader.loadModelMatrix(waterModel);
-	_waterShader.loadViewMatrix(view);
-	_waterShader.loadCameraPosition(cameraPosition);
-
-	// Bind the WaterHeightMap and the WaterNormalMap for the shaders use
-	glActiveTexture(GL_TEXTURE0);
-	_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget();
-	glActiveTexture(GL_TEXTURE1);
-	_waterNormalMapFrameBuffer.bindColourTarget();
-
-	// Draw the actual plane
-	glBindVertexArray(_waterPlaneBuffId);
-	glDrawArrays(GL_TRIANGLES, 0, _triangleVerticesCount);
-	glBindVertexArray(0);
-	_waterShader.stop();
-
-	// Unbind everything
-	glActiveTexture(GL_TEXTURE1);
-	FrameBufObj::resetBinding();
-	glActiveTexture(GL_TEXTURE0);
-	FrameBufObj::resetBinding();
+	renderWaterPlain(_waterShaders[_waterShaderID], view, projection, cameraPosition, waterModel);
 
 	waterModel = translate(waterModel, vec3(0, -1.1, 0));
 	renderBathtub(view, waterModel, projection, cameraPosition);
@@ -130,7 +138,7 @@ void WaterRenderer::addDrop(float x, float y, float dropRadius)
 		_waterAddDropShader.use();
 		_waterAddDropShader.loadDropRadius(0.02 * dropRadius);
 		vec2 dropPosition = vec2(x, 1.0f-y);
-		_waterAddDropShader.loadPosition(dropPosition);
+		_waterAddDropShader.loadDropPosition(dropPosition);
 
 		// Load the current WaterHeightMap to read from
 		_waterHeightMapFrameBuffers[_waterHeightMapId].bindColourTarget();
@@ -154,11 +162,12 @@ void WaterRenderer::addDrop(float x, float y, float dropRadius)
 
 void WaterRenderer::showColor(bool showColor)
 {
-	_waterShader.use();
-	_waterShader.loadShowColour(showColor);
-	//vec4 waterColor = vec4(0.9, 0.3, 0.2, 1);
-	//_waterShader.loadWaterColour(waterColor);
-	_waterShader.stop();
+	_waterShaderID = showColor ? 0 : 1;
+	//_waterShader.use();
+	//_waterShader.loadShowColour(showColor);
+	////vec4 waterColor = vec4(0.9, 0.3, 0.2, 1);
+	////_waterShader.loadWaterColour(waterColor);
+	//_waterShader.stop();
 }
 
 void WaterRenderer::initWaterPlane()
@@ -326,18 +335,18 @@ void WaterRenderer::initWaterNormalMap()
 	glViewport(view[0], view[1], view[2], view[3]);
 }
 
-void WaterRenderer::initWaterShader(mat4& projection, vec3& lightPosition)
+void WaterRenderer::initWaterShader(WaterShader& shader, mat4& projection, vec3& lightPosition)
 {
 	//  - the water shader, wich is responsible to draw the water and its colours
-	_waterShader.use();
-	_waterShader.loadWaterHeightMap(0);
-	_waterShader.loadWaterNormalMap(1);
-	_waterShader.loadLightPosition(lightPosition);
-	_waterShader.loadProjectionMatrix(projection);
+	shader.use();
+	shader.loadWaterHeightMap(0);
+	shader.loadWaterNormalMap(1);
+	shader.loadLightPosition(lightPosition);
+	shader.loadProjectionMatrix(projection);
 	vec4 waterColor = vec4(112.0 / 255.0, 143.0 / 255.0, 184.0 / 255.0, 1);
-	_waterShader.loadWaterColour(waterColor);
-	_waterShader.loadShowColour(true);
-	_waterShader.stop();
+	shader.loadWaterColour(waterColor);
+	shader.loadShowColour(true);
+	shader.stop();
 }
 
 void WaterRenderer::initWaterHeightMapShader()
@@ -365,14 +374,12 @@ void WaterRenderer::initPhongShader(mat4& projection, vec3& lightPosition)
 	_phongShader.use();
 	_phongShader.loadProjectionMatrix(projection);
 	_phongShader.loadLightDirection(lightPosition);
-	auto lightColor = vec3(1, 1, 1);
 	auto matAmbient = vec3(0.2, 0.2, 0.2);
 	auto matDiffuse = vec3(0.8, 0.8, 0.8);
 	auto matSpecular = vec3(0.3, 0.3, 0.3);
 	auto lightAmbient = vec3(0.3, 0.3, 0.3);
 	auto lightDiffuse = vec3(0.6, 0.6, 0.6);
 	auto lightSpecular = vec3(0.8, 0.8, 0.8);
-	_phongShader.loadLightColor(lightColor);
 	_phongShader.loadMaterialAmbient(matAmbient);
 	_phongShader.loadMaterialDiffuse(matDiffuse);
 	_phongShader.loadMaterialSpecular(matSpecular);

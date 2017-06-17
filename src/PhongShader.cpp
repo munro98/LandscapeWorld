@@ -25,9 +25,8 @@ void PhongShader::getAllUniformLocations()
 	m_location_model = getUniformLocation("model");
 	m_location_view = getUniformLocation("view");
 	m_location_projection = getUniformLocation("projection");
-	m_location_lightColor = getUniformLocation("lightColor");
 	m_location_cameraPosition = getUniformLocation("cameraPosition");
-	m_location_lightDirection = getUniformLocation("lightPos");
+	m_location_lightDirection = getUniformLocation("lightPosition");
 	m_location_materila_ambient = getUniformLocation("material.ambient");
 	m_location_materila_diffuse = getUniformLocation("material.diffuse");
 	m_location_materila_specular = getUniformLocation("material.specular");
@@ -50,11 +49,6 @@ void PhongShader::loadViewMatrix(mat4 mat)
 void PhongShader::loadProjectionMatrix(mat4 mat)
 {
 	loadMatrix(m_location_projection, mat);
-}
-
-void PhongShader::loadLightColor(vec3& p)
-{
-	loadVector(m_location_lightColor, p);
 }
 
 void PhongShader::loadLightDirection(vec3& p)

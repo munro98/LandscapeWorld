@@ -1,15 +1,12 @@
-#version 330
+#version 330 core
 
-layout(location = 0) in vec3 vVertex; 
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec2 textureCoords;
 
-// attrib: standard texture coords
-layout(location = 1) in vec2 vTexCoord0;
-
-// output: tex coord
-out vec2 vVaryingTexCoord0;    
+out vec2 TexCoord;    
 
 void main() 
 {
-	vVaryingTexCoord0 = vTexCoord0;
-	gl_Position = vec4(vVertex.x, vVertex.y, 0.0, 1.0);         
+	TexCoord = textureCoords;
+	gl_Position = vec4(position.xy, 0.0, 1.0);         
 }

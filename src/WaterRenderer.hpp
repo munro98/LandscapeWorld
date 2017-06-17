@@ -43,13 +43,14 @@ private:
 
 	// The Shaders
 	PhongShader _phongShader;
-	WaterShader _waterShader;
+	std::vector<WaterShader> _waterShaders;
 	WaterHeightShader _waterHeightShader;
 	WaterNormalShader _waterNormalShader;
 	WaterAddDropShader _waterAddDropShader;
 
 	Mesh* _bathtubMesh;
 
+	int _waterShaderID = 0;
 	// Variables to keep track of time for constant update 
 	// of the height and normal map to maintain constant speed
 	float _updateDiff = 0;
@@ -79,7 +80,7 @@ private:
 	void initPhongShader(glm::mat4& projection, glm::vec3& lightPosition);
 
 	// Initializes the water shader
-	void initWaterShader(glm::mat4& projection, glm::vec3& lightPosition);
+	void initWaterShader(WaterShader& shader, glm::mat4& projection, glm::vec3& lightPosition);
 
 	// Initializes the water height map shader
 	void initWaterHeightMapShader();
@@ -92,6 +93,8 @@ private:
 
 	// Updates the water normal map
 	void updateWaterNormalMap();
+
+	void renderWaterPlain(WaterShader& shader, glm::mat4& view, glm::mat4& projection, glm::vec3& cameraPosition, glm::mat4 waterModel);
 
 	// Renders the bathtub
 	void renderBathtub(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3& cameraPosition);

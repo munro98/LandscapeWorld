@@ -50,8 +50,6 @@ WaterRenderer* _waterRendere;
 float _dropSize = 0.5;
 float _rainIntensity = 0.6;
 glm::vec3 _waterPosition;
-bool _showColour = true;
-
 
 bool showMenu = true;
 bool isFlying = false;
@@ -246,6 +244,7 @@ int main(int argc, char **argv) {
 	bool updateFrustum = true;
 	float showBlendMap = 0.0f;
 	float snowCoverage = 0.99f;
+	bool showColour = true;
 
 	World world;
 	//TriangleRenderer triangleRenderer;
@@ -531,9 +530,9 @@ int main(int argc, char **argv) {
 					relocateWater(camPos.x, camPos.z, world);
 				}
 
-				if(ImGui::Checkbox("Show Colour", &_showColour))
+				if(ImGui::Checkbox("Show Colour", &showColour))
 				{
-					_waterRendere->showColor(_showColour);
+					_waterRendere->showColor(showColour);
 				}
 			}
 

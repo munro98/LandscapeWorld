@@ -18,7 +18,6 @@ public:
 	void loadViewMatrix(glm::mat4 mat);
 	void loadProjectionMatrix(glm::mat4 mat);
 
-	void loadLightColor(glm::vec3 &p);
 	void loadCameraPosition(glm::vec3 &p);
 	void loadLightDirection(glm::vec3 &p);
 	void loadMaterialAmbient(glm::vec3 &p);
@@ -34,7 +33,6 @@ private:
 	GLuint m_location_projection;
 	GLuint m_location_lightDirection;
 	GLuint m_location_cameraPosition;
-	GLuint m_location_lightColor;
 	GLuint m_location_materila_ambient;
 	GLuint m_location_materila_diffuse;
 	GLuint m_location_materila_specular;

@@ -1,22 +1,22 @@
-#version 330
+#version 330 core
 
 uniform sampler2D WaterHeightMap;
 
 uniform float waterHeightMapDistance_W;
 uniform float waterHeightMapDistance_H;
 
-in vec2 vVaryingTexCoord0;
+in vec2 TexCoord;
 
 out vec4 vFragColor;
 
 void main()
 {
-	vec2 currentVelocityHight = texture(WaterHeightMap, vVaryingTexCoord0.st).rg;
+	vec2 currentVelocityHight = texture(WaterHeightMap, TexCoord.st).rg;
 
 	float force = 0.0;
 
 	// Calculate the force from each neighbouring square
-	vec2 nextNeighbour = vVaryingTexCoord0.st - vec2(waterHeightMapDistance_W, waterHeightMapDistance_H);
+	vec2 nextNeighbour = TexCoord.st - vec2(waterHeightMapDistance_W, waterHeightMapDistance_H);
 	force += 0.707107 * (texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g);
 	
 	nextNeighbour.x += waterHeightMapDistance_W;
