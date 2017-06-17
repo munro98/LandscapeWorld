@@ -166,7 +166,7 @@ void relocateWater(float centerX, float centerZ, World& world)
 
 	// set the actual position
 	_waterPosition.x = x;
-	_waterPosition.y = height;
+	_waterPosition.y = 0.0f;//height;
 	_waterPosition.z = z;
 }
 
@@ -350,7 +350,7 @@ int main(int argc, char **argv) {
 
 		world.update(cameraPos.x, cameraPos.z);
 
-		glClearColor(0.564f, 0.682f, 0.831f, 1.0f); // Blueish sky colour
+		glClearColor(0.75f, 0.86f, 1.00f, 1.0f); // Blueish sky colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(90.0f, (float)width / (float)height, 0.5f, 2000.0f);
