@@ -30,6 +30,7 @@ Terrain::~Terrain()
 	
 }
 
+//Call from main thread when ready to send terrain data to GPU
 void Terrain::sendToGPU() {
 
     m_sentToGPU |= true;
@@ -54,6 +55,7 @@ void Terrain::generateTerrain()
 
 	int vertexIndex = 0;
 
+	//This nested loop generates the heightmap for our terrain tile
 	for (int x = 0; x < (TERRAIN_GRID_SIZE + 3); x++) {
 
 		for (int z = 0; z < (TERRAIN_GRID_SIZE + 3); z++) {
@@ -65,8 +67,9 @@ void Terrain::generateTerrain()
 		}
 	}
 
-	//Erode
+	//Erode?
 	
+	//Makes vertices, normals and texture coords for the terrain mesh
 	for (int x = 0; x < TERRAIN_GRID_SIZE+1; x++) {
 
 		for (int z = 0; z < TERRAIN_GRID_SIZE+1; z++) {
@@ -99,7 +102,7 @@ void Terrain::generateTerrain()
 
 	}
 
-
+	// For indexed drawing of the mesh
 	vertexIndex = 0;
 	for (int z = 0; z < TERRAIN_GRID_SIZE; z++) {
 		for (int x = 0; x < TERRAIN_GRID_SIZE; x++) {
@@ -210,6 +213,7 @@ glm::vec3 Terrain::getNormal(float x, float z) {
 	return result;
 }
 
+//Interpolates the height across the low resolution terrain
 float Terrain::getInterpHeight(float x, float z) {
 	float gridSquareSize = (float)TERRAIN_SIZE / ((float)TERRAIN_GRID_SIZE);
 	int gridX = (int)std::floor(x / gridSquareSize);
