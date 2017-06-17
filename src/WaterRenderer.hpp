@@ -19,18 +19,19 @@ public:
 	// adds a drop on to the plane
 	void addDrop(float x, float y, float dropRadius);
 
+	void showColor(bool showColor);
 private:
 	// The water mesh resolution
-	const int WaterMeshResolution_Width = 128;
-	const int WaterMeshResolution_Height = 128;
+	const int WaterMeshResolution_Width = 256;
+	const int WaterMeshResolution_Height = 256;
 
 	// The WaterHeightMapt resolution
-	const int WaterHeightMapResolution_Width = 128;
-	const int WaterHeightMapResolution_Height = 128;
+	const int WaterHeightMapResolution_Width = 256;
+	const int WaterHeightMapResolution_Height = 256;
 
 	// The WaterNormalMap resolution
-	const int WaterNormalMapResolution_Width = 256;
-	const int WaterNormalMapResolution_Height = 256;
+	const int WaterNormalMapResolution_Width = 512;
+	const int WaterNormalMapResolution_Height = 512;
 
 	// The WaterHeightMap textures and buffers
 	GLuint _waterHeightMapTextures[2];

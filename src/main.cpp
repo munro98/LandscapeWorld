@@ -50,6 +50,8 @@ WaterRenderer* _waterRendere;
 float _dropSize = 0.5;
 float _rainIntensity = 0.6;
 glm::vec3 _waterPosition;
+bool _showColour = true;
+
 
 bool showMenu = true;
 bool isFlying = false;
@@ -182,7 +184,7 @@ int main(int argc, char **argv) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
 	//Get the version for GLFW
@@ -435,12 +437,14 @@ int main(int argc, char **argv) {
 		modelRenderer.render(view, boxModel, projection, mesh);
 
 		glEnable(GL_BLEND); // Water can be transparent
-		//waterRenderer.render(view, model, projection, cameraPos);
-		glDisable(GL_BLEND);
-
 		glDisable(GL_CULL_FACE);
 		_waterRendere->render(view, model, projection, cameraPos, _dropSize, _rainIntensity);
 		glEnable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
+
+		//glDisable(GL_CULL_FACE);
+		//_waterRendere->render(view, model, projection, cameraPos, _dropSize, _rainIntensity);
+		//glEnable(GL_CULL_FACE);
 		//triangleRenderer.render();
 
 		// Render GUI on top
@@ -525,6 +529,11 @@ int main(int argc, char **argv) {
 				{
 					auto camPos = camera.getPosition();
 					relocateWater(camPos.x, camPos.z, world);
+				}
+
+				if(ImGui::Checkbox("Show Colour", &_showColour))
+				{
+					_waterRendere->showColor(_showColour);
 				}
 			}
 

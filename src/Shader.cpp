@@ -1,14 +1,18 @@
 #include "Shader.hpp"
 
 
-Shader::Shader(std::string name)
+Shader::Shader(std::string name) : Shader(name, name)
+{
+}
+
+Shader::Shader(std::string name, std::string fragmentName)
 {
 	m_program = glCreateProgram();
 	std::string output = loadShader("./LandscapeWorld/res/" + name + ".vert.c");
 	const char *vertexShaderSource = output.c_str();
 	//std::cout << vertexShaderSource;
 
-	std::string output2 = loadShader("./LandscapeWorld/res/" + name + ".frag.c");
+	std::string output2 = loadShader("./LandscapeWorld/res/" + fragmentName + ".frag.c");
 	const char *fragmentShaderSource = output2.c_str();
 	//std::cout << fragmentShaderSource;
 

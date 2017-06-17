@@ -2,8 +2,8 @@
 
 uniform sampler2D WaterHeightMap;
 
-uniform float waterHeightMapResolution_W;
-uniform float waterHeightMapResolution_H;
+uniform float waterHeightMapDistance_W;
+uniform float waterHeightMapDistance_H;
 
 in vec2 vVaryingTexCoord0;
 
@@ -11,26 +11,46 @@ out vec4 vFragColor;
 
 void main()
 {
-	vec2 vh = texture(WaterHeightMap, vVaryingTexCoord0.st).rg;
+	vec2 currentVelocityHight = texture(WaterHeightMap, vVaryingTexCoord0.st).rg;
 
 	float force = 0.0;
 
-	force += 0.707107 * (texture(WaterHeightMap, vVaryingTexCoord0.st - vec2(waterHeightMapResolution_W, waterHeightMapResolution_H)).g - vh.g);
-	force += texture(WaterHeightMap, vVaryingTexCoord0.st - vec2(0.0, waterHeightMapResolution_H)).g - vh.g;
-	force += 0.707107 * (texture(WaterHeightMap, vVaryingTexCoord0.st + vec2(waterHeightMapResolution_W, -waterHeightMapResolution_H)).g - vh.g);
+	// Calculate the force from each neighbouring square
+	vec2 nextNeighbour = vVaryingTexCoord0.st - vec2(waterHeightMapDistance_W, waterHeightMapDistance_H);
+	force += 0.707107 * (texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g);
+	
+	nextNeighbour.x += waterHeightMapDistance_W;
+	force += texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g;
+	
+	nextNeighbour.x += waterHeightMapDistance_W;
+	force += 0.707107 * (texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g);
+	
+	nextNeighbour.y += waterHeightMapDistance_H;
+	force += texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g;
+	
+	nextNeighbour.y += waterHeightMapDistance_H;
+	force += 0.707107 * (texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g);
+	
+	nextNeighbour.x -= waterHeightMapDistance_W;
+	force += texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g;
+	
+	nextNeighbour.x -= waterHeightMapDistance_W;
+	force += 0.707107 * (texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g);
+	
+	nextNeighbour.y -= waterHeightMapDistance_H;
+	force += texture(WaterHeightMap, nextNeighbour).g - currentVelocityHight.g;
 
-	force += texture(WaterHeightMap, vVaryingTexCoord0.st - vec2(waterHeightMapResolution_W, 0.0)).g - vh.g;
-	force += texture(WaterHeightMap, vVaryingTexCoord0.st + vec2(waterHeightMapResolution_W, 0.0)).g - vh.g;
+	// divide it by the number of neighbouring squares
+	force /= 8.0;
 
-	force += 0.707107 * (texture(WaterHeightMap, vVaryingTexCoord0.st + vec2(-waterHeightMapResolution_W, waterHeightMapResolution_H)).g - vh.g);
-	force += texture(WaterHeightMap, vVaryingTexCoord0.st + vec2(0.0, waterHeightMapResolution_H)).g - vh.g;
-	force += 0.707107 * (texture(WaterHeightMap, vVaryingTexCoord0.st + vec2(waterHeightMapResolution_W, waterHeightMapResolution_H)).g - vh.g);
+	// set new force
+	currentVelocityHight.r += force;
+	
+	// set new height
+	currentVelocityHight.g += currentVelocityHight.r;
+	
+	// gradualy decline height
+	currentVelocityHight.g *= 0.99;
 
-	force *= 0.125;
-
-	vh.r += force;
-	vh.g += vh.r;
-	vh.g *= 0.99;
-
-	vFragColor = vec4(vh, 0.0, 0.0);
+	vFragColor = vec4(currentVelocityHight, 0.0, 0.0);
 }

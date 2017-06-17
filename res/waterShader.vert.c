@@ -1,4 +1,4 @@
-#version 330
+#version 330 core
 
 layout(location = 0) in vec3 vVertex; 
 
@@ -14,6 +14,7 @@ out vec3 Position;
 uniform mat4 model;
 uniform mat4 view; 
 uniform mat4 projection;
+uniform int useColour;
 
 void main()
 {
