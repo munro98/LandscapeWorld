@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 		abort();
 	}
 
-	//glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
+	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
 	//We want this version of gl
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

@@ -5,7 +5,7 @@ layout (triangle_strip, max_vertices = 7) out;
 in vec4 Position[1];
 flat in int isVisible[1];
 
-const vec4 normal = vec4(0.0,0.0,-1.0,0.0);//going to have to pass this in once instance rotation is implemented
+const vec4 normal = vec4(0.0,0.0,-1.0,1.0);//going to have to pass this in if rotatioon per instance is implemented
 
 uniform mat4 model;
 uniform mat4 view;
@@ -25,10 +25,11 @@ void grass_blade(vec4 position){
     -sineAngle, 0.0,0.0,0.0,
     0.0,0.0,0.0,1.0);
     
-
+    vec4 rotatedNormal = rotationMatrix*normal;
+    normal_out = vec3(rotatedNormal.x,rotatedNormal.y,rotatedNormal.z); 
     gl_Position = projection*view*model*(position2 + rotationMatrix*vec4(-0.05, 0.0, 0.0, 0.0)); // 1  
     EmitVertex();   
-    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4( 0.05, 0.0, 0.0, 0.0)); // 2
+    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4( 0.00, 0.0, 0.0, 0.0)); // 2
     EmitVertex();
     gl_Position = projection*view*model*(position2 + rotationMatrix*vec4(0.05,  0.2, 0.0, 0.0)); // 3
     EmitVertex();
@@ -41,13 +42,13 @@ void grass_blade(vec4 position){
     gl_Position = projection*view*model*(position2 + rotationMatrix*vec4( 0.15,  0.8, 0.0, 0.0)); // 7
     EmitVertex();
     EndPrimitive();
-    vec4 rotatedNormal = rotationMatrix*normal;
-    normal_out = vec3(rotatedNormal.x,rotatedNormal.y,rotatedNormal.z); 
+    //vec4 rotatedNormal = rotationMatrix*normal;
+    //normal_out = vec3(rotatedNormal.x,rotatedNormal.y,rotatedNormal.z); 
 }
 
 void main() {   
     if(isVisible[0] == 1){
-    grass_blade(Position[0]);
+      grass_blade(Position[0]);
     }
 }
 

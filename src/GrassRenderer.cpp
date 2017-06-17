@@ -16,7 +16,7 @@ GrassRenderer::GrassRenderer(World &world) : m_shader(GrassShader("grassShader")
 	std::mt19937 rng; //random number generator
 	rng.seed(std::random_device()());
 	std::uniform_real_distribution<float> dist(-0.6f, 0.6f);
-	std::uniform_real_distribution<float> anglDist(-45.0f, 45.0f);
+	std::uniform_real_distribution<float> anglDist(-180.0f, 180.0f);
 
 	for(int i = 0; i<DENSITY*4;i=i+4){ //create DENSITY grass coordinates in a 1.0 by 1.0 area at the origin
 		vertices[i] = dist(rng);
@@ -48,8 +48,8 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 	//Nigel: should use raw data when dealing with OpenGL
 	std::vector<GLfloat> translations(10000 * 3); //Nigel:  x3 make space for x, y, z components
 	int index =0;
-	for(int z = cameraPosition.z-50; z<cameraPosition.z+50;++z){ //create a 100x100 square around the cameraPosition
-		for (int x = cameraPosition.x-50; x<cameraPosition.x+50;++x){
+	for(int z = cameraPosition.z-49; z<cameraPosition.z+50;++z){ //create a 100x100 square around the cameraPosition
+		for (int x = cameraPosition.x-49; x<cameraPosition.x+50;++x){
 			if (index >= 10000 * 3) {//Nigel: This fixes segfualt hopefully. need to be more carefull in this loop.
 				goto exit_label; // This is horrible fix later
 			}
