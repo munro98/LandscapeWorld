@@ -97,10 +97,10 @@ Shader::Shader(std::string name, std::string fragmentName)
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	
-	if (useGeometryShader)
-	{
+	if (useGeometryShader) {
 		glDeleteShader(geometryShader);
 	}
+	
 }
 
 

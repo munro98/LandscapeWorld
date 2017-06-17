@@ -40,6 +40,8 @@ public:
 
 	float heightAt(float worldX, float worldZ);
 
+	glm::vec3 normalAt(float worldX, float worldZ);
+
 private:
 	
 	std::unordered_map<TerrainPosition,  Terrain*> m_terrains;
