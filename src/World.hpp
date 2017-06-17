@@ -26,12 +26,12 @@ public:
 	World();
 	~World();
 
-	void applyNewSeed(int newSeed);
+	void applyNewSeed(int newSeed, bool interpolateNoise);
 
 	void update(float playerX, float playerZ);
-	void updateChunk(int x, int z);
+	void updateTile(int x, int z);
 	void threadUpdateTerrains();
-	int chunkVisible(Frustum frustum, int terrainX, int terrainZ);
+	int chunkVisible(Frustum & frustum, int terrainX, int terrainZ);
 	void checkTerrainInFrustum(Frustum & frustum);
 	void render();
 	void rayCastTerrain(glm::vec3 & start, glm::vec3 & forward);

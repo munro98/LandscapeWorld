@@ -36,17 +36,17 @@ void PhongShader::getAllUniformLocations()
 	m_location_light_specular = getUniformLocation("light.specular");
 }
 
-void PhongShader::loadModelMatrix(mat4 mat)
+void PhongShader::loadModelMatrix(mat4 & mat)
 {
 	loadMatrix(m_location_model, mat);
 }
 
-void PhongShader::loadViewMatrix(mat4 mat)
+void PhongShader::loadViewMatrix(mat4 & mat)
 {
 	loadMatrix(m_location_view, mat);
 }
 
-void PhongShader::loadProjectionMatrix(mat4 mat)
+void PhongShader::loadProjectionMatrix(mat4 & mat)
 {
 	loadMatrix(m_location_projection, mat);
 }

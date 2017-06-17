@@ -17,11 +17,11 @@ public:
 
 	void loadTextures();
 
-	void loadModelMatrix(glm::mat4 mat);
+	void loadModelMatrix(glm::mat4 & mat);
 
-	void loadViewMatrix(glm::mat4 mat);
+	void loadViewMatrix(glm::mat4 & mat);
 
-	void loadProjectionMatrix(glm::mat4 mat);
+	void loadProjectionMatrix(glm::mat4 & mat);
 
 	void loadLightPosition(glm::vec3 lightColour);
 

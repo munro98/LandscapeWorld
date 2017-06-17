@@ -10,7 +10,7 @@ class SkydomeRenderer
 public:
 	SkydomeRenderer(glm::mat4 projectionMatrix);
 	~SkydomeRenderer();
-	void render(glm::mat4 viewMatrix, glm::mat4 model);
+	void render(glm::mat4 view, glm::mat4 & model);
 private:
 	static std::vector<float> m_vertices;
 	Mesh *m_cube;

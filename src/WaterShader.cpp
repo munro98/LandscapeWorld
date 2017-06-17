@@ -37,17 +37,17 @@ void WaterShader::getAllUniformLocations()
 	m_location_ShowColour = getUniformLocation("useColour");
 }
 
-void WaterShader::loadModelMatrix(mat4 mat)
+void WaterShader::loadModelMatrix(mat4 & mat)
 {
 	loadMatrix(m_location_model, mat);
 }
 
-void WaterShader::loadViewMatrix(mat4 mat)
+void WaterShader::loadViewMatrix(mat4 & mat)
 {
 	loadMatrix(m_location_view, mat);
 }
 
-void WaterShader::loadProjectionMatrix(mat4 mat)
+void WaterShader::loadProjectionMatrix(mat4 & mat)
 {
 	loadMatrix(m_location_projection, mat);
 }

@@ -53,6 +53,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# C++14
 	add_compile_options(-std=c++1y)
+	add_compile_options(-O3)
 	# Full normal warnings
 	add_compile_options(-Wall -Wextra -pedantic)
 	# Promote missing return to error

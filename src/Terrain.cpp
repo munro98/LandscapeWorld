@@ -67,7 +67,6 @@ void Terrain::generateTerrain()
 		}
 	}
 
-	//Erode?
 	
 	//Makes vertices, normals and texture coords for the terrain mesh
 	for (int x = 0; x < TERRAIN_GRID_SIZE+1; x++) {

@@ -27,17 +27,17 @@ void ModelShader::getAllUniformLocations()
 }
 
 
-void ModelShader::loadModelMatrix(glm::mat4 mat)
+void ModelShader::loadModelMatrix(glm::mat4 & mat)
 {
 	Shader::loadMatrix(mlocation_model, mat);
 }
 
-void ModelShader::loadViewMatrix(glm::mat4 mat)
+void ModelShader::loadViewMatrix(glm::mat4 & mat)
 {
 	Shader::loadMatrix(mlocation_view, mat);
 }
 
-void ModelShader::loadProjectionMatrix(glm::mat4 mat)
+void ModelShader::loadProjectionMatrix(glm::mat4 & mat)
 {
 	Shader::loadMatrix(mlocation_projection, mat);
 }

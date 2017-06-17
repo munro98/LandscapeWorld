@@ -402,8 +402,8 @@ int main(int argc, char **argv) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		boxModel = glm::translate(boxModel, mousePicker.getCurrentWaterPoint());
-		boxModel = glm::scale(boxModel, glm::vec3(0.1, 0.1, 0.1));
+		boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
+		boxModel = glm::scale(boxModel, glm::vec3(0.2, 0.2, 0.2));
 		modelRenderer.render(view, boxModel, projection, mesh);
 
 		//glEnable(GL_BLEND); // Water can be transparent
@@ -474,10 +474,12 @@ int main(int argc, char **argv) {
 				//ImGui::Text("hello.");
 
 				static int seedValue = 0;
+				static bool interpolateNoise = true;
 				ImGui::InputInt("Terrain seed int", &seedValue);
+				ImGui::Checkbox("Cosine Interp Noise", &interpolateNoise);
 				static bool a = false;
 				if (ImGui::Button("Apply Seed(lots of memory allocation)")) { 
-					world.applyNewSeed(seedValue);
+					world.applyNewSeed(seedValue, interpolateNoise);
 					cout << "Applying seed\n"; 
 					a ^= 1; 
 				}
