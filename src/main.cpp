@@ -370,7 +370,6 @@ int main(int argc, char **argv) {
 		if (updateFrustum) {
 			world.checkTerrainInFrustum(frustum);
 		}
-		
 
 		glm::mat4 model(1);
 
@@ -396,9 +395,6 @@ int main(int argc, char **argv) {
 			mousePicker.SetWaterPosition(_waterPosition);
 		}
 
-		//float heightAt = world.heightAt(50, 50);
-		// Set the waterline height: the hight plus 1 (translated in waterRenderer)
-		//auto position = glm::vec3(50, heightAt, 50);
 		model = glm::translate(model, _waterPosition);
 		Terrain *t = world.findTerrainAt(0, 0);
 		glm::vec3 v;
@@ -406,23 +402,15 @@ int main(int argc, char **argv) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		//boxModel = glm::translate(boxModel, glm::vec3(25, world.heightAt(25, 25), 25));
-		
-		//boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
 		boxModel = glm::translate(boxModel, mousePicker.getCurrentWaterPoint());
 		boxModel = glm::scale(boxModel, glm::vec3(0.1, 0.1, 0.1));
 		modelRenderer.render(view, boxModel, projection, mesh);
 
-		glEnable(GL_BLEND); // Water can be transparent
+		//glEnable(GL_BLEND); // Water can be transparent
 		glDisable(GL_CULL_FACE);
 		_waterRendere->render(view, model, projection, cameraPos, _dropSize, _rainIntensity);
 		glEnable(GL_CULL_FACE);
-		glDisable(GL_BLEND);
-
-		//glDisable(GL_CULL_FACE);
-		//_waterRendere->render(view, model, projection, cameraPos, _dropSize, _rainIntensity);
-		//glEnable(GL_CULL_FACE);
-		//triangleRenderer.render();
+		//glDisable(GL_BLEND);
 
 		// Render GUI on top
 		/*
@@ -499,6 +487,7 @@ int main(int argc, char **argv) {
 				ImGui::SliderFloat("Snow coverage", &snowCoverage, 0.0f, 1.0f, "%.3f");
 				ImGui::Checkbox("Update frustum", &updateFrustum);
 
+				// Water settings
 				ImGui::Text("Water Settings");
 				ImGui::SliderFloat("Rain intensity", &_rainIntensity, 0.0f, 1.0f, "%.3f");
 				ImGui::SliderFloat("Drop size", &_dropSize, 0.4f, 1.0f, "%.3f");
