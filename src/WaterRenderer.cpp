@@ -6,7 +6,7 @@ using namespace glm;
 
 WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
 	_phongShader(PhongShader("phongShader")),
-	_waterHeightShader(WaterHeightShader("waterHeightMapShader")),
+	_waterHeightShader(WaterHeightShader("waterHeightMapShader", "waterInitHeightMapShader")),
 	_waterNormalShader(WaterNormalShader("waterNormalMapShader")),
 	_waterAddDropShader(WaterAddDropShader("waterAddDropShader"))
 {
@@ -20,6 +20,9 @@ WaterRenderer::WaterRenderer(mat4& projection, vec3& lightPosition) :
 	initWaterShader(_waterShaders[0], projection, lightPosition);
 	_waterShaders.push_back(WaterShader("waterShader", "waterShaderNoColor"));
 	initWaterShader(_waterShaders[1], projection, lightPosition);
+	initWaterHeightMapShader();
+	initWaterBuffer();
+	_waterHeightShader = WaterHeightShader("waterHeightMapShader");
 	initWaterHeightMapShader();
 	initWaterNormalMapShader();
 	initPhongShader(projection, lightPosition);
@@ -69,6 +72,9 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		int origViewport[4];
 		glGetIntegerv(GL_VIEWPORT, origViewport);
 
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		
 		updateWaterHeightMap();
 
 		updateWaterNormalMap();
@@ -221,9 +227,6 @@ void WaterRenderer::updateWaterHeightMap()
 
 	//// Get the next id for the water height buffer
 	GLuint nextId = (_waterHeightMapId + 1) % 2;
-
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_BLEND);
 
 	// Bind the water height map, use the HeightMapShader and draw
 	// a square to update the water height map and unbind everything
@@ -474,4 +477,22 @@ void WaterRenderer::renderBathtub(mat4& view, mat4& model, mat4& projection, vec
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 	glBindVertexArray(0);
+}
+
+void WaterRenderer::initWaterBuffer()
+{
+	// Save current viewport settings
+	int origViewport[4];
+	glGetIntegerv(GL_VIEWPORT, origViewport);
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+
+	updateWaterHeightMap();
+	updateWaterHeightMap();
+
+	// reset the Viewport to the previouse values
+	glViewport(origViewport[0], origViewport[1], origViewport[2], origViewport[3]);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 }

@@ -9,6 +9,7 @@ class WaterHeightShader : public Shader
 {
 public:
 	WaterHeightShader(std::string name);
+	WaterHeightShader(std::string name, std::string fragName);
 	~WaterHeightShader();
 
 	void bindAttributes();

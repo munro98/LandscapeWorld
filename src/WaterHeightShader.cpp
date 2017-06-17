@@ -1,12 +1,14 @@
 #include "WaterHeightShader.hpp"
 
+WaterHeightShader::WaterHeightShader(std::string name) : WaterHeightShader(name, name)
+{
+	//getAllUniformLocations();
+}
 
-
-WaterHeightShader::WaterHeightShader(std::string name) : Shader(name)
+WaterHeightShader::WaterHeightShader(std::string name, std::string fragName) : Shader(name, fragName)
 {
 	getAllUniformLocations();
 }
-
 
 WaterHeightShader::~WaterHeightShader()
 {
