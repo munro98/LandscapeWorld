@@ -1,12 +1,9 @@
 #include "WaterAddDropShader.hpp"
 
-
-
 WaterAddDropShader::WaterAddDropShader(std::string name) : Shader(name)
 {
 	getAllUniformLocations();
 }
-
 
 WaterAddDropShader::~WaterAddDropShader()
 {
@@ -25,7 +22,7 @@ void WaterAddDropShader::getAllUniformLocations()
 	m_location_view = getUniformLocation("view");
 	m_location_projection = getUniformLocation("projection");
 	m_location_dropRadius = getUniformLocation("DropRadius");
-	m_location_position = getUniformLocation("Position");
+	m_location_dropPosition = getUniformLocation("DropPosition");
 }
 
 void WaterAddDropShader::loadModelMatrix(glm::mat4 mat)
@@ -48,7 +45,7 @@ void WaterAddDropShader::loadDropRadius(float radius)
 	loadFloat(m_location_dropRadius, radius);
 }
 
-void WaterAddDropShader::loadPosition(glm::vec2& p)
+void WaterAddDropShader::loadDropPosition(glm::vec2& p)
 {
-	loadVector(m_location_position, p);
+	loadVector(m_location_dropPosition, p);
 }

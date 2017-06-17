@@ -22,8 +22,6 @@ SET(headers
 	"World.hpp"
 	"TerrainPosition.hpp"
 	"BlendMapTexture.hpp"
-	"_WaterRenderer.hpp"
-	"_WaterShader.hpp"
 	"Frustum.hpp"
 	"BoundingBox.hpp"
 	"WaterRenderer.hpp"
@@ -32,6 +30,7 @@ SET(headers
 	"WaterNormalShader.hpp"
 	"WaterAddDropShader.hpp"
 	"FrameBufObj.hpp"
+	"PhongShader.hpp"
 	"MousePicker.hpp"
 )
 
@@ -60,8 +59,6 @@ SET(sources
 	"World.cpp"
 	"TerrainPosition.cpp"
 	"BlendMapTexture.cpp"
-	"_WaterRenderer.cpp"
-	"_WaterShader.cpp"
 	"Frustum.cpp"
 	"BoundingBox.cpp"
 	"WaterRenderer.cpp"
@@ -70,6 +67,7 @@ SET(sources
 	"WaterNormalShader.cpp"
 	"WaterAddDropShader.cpp"
 	"FrameBufObj.cpp"
+	"PhongShader.cpp"
 	"MousePicker.cpp"
 )
 

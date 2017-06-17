@@ -18,9 +18,8 @@ World::World() : m_isRunning(true)
 
 World::~World()
 {
-    
 	m_isRunning = false;
-    
+	
 	m_threadVariable.notify_all();
 
 	for (int i = 0; i < THREADS; ++i)

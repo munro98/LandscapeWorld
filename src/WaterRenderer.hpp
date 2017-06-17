@@ -4,7 +4,7 @@
 #include "WaterNormalShader.hpp"
 #include "WaterAddDropShader.hpp"
 #include "FrameBufObj.hpp"
-#include "ModelShader.hpp"
+#include "PhongShader.hpp"
 
 class WaterRenderer
 {
@@ -13,25 +13,25 @@ public:
 	WaterRenderer(glm::mat4& projection, glm::vec3& lightPosition);
 	// Destructor
 	~WaterRenderer();
-
 	// renders the actual scene
 	void render(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3 & cameraPosition, float dropSize, float rainIntensity);
 
 	// adds a drop on to the plane
 	void addDrop(float x, float y, float dropRadius);
 
+	void showColor(bool showColor);
 private:
 	// The water mesh resolution
-	const int WaterMeshResolution_Width = 128;
-	const int WaterMeshResolution_Height = 128;
+	const int WaterMeshResolution_Width = 256;
+	const int WaterMeshResolution_Height = 256;
 
 	// The WaterHeightMapt resolution
-	const int WaterHeightMapResolution_Width = 128;
-	const int WaterHeightMapResolution_Height = 128;
+	const int WaterHeightMapResolution_Width = 256;
+	const int WaterHeightMapResolution_Height = 256;
 
 	// The WaterNormalMap resolution
-	const int WaterNormalMapResolution_Width = 256;
-	const int WaterNormalMapResolution_Height = 256;
+	const int WaterNormalMapResolution_Width = 512;
+	const int WaterNormalMapResolution_Height = 512;
 
 	// The WaterHeightMap textures and buffers
 	GLuint _waterHeightMapTextures[2];
@@ -42,15 +42,15 @@ private:
 	FrameBufObj _waterNormalMapFrameBuffer;
 
 	// The Shaders
-	ModelShader _modelShader;
-	WaterShader _waterShader;
+	PhongShader _phongShader;
+	std::vector<WaterShader> _waterShaders;
 	WaterHeightShader _waterHeightShader;
 	WaterNormalShader _waterNormalShader;
 	WaterAddDropShader _waterAddDropShader;
 
 	Mesh* _bathtubMesh;
-	Texture* _texture;
 
+	int _waterShaderID = 0;
 	// Variables to keep track of time for constant update 
 	// of the height and normal map to maintain constant speed
 	float _updateDiff = 0;
@@ -76,7 +76,28 @@ private:
 	// Initializes the WaterNormalMap
 	void initWaterNormalMap();
 
-	void renderBathtub(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection);
+	// Initalizes the phong shader for the bathtub
+	void initPhongShader(glm::mat4& projection, glm::vec3& lightPosition);
+
+	// Initializes the water shader
+	void initWaterShader(WaterShader& shader, glm::mat4& projection, glm::vec3& lightPosition);
+
+	// Initializes the water height map shader
+	void initWaterHeightMapShader();
+
+	// Initializes the water normal map shader
+	void initWaterNormalMapShader();
+
+	// Updates the water height map
+	void updateWaterHeightMap();
+
+	// Updates the water normal map
+	void updateWaterNormalMap();
+
+	void renderWaterPlain(WaterShader& shader, glm::mat4& view, glm::mat4& projection, glm::vec3& cameraPosition, glm::mat4 waterModel);
+
+	// Renders the bathtub
+	void renderBathtub(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3& cameraPosition);
 
 	// Generates an TextureID and creates an empty thexture for later updates by the shaders
 	static GLuint createEmptyTexture(GLuint w, GLuint h);

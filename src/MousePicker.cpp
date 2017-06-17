@@ -20,14 +20,14 @@ void MousePicker::update(int width, int height, int mouseX, int mouseY, glm::mat
 		m_currentTerrainPoint = binarySearch(0, 0, RAY_RANGE, m_currentRay, cameraPosition);
 		m_currentWaterPoint = binarySearchWater(0, 0, RAY_RANGE, m_currentRay, cameraPosition);
 
-		//TODO clean this up
-		m_currentWaterTexturePoint.x = m_currentWaterPoint.x - 48.0f;
-		m_currentWaterTexturePoint.y = m_currentWaterPoint.z - 48.0f;
+		// substract the scale factor from the position to get the starting position
+		m_currentWaterTexturePoint.x = m_currentWaterPoint.x - (m_waterPosition.x - m_waterScaleFactor);
+		m_currentWaterTexturePoint.y = m_currentWaterPoint.z - (m_waterPosition.z - m_waterScaleFactor);
 
 		m_currentWaterTexturePoint.x /= 4.0f;
 		m_currentWaterTexturePoint.y /= 4.0f;
 
-		std::cout << m_currentWaterTexturePoint.x << " " << m_currentWaterTexturePoint.y << "\n";
+		//std::cout << m_currentWaterTexturePoint.x << " " << m_currentWaterTexturePoint.y << "\n";
 
 		//m_currentTerrainPoint = stepSearch(m_currentRay);
 	//m_currentTerrainPoint = getPointOnRay(m_currentRay, 10.0f, cameraPosition);
@@ -154,10 +154,8 @@ bool MousePicker::intersectionInRangeWater(float start, float finish, glm::vec3 
 }
 
 bool MousePicker::isUnderWater(glm::vec3 testPoint) {
-
-	float height = 0;
-	height = 9.6;
-	if (testPoint.y < height) {
+	// Plus 1 because it will be translated by one
+	if (testPoint.y < m_waterPosition.y + 1) {
 		return true;
 	}
 	else {
@@ -165,6 +163,10 @@ bool MousePicker::isUnderWater(glm::vec3 testPoint) {
 	}
 }
 
+void MousePicker::SetWaterPosition(glm::vec3 position)
+{
+	m_waterPosition = position;
+}
 
 
 

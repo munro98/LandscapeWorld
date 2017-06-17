@@ -11,6 +11,7 @@ class Shader
 {
 public:
 	Shader(std::string name);
+	Shader(std::string name, std::string fragmentName);
 	~Shader();
 
 	std::string loadShader(const std::string& fileName);

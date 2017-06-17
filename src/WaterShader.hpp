@@ -9,6 +9,7 @@ class WaterShader : public Shader
 {
 public:
 	WaterShader(std::string name);
+	WaterShader(std::string name, std::string fragmentName);
 	~WaterShader();
 
 	void bindAttributes();
@@ -22,7 +23,8 @@ public:
 	void loadLightPosition(glm::vec3 &p);
 	void loadWaterHeightMap(GLuint);
 	void loadWaterNormalMap(GLuint);
-	void loadWaterColor(glm::vec4 &p);
+	void loadWaterColour(glm::vec4 &p);
+	void loadShowColour(bool showColor);
 
 private:
 	GLuint m_location_model;
@@ -32,6 +34,7 @@ private:
 	GLuint m_location_LightPosition;
 	GLuint m_location_WaterHeightMap;
 	GLuint m_location_WaterNormalMap;
-	GLuint m_location_WaterColor;
+	GLuint m_location_WaterColour;
+	GLuint m_location_ShowColour;
 };
 
