@@ -14,11 +14,15 @@ public:
 	void bindAttributes();
 	void getAllUniformLocations();
 
-	void loadwaterHeightMapDistWidth(float);
-	void loadwaterHeightMapDistHeight(float);
+	void loadWaterHeightMapDistWidth(float);
+	void loadWaterHeightMapDistHeight(float);
+	void loadSin45(float);
+	void loadAttenuation(float);
 
 private:
 	GLuint m_location_waterHeightMapDistance_W; 
 	GLuint m_location_waterHeightMapDistance_H;
+	GLuint m_location_sin45;
+	GLuint m_location_attenuation;
 };
 
