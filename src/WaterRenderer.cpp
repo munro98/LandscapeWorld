@@ -64,7 +64,8 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		addDrop(x, y, dropSize);
 	}
 
-	if (_updateDiff > 0.016)
+ 	if (_updateDiff > 0.016)
+//	if (_updateDiff > 1)
 	{
 		_updateDiff = 0;
 
@@ -263,13 +264,6 @@ void WaterRenderer::initWaterHeightMaps()
 {
 	glActiveTexture(GL_TEXTURE0);
 
-	// save current settings:
-	int view[4];
-	glGetIntegerv(GL_VIEWPORT, view);
-
-	// New viewport
-	glViewport(0, 0, WaterHeightMapResolution_Width, WaterHeightMapResolution_Height);
-
 	for (int i = 0; i < 2; i++)
 	{
 		// Setup the WaterHeightMapTextures and buffers
@@ -279,20 +273,11 @@ void WaterRenderer::initWaterHeightMaps()
 
 	// Unbind all the textures and buffers
 	FrameBufObj::resetBinding();
-	
-	// Reset Viewport to previouse settings
-	glViewport(view[0], view[1], view[2], view[3]);
 }
 
 void WaterRenderer::initWaterNormalMap()
 {
 	glActiveTexture(GL_TEXTURE1);
-	// save current settings:
-	int view[4];
-	glGetIntegerv(GL_VIEWPORT, view);
-
-	// New viewport
-	glViewport(0, 0, WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
 
 	// Setup the WaterNormalMapTexture and buffer
 	_waterNormalMapTexture = createEmptyTexture(WaterNormalMapResolution_Width, WaterNormalMapResolution_Height);
@@ -300,9 +285,6 @@ void WaterRenderer::initWaterNormalMap()
 
 	// Unbind all the textures and buffers
 	FrameBufObj::resetBinding();
-	
-	// Reset Viewport to previouse settings
-	glViewport(view[0], view[1], view[2], view[3]);
 }
 
 void WaterRenderer::initWaterShader(WaterShader& shader, mat4& projection, vec3& lightPosition)
@@ -323,10 +305,10 @@ void WaterRenderer::initWaterHeightMapShader()
 {
 	//  - the water height shader, wich will update the height map
 	_waterHeightShader.use();
-	_waterHeightShader.loadWaterHeightMapDistWidth(1.0f / WaterHeightMapResolution_Width);
-	_waterHeightShader.loadWaterHeightMapDistHeight(1.0f / WaterHeightMapResolution_Height);
+	_waterHeightShader.loadWaterHeightMapDistWidth(1.0f / (float)WaterHeightMapResolution_Width);
+	_waterHeightShader.loadWaterHeightMapDistHeight(1.0f / (float)WaterHeightMapResolution_Height);
 	_waterHeightShader.loadSin45(sqrt(2.0f) / 2);
-	_waterHeightShader.loadAttenuation(0.99);
+	_waterHeightShader.loadAttenuation(0.99f);
 	_waterHeightShader.stop();
 }
 
@@ -334,9 +316,9 @@ void WaterRenderer::initWaterNormalMapShader()
 {
 	//  - the water normal shader, wich will update the normal map
 	_waterNormalShader.use();
-	_waterNormalShader.loadwaterNormMapDistWidth(1.0 / WaterNormalMapResolution_Width);
-	_waterNormalShader.loadwaterNormMapDistHeight(1.0 / WaterNormalMapResolution_Height);
-	_waterNormalShader.loadDefaultHeight(4.0 / ((WaterNormalMapResolution_Width + WaterNormalMapResolution_Height) / 2.0));
+	_waterNormalShader.loadwaterNormMapDistWidth(1.0f / (float)WaterNormalMapResolution_Width);
+	_waterNormalShader.loadwaterNormMapDistHeight(1.0f / (float)WaterNormalMapResolution_Height);
+	_waterNormalShader.loadDefaultHeight(4.0f / (float)((WaterNormalMapResolution_Width + WaterNormalMapResolution_Height) / 2.0f));
 	_waterNormalShader.stop();
 }
 
@@ -367,16 +349,25 @@ GLuint WaterRenderer::createEmptyTexture(GLuint w, GLuint h)
 	// Generate texture ID
 	GLuint texId;
 	glGenTextures(1, &texId);
+	
+	vec4 *data = new vec4[w * h];
+	
+	for(int i = 0; i < w * h; i++)
+	{
+	  data[i] = vec4(0,0,0,0);
+	}
 
 	// Set appropriate values and generate empty image
 	glBindTexture(GL_TEXTURE_2D, texId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
-
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, data);
+	
+	delete [] data;
 	return texId;
 }
 
@@ -486,9 +477,40 @@ void WaterRenderer::initWaterBuffer()
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
+	_waterHeightMapId = 0;
 	updateWaterHeightMap();
+	_waterHeightMapId = 1;
 	updateWaterHeightMap();
-
+	_waterHeightMapId = 0;
+	updateWaterHeightMap();
+	_waterHeightMapId = 1;
+	updateWaterHeightMap();
+	_waterHeightMapId = 0;
+	updateWaterHeightMap();
+	_waterHeightMapId = 1;
+	updateWaterHeightMap();
+	_waterHeightMapId = 0;
+	updateWaterHeightMap();
+	_waterHeightMapId = 1;
+	updateWaterHeightMap();
+	_waterHeightMapId = 0;
+	updateWaterHeightMap();
+	_waterHeightMapId = 1;
+	updateWaterHeightMap();
+	_waterHeightMapId = 0;
+	updateWaterHeightMap();
+	_waterHeightMapId = 1;
+	updateWaterHeightMap();
+	_waterHeightMapId = 0;
+	updateWaterHeightMap();
+	_waterHeightMapId = 1;
+	updateWaterHeightMap();
+	_waterHeightMapId = 0;
+	updateWaterHeightMap();
+	_waterHeightMapId = 1;
+	updateWaterHeightMap();
+	_waterHeightMapId = 0;
+	updateWaterHeightMap();
 	// reset the Viewport to the previouse values
 	glViewport(origViewport[0], origViewport[1], origViewport[2], origViewport[3]);
 	glEnable(GL_DEPTH_TEST);

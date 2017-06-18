@@ -15,12 +15,12 @@ void main()
 {
 	vec2 currentVelocityHight = texture(WaterHeightMap, TexCoord.st).rg;
 
-	float force = 0.0;
+	float force = 0.0f;
 
 	// Calculate the force from each neighbouring square
 	vec2 nextNeighbour = TexCoord.st - vec2(waterHeightMapDistance_W, waterHeightMapDistance_H);
 	force += sin45 * (texture(WaterHeightMap, nextNeighbour).y - currentVelocityHight.y);
-	
+
 	nextNeighbour.x += waterHeightMapDistance_W;
 	force += texture(WaterHeightMap, nextNeighbour).y - currentVelocityHight.y;
 	
@@ -51,8 +51,8 @@ void main()
 	// add height
 	currentVelocityHight.y += currentVelocityHight.x;
 	
-	// reduce force to attone for attenuation
-	currentVelocityHight.y *= attenuation ;
+	// reduce force to atone for attenuation
+	currentVelocityHight.y *= attenuation;
 
 	vFragColor = vec4(currentVelocityHight, 0.0, 0.0);
 }
