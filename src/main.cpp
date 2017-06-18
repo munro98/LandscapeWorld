@@ -22,7 +22,11 @@
 #include "SkydomeRenderer.hpp"
 #include "TerrainRenderer.hpp"
 #include "World.hpp"
+
+#include "GrassRenderer.hpp"
+
 #include "MousePicker.hpp"
+
 
 #include "Frustum.hpp"
 #include "WaterRenderer.hpp"
@@ -177,7 +181,7 @@ int main(int argc, char **argv) {
 		abort();
 	}
 
-	//glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
+	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
 	//We want this version of gl
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -247,7 +251,9 @@ int main(int argc, char **argv) {
 	bool showColour = true;
 
 	World world;
+	
 	//TriangleRenderer triangleRenderer;
+	GrassRenderer grassRenderer(world);
 	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
@@ -405,6 +411,11 @@ int main(int argc, char **argv) {
 		boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
 		boxModel = glm::scale(boxModel, glm::vec3(0.2, 0.2, 0.2));
 		modelRenderer.render(view, boxModel, projection, mesh);
+
+
+		//triangleRenderer.render();
+		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
+		grassRenderer.render(view, grassModel, projection, cameraPos);
 
 		//glEnable(GL_BLEND); // Water can be transparent
 		glDisable(GL_CULL_FACE);

@@ -422,3 +422,21 @@ float World::heightAt(float worldX, float worldZ)
 	//std::cout << terrainX << " " << terrainZ << " " << height << "\n";
 	return height;
 }
+
+glm::vec3 World::normalAt(float worldX, float worldZ)
+{
+	int x = (int)std::floor(worldX / TERRAIN_SIZE);
+	int z = (int)std::floor(worldZ / TERRAIN_SIZE);
+
+	TerrainPosition terrainPos(x, z);
+	auto chunkIt = m_terrains.find(terrainPos);
+	if (chunkIt == m_terrains.end())
+	{
+		return glm::vec3(0.0f, 1.0f, 0.0f);
+	}
+
+	float terrainX = worldX - (x * TERRAIN_SIZE);
+	float terrainZ = worldZ - (z * TERRAIN_SIZE);
+
+	return chunkIt->second->getNormal(terrainX, terrainZ);
+}
