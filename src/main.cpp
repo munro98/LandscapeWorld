@@ -265,7 +265,7 @@ int main(int argc, char **argv) {
 	_waterRendere = new WaterRenderer(projection, lightDir);
 	_waterPosition = glm::vec3(40, 0, 40);
 
-	Mesh *mesh = OBJLoader::loadObjModel("box");
+	//Mesh *mesh = OBJLoader::loadObjModel("box");
 	
 
 	while (!glfwWindowShouldClose(window)) {
@@ -379,7 +379,7 @@ int main(int argc, char **argv) {
 
 		glm::mat4 model(1);
 
-		glm::mat4 boxModel(1);
+		//glm::mat4 boxModel(1);
 		
 		//glDisable(GL_DEPTH_TEST);
 
@@ -408,9 +408,9 @@ int main(int argc, char **argv) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
-		boxModel = glm::scale(boxModel, glm::vec3(0.2, 0.2, 0.2));
-		modelRenderer.render(view, boxModel, projection, mesh);
+		//boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
+		//boxModel = glm::scale(boxModel, glm::vec3(0.2, 0.2, 0.2));
+		//modelRenderer.render(view, boxModel, projection, mesh);
 
 
 		//triangleRenderer.render();
