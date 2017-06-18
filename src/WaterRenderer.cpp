@@ -64,8 +64,7 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		addDrop(x, y, dropSize);
 	}
 
- 	if (_updateDiff > 0.016)
-//	if (_updateDiff > 1)
+	if (_updateDiff > 0.016)
 	{
 		_updateDiff = 0;
 
