@@ -491,6 +491,7 @@ int main(int argc, char **argv) {
 				static bool a = false;
 				if (ImGui::Button("Apply Seed(lots of memory allocation)")) { 
 					world.applyNewSeed(seedValue, interpolateNoise);
+					_waterPosition.y = 0;
 					cout << "Applying seed\n"; 
 					a ^= 1; 
 				}
