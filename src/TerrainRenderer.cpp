@@ -41,7 +41,7 @@ TerrainRenderer::~TerrainRenderer()
 	delete m_snow;
 }
 
-void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos, float showBlendMap, float snowCoverage)
+void TerrainRenderer::render(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3 camPos, float showBlendMap, float snowCoverage)
 {
 	m_shader.use();
 	//Update uniforms

@@ -110,12 +110,12 @@ bool MousePicker::intersectionInRange(float start, float finish, glm::vec3 ray, 
 }
 
 bool MousePicker::isUnderGround(glm::vec3 testPoint) {
-	//Terrain terrain = getTerrain(testPoint.x, testPoint.z);
-	float height = 0;
-	//if (terrain != nullptr) {
-		//height = terrain.getHeightOfTerrain(testPoint.x, testPoint.z);
-	height = m_terrain.getInterpHeight(testPoint.x, testPoint.z);
+	float height = m_world.heightAt(testPoint.x, testPoint.z);
+	//Terrain * t = m_world.findTerrainAt(testPoint.x, testPoint.z);
+	//if (t != nullptr) {
+		//height = t->getInterpHeight(testPoint.x, testPoint.z);
 	//}
+	
 	if (testPoint.y < height) {
 		return true;
 	} else {
@@ -166,12 +166,6 @@ bool MousePicker::isUnderWater(glm::vec3 testPoint) {
 void MousePicker::SetWaterPosition(glm::vec3 position)
 {
 	m_waterPosition = position;
-}
-
-
-
-Terrain MousePicker::getTerrain(float worldX, float worldZ) {
-	return m_terrain;
 }
 
 glm::vec3 MousePicker::getCurrentTerrainPoint() {

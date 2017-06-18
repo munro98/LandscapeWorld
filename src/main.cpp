@@ -22,7 +22,11 @@
 #include "SkydomeRenderer.hpp"
 #include "TerrainRenderer.hpp"
 #include "World.hpp"
+
+#include "GrassRenderer.hpp"
+
 #include "MousePicker.hpp"
+
 
 #include "Frustum.hpp"
 #include "WaterRenderer.hpp"
@@ -166,7 +170,7 @@ void relocateWater(float centerX, float centerZ, World& world)
 
 	// set the actual position
 	_waterPosition.x = x;
-	_waterPosition.y = height;
+	_waterPosition.y = 0.0f;//height;
 	_waterPosition.z = z;
 }
 
@@ -177,7 +181,7 @@ int main(int argc, char **argv) {
 		abort();
 	}
 
-	//glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
+	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
 	//We want this version of gl
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -247,7 +251,9 @@ int main(int argc, char **argv) {
 	bool showColour = true;
 
 	World world;
+	
 	//TriangleRenderer triangleRenderer;
+	GrassRenderer grassRenderer(world);
 	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
@@ -350,7 +356,7 @@ int main(int argc, char **argv) {
 
 		world.update(cameraPos.x, cameraPos.z);
 
-		glClearColor(0.564f, 0.682f, 0.831f, 1.0f); // Blueish sky colour
+		glClearColor(0.75f, 0.86f, 1.00f, 1.0f); // Blueish sky colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(90.0f, (float)width / (float)height, 0.5f, 2000.0f);
@@ -402,9 +408,14 @@ int main(int argc, char **argv) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		boxModel = glm::translate(boxModel, mousePicker.getCurrentWaterPoint());
-		boxModel = glm::scale(boxModel, glm::vec3(0.1, 0.1, 0.1));
+		boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
+		boxModel = glm::scale(boxModel, glm::vec3(0.2, 0.2, 0.2));
 		modelRenderer.render(view, boxModel, projection, mesh);
+
+
+		//triangleRenderer.render();
+		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
+		grassRenderer.render(view, grassModel, projection, cameraPos);
 
 		//glEnable(GL_BLEND); // Water can be transparent
 		glDisable(GL_CULL_FACE);
@@ -474,10 +485,12 @@ int main(int argc, char **argv) {
 				//ImGui::Text("hello.");
 
 				static int seedValue = 0;
+				static bool interpolateNoise = true;
 				ImGui::InputInt("Terrain seed int", &seedValue);
+				ImGui::Checkbox("Cosine Interp Noise", &interpolateNoise);
 				static bool a = false;
 				if (ImGui::Button("Apply Seed(lots of memory allocation)")) { 
-					world.applyNewSeed(seedValue);
+					world.applyNewSeed(seedValue, interpolateNoise);
 					cout << "Applying seed\n"; 
 					a ^= 1; 
 				}

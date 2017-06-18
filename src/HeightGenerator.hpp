@@ -16,7 +16,6 @@ public:
 	static float generateInterpolatedNoise(float x, float z);
 	static float interpolate(float a, float b, float blend);
 	static float lerp(float a, float b, float f);
-	static float generateSmoothNoise(int x, int z);
 	static float generateNoise(int x, int z);
 
 	static float generateNoise2(int x, int z);
@@ -25,14 +24,11 @@ public:
 
 	static int hash(int x, int y);
 
-	static int generateRandomInt(int startRange, int endRange);
-
-	static float generateRandomFloat(int startRange, int endRange);
-
 
 	static float random();
 
 	static int m_seed;
+	static bool m_interpolateNoise;
 
 
 };

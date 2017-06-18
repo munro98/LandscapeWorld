@@ -15,9 +15,10 @@ public:
 	void bindAttributes();
 	void getAllUniformLocations();
 
-	void loadModelMatrix(glm::mat4 mat);
-	void loadViewMatrix(glm::mat4 mat);
-	void loadProjectionMatrix(glm::mat4 mat);
+	void loadModelMatrix(glm::mat4 & mat);
+	void loadViewMatrix(glm::mat4 & mat);
+	void loadProjectionMatrix(glm::mat4 & mat);
+
 
 	void loadCameraPosition(glm::vec3 &p);
 	void loadLightPosition(glm::vec3 &p);

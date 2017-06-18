@@ -3,6 +3,7 @@
 #include <iostream>
 
 int HeightGenerator::m_seed = 0;
+bool HeightGenerator::m_interpolateNoise = true;
 
 HeightGenerator::HeightGenerator()
 {
@@ -40,18 +41,18 @@ float HeightGenerator::generateInterpolatedNoise(float x, float z)
 	float fracX = x - intX;
 	float fracZ = z - intZ;
 
-	float v1 = generateSmoothNoise(intX, intZ);
-	float v2 = generateSmoothNoise(intX + 1, intZ);
-	float v3 = generateSmoothNoise(intX, intZ + 1);
-	float v4 = generateSmoothNoise(intX + 1, intZ + 1);
+	if (!m_interpolateNoise) {
+		return generateNoise(intX, intZ);
+	}
+
+	float v1 = generateNoise(intX, intZ);
+	float v2 = generateNoise(intX + 1, intZ);
+	float v3 = generateNoise(intX, intZ + 1);
+	float v4 = generateNoise(intX + 1, intZ + 1);
 
 	float i1 = interpolate(v1, v2, fracX);
 	float i2 = interpolate(v3, v4, fracX);
 	return interpolate(i1, i2, fracZ);
-
-	//float i1 = lerp(v1, v2, fracX);
-	//float i2 = lerp(v3, v4, fracX);
-	//return lerp(i1, i2, fracZ);
 }
 
 float HeightGenerator::interpolate(float a, float b, float blend)
@@ -66,17 +67,7 @@ float HeightGenerator::lerp(float a, float b, float f)
 	return a + f * (b - a);
 }
 
-float HeightGenerator::generateSmoothNoise(int x, int z)
-{
-	//float corners = (generateNoise(x-1, z-1) + generateNoise(x+1, z-1) + generateNoise(x-1, z+1) + generateNoise(x+1, z+1)) / 8.0f;
-	//float sides = (generateNoise(x - 1, z) + generateNoise(x + 1, z) + generateNoise(x, z - 1) + generateNoise(x, z + 1)) / 4.0f;
-	//float center = generateNoise(x, z);
-	float center = generateNoise(x, z);
-	//return center + sides + corners;// +corners;// + sides
-	//return center + corners + sides;
-	return center;
-}
-
+//Return a completly random number given 2
 ///*
 float HeightGenerator::generateNoise(int x, int z)
 {
@@ -84,12 +75,11 @@ float HeightGenerator::generateNoise(int x, int z)
 	std::mt19937 rng;
 	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 	//rng.seed(x * 49632 + z * 325176);
-	rng.seed(x * 49632 + z * 325176 + m_seed); // last number is seed value
+	rng.seed(x * 49632 + z * 325176 + m_seed); // m_seed is seed value
 	//rng.seed(x + z); // Not very random
-	//rng.seed(Hasher::hash(x,z));
 
 	//std::cout << dist(rng) << std::endl;
-	float value = dist(rng);// *2.0f - 1.0f;
+	float value = dist(rng);
 	//std::cout << value << "\n";
 	return value;
 }

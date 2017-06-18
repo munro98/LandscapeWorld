@@ -62,9 +62,6 @@ private:
 
 	bool intersectionInRangeWater(float start, float finish, glm::vec3 ray, glm::vec3 cameraPosition);
 
-	
-	Terrain getTerrain(float worldX, float worldZ);
-
 	// -- water specific section ---
 	// the position of the bathtube
 	glm::vec3 m_waterPosition;

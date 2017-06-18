@@ -7,6 +7,12 @@ Shader::Shader(std::string name) : Shader(name, name)
 
 Shader::Shader(std::string name, std::string fragmentName)
 {
+	//flag to use the optional geometry shader
+	bool useGeometryShader = false;
+	if(name == "grassShader"){ //hard coded for grassShader, should probably just check a file with the .geo extension exists
+		useGeometryShader = true;
+	}
+
 	m_program = glCreateProgram();
 	std::string output = loadShader("./LandscapeWorld/res/" + name + ".vert.c");
 	const char *vertexShaderSource = output.c_str();
@@ -15,6 +21,16 @@ Shader::Shader(std::string name, std::string fragmentName)
 	std::string output2 = loadShader("./LandscapeWorld/res/" + fragmentName + ".frag.c");
 	const char *fragmentShaderSource = output2.c_str();
 	//std::cout << fragmentShaderSource;
+
+
+	//optional geometry shader
+	const char *geometryShaderSource; //need to declare this outside the conditional in order to be recognised aparently
+
+	if(useGeometryShader){
+		std::string output3 = loadShader("./LandscapeWorld/res/" + name + ".geo.c");
+		geometryShaderSource = output3.c_str();
+		//std::cout << geometryShaderSource;
+	}
 
 	GLuint vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -25,9 +41,22 @@ Shader::Shader(std::string name, std::string fragmentName)
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
+	
+
+	//optional geometry shader
+	GLuint geometryShader; //need to declare this outside the conditional in order to be recognised aparently
+	if(useGeometryShader){
+		geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometryShader,1,&geometryShaderSource,NULL);
+		glCompileShader(geometryShader);
+	}
 
 	glAttachShader(m_program, vertexShader);
 	glAttachShader(m_program, fragmentShader);
+
+	if(useGeometryShader){//optional geometry shader
+		glAttachShader(m_program, geometryShader);
+	}
 	glLinkProgram(m_program);
 
 	GLint success;
@@ -48,6 +77,15 @@ Shader::Shader(std::string name, std::string fragmentName)
 		std::cout << "ERROR.SHADER.FRAGMENT.COMPILATION FAIL\n" << infoLog << std::endl;
 	}
 
+	if(useGeometryShader){//optional geometry shader
+		glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &success);
+
+		if (!success){
+			glGetShaderInfoLog(geometryShader, 512, NULL, infoLog);
+			std::cout << "ERROR.SHADER.GEOMETRY.COMPILATION FAIL\n" << infoLog << std::endl;
+		}
+	}
+
 	glGetShaderiv(m_program, GL_LINK_STATUS, &success);
 
 	if (!success)
@@ -58,6 +96,11 @@ Shader::Shader(std::string name, std::string fragmentName)
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	
+	if (useGeometryShader) {
+		glDeleteShader(geometryShader);
+	}
+	
 }
 
 

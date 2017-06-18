@@ -56,7 +56,7 @@ World::~World()
 }
 
 //Delete all terrain and start over
-void World::applyNewSeed(int newSeed) {
+void World::applyNewSeed(int newSeed, bool interpolateNoise) {
 	m_isRunning = false;
 
 	m_threadVariable.notify_all();
@@ -100,6 +100,7 @@ void World::applyNewSeed(int newSeed) {
 
 	///////////////////////// Everything is cleaned
 	HeightGenerator::m_seed = newSeed;
+	HeightGenerator::m_interpolateNoise = interpolateNoise;
 	m_isRunning = true;
 
 	for (int i = 0; i < THREADS; ++i)
@@ -120,7 +121,7 @@ void World::update(float playerX, float playerZ)
 
 	//std::cout << x << ", " << z << std::endl;
 
-	updateChunk(x, z);
+	updateTile(x, z);
 	///*
 #if 1
 	int di = 1;
@@ -137,7 +138,7 @@ void World::update(float playerX, float playerZ)
 		j += dj;
 		++segmentPassed;
 		//std::cout << i << " " << j << "\n";
-		updateChunk(x + i, z + j);
+		updateTile(x + i, z + j);
 
 		if (segmentPassed == segmentLength) {
 			// done with current segment
@@ -204,7 +205,7 @@ void World::update(float playerX, float playerZ)
 		m_terrainsToGenerateMutex.unlock();
 	}
 	*/
-
+	// Take 1 newly generated
 	m_terrainsGeneratedMutex.lock();
 	if (!m_terrainsGenerated.empty())
 	{
@@ -270,12 +271,12 @@ void World::update(float playerX, float playerZ)
 	*/
 	
 }
-
-void World::updateChunk(int x, int z) {
+// Queue if not in hash map and not all ready queued
+void World::updateTile(int x, int z) {
 	TerrainPosition terrainPos(x, z);
-	auto chunkIt = m_terrains.find(terrainPos);
-	auto chunkSetIt = m_terrainsToAddToMap.find(terrainPos);
-	if (chunkIt == m_terrains.end() && chunkSetIt == m_terrainsToAddToMap.end())
+	auto TileIt = m_terrains.find(terrainPos);
+	auto TileSetIt = m_terrainsToAddToMap.find(terrainPos);
+	if (TileIt == m_terrains.end() && TileSetIt == m_terrainsToAddToMap.end())
 	{
 		m_terrainsToAddToMap.insert(terrainPos);
 
@@ -287,6 +288,7 @@ void World::updateChunk(int x, int z) {
 	}
 
 }
+
 
 void World::threadUpdateTerrains() {
 
@@ -314,8 +316,8 @@ void World::threadUpdateTerrains() {
 
 }
 
-int World::chunkVisible(Frustum frustum, int terrainX, int terrainZ) {
-	BoundingBox box(glm::vec3(0.0f, -128, 0.0f), glm::vec3(TERRAIN_SIZE, 128, TERRAIN_SIZE), glm::vec3(terrainX * TERRAIN_SIZE, 0.0f, terrainZ * TERRAIN_SIZE));
+int World::chunkVisible(Frustum & frustum, int terrainX, int terrainZ) {
+	BoundingBox box(glm::vec3(0.0f, -140, 0.0f), glm::vec3(TERRAIN_SIZE, 140, TERRAIN_SIZE), glm::vec3(terrainX * TERRAIN_SIZE, 0.0f, terrainZ * TERRAIN_SIZE));
 	return frustum.testIntersection(box);
 }
 
@@ -333,6 +335,7 @@ void World::checkTerrainInFrustum(Frustum &frustum)
 	}
 }
 
+//Render all the terrains
 void World::render()
 {
 	for (auto it = m_terrains.begin(); it != m_terrains.end(); ++it) {
@@ -418,4 +421,22 @@ float World::heightAt(float worldX, float worldZ)
 	float height = chunkIt->second->getInterpHeight(terrainX, terrainZ);
 	//std::cout << terrainX << " " << terrainZ << " " << height << "\n";
 	return height;
+}
+
+glm::vec3 World::normalAt(float worldX, float worldZ)
+{
+	int x = (int)std::floor(worldX / TERRAIN_SIZE);
+	int z = (int)std::floor(worldZ / TERRAIN_SIZE);
+
+	TerrainPosition terrainPos(x, z);
+	auto chunkIt = m_terrains.find(terrainPos);
+	if (chunkIt == m_terrains.end())
+	{
+		return glm::vec3(0.0f, 1.0f, 0.0f);
+	}
+
+	float terrainX = worldX - (x * TERRAIN_SIZE);
+	float terrainZ = worldZ - (z * TERRAIN_SIZE);
+
+	return chunkIt->second->getNormal(terrainX, terrainZ);
 }
