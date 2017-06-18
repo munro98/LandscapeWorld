@@ -5,7 +5,7 @@ layout (triangle_strip, max_vertices = 7) out;
 in vec4 Position[1];
 flat in int isVisible[1];
 in vec3 Normal[1];
-
+in float Time[1];
 const vec4 normalDefault = vec4(0.0,0.0,-1.0,0.0);//going to have to pass this in if rotatioon per instance is implemented
 
 uniform mat4 model;

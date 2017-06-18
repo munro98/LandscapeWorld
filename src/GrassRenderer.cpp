@@ -43,7 +43,7 @@ GrassRenderer::GrassRenderer(World &world) : m_shader(GrassShader("grassShader")
 
 }
 
-void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition) {
+void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition, float time) {
 	//std::cout << cameraPosition.x << " " << cameraPosition.z << "\n";
 	//calculate offsets for instanced rendering
 	//glm::vec3 translations[10000];
@@ -82,6 +82,7 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 	m_shader.loadModelMatrix(model);
 	m_shader.loadViewMatrix(view);
 	m_shader.loadCameraPosition(cameraPosition);
+	m_shader.loadTime(time);
 
     	//create the instance offset VBO
     	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);

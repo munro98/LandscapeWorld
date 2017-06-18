@@ -13,7 +13,7 @@ public:
 	GrassRenderer(World &world);
 	~GrassRenderer();
 
-	void render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition);
+	void render(glm::mat4& view, glm::mat4& model, glm::mat4& projection, glm::vec3& cameraPosition, float time);
 private:
 	World &world;
 	GrassShader m_shader;

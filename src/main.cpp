@@ -415,7 +415,7 @@ int main(int argc, char **argv) {
 
 		//triangleRenderer.render();
 		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
-		grassRenderer.render(view, grassModel, projection, cameraPos);
+		grassRenderer.render(view, grassModel, projection, cameraPos, currentFrame);
 
 		//glEnable(GL_BLEND); // Water can be transparent
 		glDisable(GL_CULL_FACE);

@@ -25,6 +25,8 @@ void GrassShader::getAllUniformLocations()
 	m_location_view = Shader::getUniformLocation("view");
 	m_location_projection = Shader::getUniformLocation("projection");
 	m_location_cameraPosition = Shader::getUniformLocation("cameraPosition");
+
+	m_time = Shader::getUniformLocation("time");
 }
 
 void GrassShader::loadModelMatrix(glm::mat4 mat)
@@ -46,3 +48,7 @@ void GrassShader::loadCameraPosition(glm::vec3& p)
 {
 	Shader::loadVector(m_location_cameraPosition, p);
 } 
+
+void GrassShader::loadTime(float t){
+	Shader::loadFloat(m_time, t);
+}
