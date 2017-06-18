@@ -33,19 +33,23 @@ void grass_blade(vec4 position){
     
     viewDirection = normalize(camPos - vec3(position.x,position.y,position.z));  
 
-    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4(-0.05, 0.0, 0.0, 0.0)); // 1  
+    float moveFactorY = 1; //max(sin(Time[0]) * 2.0, 1.0);
+    float moveFactorX = sin(Time[0]+Position[0].x)*0.5+1.5;
+    mat4  mvp =projection*view*model;
+
+    gl_Position = mvp*(position2 + rotationMatrix*vec4(-0.05, 0.0, 0.0, 0.0)); // 1  
     EmitVertex();   
-    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4( 0.00, 0.0, 0.0, 0.0)); // 2
+    gl_Position = mvp*(position2 + rotationMatrix*vec4( 0.00, 0.0, 0.0, 0.0)); // 2
     EmitVertex();
-    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4(0.05,  0.2, 0.0, 0.0)); // 3
+    gl_Position = mvp*(position2 + rotationMatrix*vec4(0.05*moveFactorX,  0.2*moveFactorY , 0.0, 0.0)); // 3
     EmitVertex();
-    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4( 0.0,  0.4, 0.0, 0.0)); // 4
+    gl_Position = mvp*(position2 + rotationMatrix*vec4( 0.0*moveFactorX,  0.4*moveFactorY, 0.0, 0.0)); // 4
     EmitVertex();
-    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4( 0.05,  0.6, 0.0, 0.0)); // 5
+    gl_Position = mvp*(position2 + rotationMatrix*vec4( 0.05*moveFactorX,  0.6*moveFactorY, 0.0, 0.0)); // 5
     EmitVertex();
-    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4( 0.1,  0.4, 0.0, 0.0)); // 6
+    gl_Position = mvp*(position2 + rotationMatrix*vec4( 0.1*moveFactorX,  0.4*moveFactorY, 0.0, 0.0)); // 6
     EmitVertex();
-    gl_Position = projection*view*model*(position2 + rotationMatrix*vec4( 0.15,  0.8, 0.0, 0.0)); // 7
+    gl_Position = mvp*(position2 + rotationMatrix*vec4( 0.15*moveFactorX,  0.8*moveFactorY, 0.0, 0.0)); // 7
     EmitVertex();
     EndPrimitive();
 }
