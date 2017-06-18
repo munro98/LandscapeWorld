@@ -22,12 +22,8 @@
 #include "SkydomeRenderer.hpp"
 #include "TerrainRenderer.hpp"
 #include "World.hpp"
-
 #include "GrassRenderer.hpp"
-
 #include "MousePicker.hpp"
-
-
 #include "Frustum.hpp"
 #include "WaterRenderer.hpp"
 
@@ -38,7 +34,6 @@ GLFWwindow* window;
 static const float fovx = 80.0f;
 static const float znear = 0.1f;
 static const float zfar = 2000.0f;
-
 
 bool leftMouseDown = false;
 glm::vec2 mousePosition = glm::vec2(0.0, 0.0);
@@ -89,8 +84,6 @@ void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
 	}
 }
 
-
-
 // Mouse Button callback
 // Called for mouse button event on since the last glfwPollEvents
 void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
@@ -108,14 +101,11 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 	}
 }
 
-
 //Scroll callback
 //Called for scroll event on since the last glfwPollEvents
 void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 	// cout << "Scroll Callback :: xoffset=" << xoffset << "yoffset=" << yoffset << endl;
-
 }
-
 
 //Keyboard callback
 //Called for every key event on since the last glfwPollEvents
@@ -188,11 +178,9 @@ int main(int argc, char **argv) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-
 	//Get the version for GLFW
 	int glfwMajor, glfwMinor, glfwRevision;
 	glfwGetVersion(&glfwMajor, &glfwMinor, &glfwRevision);
-
 
 	//Create a windowed mode window and its OpenGL context
 	window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
@@ -202,10 +190,7 @@ int main(int argc, char **argv) {
 		abort();
 	}
 
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 	glfwMakeContextCurrent(window);
-
 
 	// Initialize GLEW
 	// must be done after making a GL context current (glfwMakeContextCurrent in this case)
@@ -220,8 +205,6 @@ int main(int argc, char **argv) {
 	cout << "Using OpenGL " << glGetString(GL_VERSION) << endl;
 	cout << "Using GLEW " << glewGetString(GLEW_VERSION) << endl;
 	cout << "Using GLFW " << glfwMajor << "." << glfwMinor << "." << glfwRevision << endl;
-
-
 
 	//Attach input callbacks to window
 	glfwSetCursorPosCallback(window, cursorPosCallback);
@@ -265,9 +248,6 @@ int main(int argc, char **argv) {
 	_waterRendere = new WaterRenderer(projection, lightDir);
 	_waterPosition = glm::vec3(40, 0, 40);
 
-	//Mesh *mesh = OBJLoader::loadObjModel("box");
-	
-
 	while (!glfwWindowShouldClose(window)) {
 
 		//Poll for and process events
@@ -277,27 +257,11 @@ int main(int argc, char **argv) {
 		deltaFrame = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-
-
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
 
 		//Set viewport to be the whole window
 		glViewport(0, 0, width, height);
-
-		/*
-		float xoffset = mousePosition.x - width / 2;
-		float yoffset = mousePosition.y - height / 2;
-
-		if (hasWindowFocus) {
-			glfwSetCursorPos( window ,width / 2, height / 2);
-		}
-
-		float sensitivity = 0.1;
-		xoffset = xoffset * sensitivity;
-		yoffset = yoffset * sensitivity;
-		camera.Rotate(xoffset, -yoffset);
-		*/
 
 		if (isFlying) {
 			if (glfwGetKey(window, GLFW_KEY_A))
@@ -347,8 +311,6 @@ int main(int argc, char **argv) {
 			}
 
 			camera.update(deltaFrame, world, takeInput);
-
-
 		}
 
 
@@ -379,21 +341,12 @@ int main(int argc, char **argv) {
 
 		glm::mat4 model(1);
 
-		//glm::mat4 boxModel(1);
-		
-		//glDisable(GL_DEPTH_TEST);
-
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 		
 		skydomeRenderer.render(view, model);
 		glClear(GL_DEPTH_BUFFER_BIT); // Everything goes on top of sky
-		//glEnable(GL_DEPTH_TEST);
 		terrainRenderer.render(view, model, projection, cameraPos, showBlendMap, snowCoverage);
-
-		//glm::translate(model, camera.getPosition() + glm::vec3(0, -10, 0));
-		//float heightAt = world.heightAt(camera.getPosition().x, camera.getPosition().z);
-		//model = glm::translate(model, glm::vec3(camera.getPosition().x, heightAt, camera.getPosition().z));
 
 		if(_waterPosition.y == 0)
 		{
@@ -408,122 +361,74 @@ int main(int argc, char **argv) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		//boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
-		//boxModel = glm::scale(boxModel, glm::vec3(0.2, 0.2, 0.2));
-		//modelRenderer.render(view, boxModel, projection, mesh);
-
-
-		//triangleRenderer.render();
 		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
 		grassRenderer.render(view, grassModel, projection, cameraPos);
 
-		//glEnable(GL_BLEND); // Water can be transparent
 		glDisable(GL_CULL_FACE);
 		_waterRendere->render(view, model, projection, cameraPos, _dropSize, _rainIntensity);
 		glEnable(GL_CULL_FACE);
-		//glDisable(GL_BLEND);
 
-		// Render GUI on top
-		/*
-		if (showMenu) {
-			ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-			ImGui::ShowTestWindow(&showMenu);
-		}
-		*/
+		// Render Menu
+		SimpleGUI::newFrame();
 
-		//SimpleGUI::render();
-		if (showMenu) {
-			SimpleGUI::newFrame();
+		static bool no_titlebar = false;
+		static bool no_border = true;
+		static bool no_resize = false;
+		static bool no_move = false;
+		static bool no_scrollbar = false;
+		static bool no_collapse = false;
+		static bool no_menu = false;
 
-			if (ImGui::IsMouseClicked(1))
-				ImGui::OpenPopup("Player");
+		// Demonstrate the various window flags. Typically you would just use the default.
+		ImGuiWindowFlags window_flags = 0;
+		if (no_titlebar)  window_flags |= ImGuiWindowFlags_NoTitleBar;
+		if (!no_border)   window_flags |= ImGuiWindowFlags_ShowBorders;
+		if (no_resize)    window_flags |= ImGuiWindowFlags_NoResize;
+		if (no_move)      window_flags |= ImGuiWindowFlags_NoMove;
+		if (no_scrollbar) window_flags |= ImGuiWindowFlags_NoScrollbar;
+		if (no_collapse)  window_flags |= ImGuiWindowFlags_NoCollapse;
+		if (!no_menu)     window_flags |= ImGuiWindowFlags_MenuBar;
+		ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
+		if (ImGui::Begin("LandScape Demo", &showMenu, window_flags))
+		{
+			ImGui::PushItemWidth(-140);// Right align, keep 140 pixels for labels
 
-			if (ImGui::BeginPopup("Player")) {
-				if (ImGui::Selectable("1")) {
-
-
-				}
-
-				if (ImGui::Selectable("2")) {
-
-
-				}
-
-				if (ImGui::Selectable("3")) {
-
-
-				}
-
-				ImGui::EndPopup();
+			static int seedValue = 0;
+			static bool interpolateNoise = true;
+			ImGui::InputInt("Terrain seed int", &seedValue);
+			ImGui::Checkbox("Cosine Interp Noise", &interpolateNoise);
+			static bool a = false;
+			if (ImGui::Button("Apply Seed(lots of memory allocation)")) { 
+				world.applyNewSeed(seedValue, interpolateNoise);
+				_waterPosition.y = 0;
+				cout << "Applying seed\n"; 
+				a ^= 1; 
 			}
+			ImGui::SliderFloat("Terrain blendMap", &showBlendMap, 0.0f, 1.0f, "%.3f");
+			ImGui::SliderFloat("Snow coverage", &snowCoverage, 0.0f, 1.0f, "%.3f");
+			ImGui::Checkbox("Update frustum", &updateFrustum);
 
-			//Uncomment to show test window
-			//ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-			//ImGui::ShowTestWindow(&showMenu);
-
-			static bool no_titlebar = false;
-			static bool no_border = true;
-			static bool no_resize = false;
-			static bool no_move = false;
-			static bool no_scrollbar = false;
-			static bool no_collapse = false;
-			static bool no_menu = false;
-
-			// Demonstrate the various window flags. Typically you would just use the default.
-			ImGuiWindowFlags window_flags = 0;
-			if (no_titlebar)  window_flags |= ImGuiWindowFlags_NoTitleBar;
-			if (!no_border)   window_flags |= ImGuiWindowFlags_ShowBorders;
-			if (no_resize)    window_flags |= ImGuiWindowFlags_NoResize;
-			if (no_move)      window_flags |= ImGuiWindowFlags_NoMove;
-			if (no_scrollbar) window_flags |= ImGuiWindowFlags_NoScrollbar;
-			if (no_collapse)  window_flags |= ImGuiWindowFlags_NoCollapse;
-			if (!no_menu)     window_flags |= ImGuiWindowFlags_MenuBar;
-			ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
-			if (ImGui::Begin("LandScape Demo", &showMenu, window_flags))
+			// Water settings
+			ImGui::Text("Water Settings");
+			ImGui::SliderFloat("Rain intensity", &_rainIntensity, 0.0f, 1.0f, "%.3f");
+			ImGui::SliderFloat("Drop size", &_dropSize, 0.4f, 1.0f, "%.3f");
+			if (ImGui::Button("Relocate Water"))
 			{
-				ImGui::PushItemWidth(-140);// Right align, keep 140 pixels for labels
-				//ImGui::Text("hello.");
-
-				static int seedValue = 0;
-				static bool interpolateNoise = true;
-				ImGui::InputInt("Terrain seed int", &seedValue);
-				ImGui::Checkbox("Cosine Interp Noise", &interpolateNoise);
-				static bool a = false;
-				if (ImGui::Button("Apply Seed(lots of memory allocation)")) { 
-					world.applyNewSeed(seedValue, interpolateNoise);
-					_waterPosition.y = 0;
-					cout << "Applying seed\n"; 
-					a ^= 1; 
-				}
-				//static bool showBlendMap = true;
-				//ImGui::Checkbox("Show terrain blendMap", &showBlendMap);
-				ImGui::SliderFloat("Terrain blendMap", &showBlendMap, 0.0f, 1.0f, "%.3f");
-				ImGui::SliderFloat("Snow coverage", &snowCoverage, 0.0f, 1.0f, "%.3f");
-				ImGui::Checkbox("Update frustum", &updateFrustum);
-
-				// Water settings
-				ImGui::Text("Water Settings");
-				ImGui::SliderFloat("Rain intensity", &_rainIntensity, 0.0f, 1.0f, "%.3f");
-				ImGui::SliderFloat("Drop size", &_dropSize, 0.4f, 1.0f, "%.3f");
-				if (ImGui::Button("Relocate Water"))
-				{
-					auto camPos = camera.getPosition();
-					relocateWater(camPos.x, camPos.z, world);
-				}
-
-				if(ImGui::Checkbox("Show Colour", &showColour))
-				{
-					_waterRendere->showColor(showColour);
-				}
+				auto camPos = camera.getPosition();
+				relocateWater(camPos.x, camPos.z, world);
 			}
 
-			ImGui::End();
-
-
-			//Flush components and render
-			ImGui::Render();
+			if(ImGui::Checkbox("Show Colour", &showColour))
+			{
+				_waterRendere->showColor(showColour);
+			}
 		}
 
+		ImGui::End();
+
+		//Flush components and render
+		ImGui::Render();
+		
 		//Swap front and back buffers
 		glfwSwapBuffers(window);
 	}
