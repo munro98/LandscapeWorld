@@ -49,12 +49,12 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 	//glm::vec3 translations[10000];
 
 	//Nigel: should use raw data when dealing with OpenGL
-	std::vector<GLfloat> translations(10000 * 3); //Nigel:  x3 make space for x, y, z components
+	std::vector<GLfloat> translations(10000 * 6); //Nigel:  x3 make space for x, y, z components
 
 	int index =0;
 	for(int z = cameraPosition.z-49; z<cameraPosition.z+50;++z){ //create a 100x100 square around the cameraPosition
 		for (int x = cameraPosition.x-49; x<cameraPosition.x+50;++x){
-			if (index >= 10000 * 3) {//Nigel: This fixes segfualt hopefully. need to be more carefull in this loop.
+			if (index >= 10000 * 6) {//Nigel: This fixes segfualt hopefully. need to be more carefull in this loop.
 				goto exit_label; // This is horrible fix later
 			}
 			glm::vec3 translation;		
@@ -66,15 +66,15 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 			translations[index++] = translation.x;//Nigel:  since where store all x y z in single array
 			translations[index++] = translation.y;
 			translations[index++] = translation.z;
-			//glm::vec3 normal =  world.normalAt(float worldX, float worldZ) Nigel: could be useful for lighting
+			glm::vec3 normal =  world.normalAt(x, z);// Nigel: could be useful for lighting
+			translations[index++] = normal.x;//Nigel:  since where store all x y z in single array
+			translations[index++] = normal.y;
+			translations[index++] = normal.z;
 		}
 	}
 
 	exit_label:;
 	
-	//TODO perform 2 pass rendering with  the first pass using culling shaders
-
-
 	//render
 	m_shader.use();
 
@@ -86,15 +86,18 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
     	//create the instance offset VBO
     	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
     	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 10000, &translations[0], GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 3, translations.data(), GL_DYNAMIC_DRAW); //Nigel: now using data contained in vector
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 6, translations.data(), GL_DYNAMIC_DRAW); //Nigel: now using data contained in vector
 													//sizeof(GLfloat) * 10000 * 3
+
     	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(m_VAO);
 
 	glEnableVertexAttribArray(1);
     	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO); // this attribute comes from a different vertex buffer
-    	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+    	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     	glBindBuffer(GL_ARRAY_BUFFER, 0);
     	glVertexAttribDivisor(1, 1); // tell OpenGL this is an instanced vertex attribute.
 
