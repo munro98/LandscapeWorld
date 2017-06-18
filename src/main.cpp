@@ -36,6 +36,7 @@ static const float znear = 0.1f;
 static const float zfar = 2000.0f;
 
 bool leftMouseDown = false;
+bool rightMouseDown = false;
 glm::vec2 mousePosition = glm::vec2(0.0, 0.0);
 glm::vec2 lastMousePosition = glm::vec2(0.0, 0.0);
 
@@ -78,7 +79,7 @@ void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
 
 	lastMousePosition = mousePosition;
 
-	if (leftMouseDown)
+	if(rightMouseDown)
 	{
 		camera.rotate(xoffset, -yoffset);
 	}
@@ -98,6 +99,11 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 		{
 			_waterRendere->addDrop(currentWaterTexturePoint.x, currentWaterTexturePoint.y, _dropSize);
 		}
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT)
+	{
+		rightMouseDown = (action == GLFW_PRESS);
 	}
 }
 
