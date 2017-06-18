@@ -1,29 +1,20 @@
 #version 330 core
 
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec2 textureCoords;
-layout (location = 2) in vec3 normal;
-
-out vec2 TexCoord;
-out vec3 surfaceNormal;
-
-out vec3 toCameraVector;
+layout(location = 0) in vec3 position; 
+layout(location = 1) in vec2 textureCoords;
 
 uniform mat4 model;
-uniform mat4 view;
+uniform mat4 view; 
 uniform mat4 projection;
+uniform sampler2D WaterHeightMap;
 
-uniform vec3 cameraPosition;
-uniform float deltaTime; // Use to animate textureCoords
+out vec2 TexCoord; 
+out vec3 Position;
 
 void main()
 {
-	vec4 worldPosition = model * vec4(position, 1.0);
-	gl_Position = projection * view * worldPosition;
-
-	TexCoord = textureCoords;
-
-	toCameraVector = cameraPosition - worldPosition.xyz;
-
-
+	TexCoord.st = vec2(position.x * 0.5 + 0.5, 0.5 - position.z * 0.5);
+	Position = position.xyz;
+	Position.y += texture(WaterHeightMap, TexCoord.st).g;
+	gl_Position = projection * view * model * vec4(Position, 1.0);
 }

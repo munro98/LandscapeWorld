@@ -11,10 +11,6 @@ public:
 
 	void update(float delta, World & world, bool takeInput);
 
-	void update(float delta, World & world);
-
-	void update(float delta);
-
 	void forward(float delta);
 	void backward(float delta);
 	void left(float delta);
@@ -30,11 +26,11 @@ public:
 	glm::vec3 getUp();
 	glm::vec3 getRight();
 
-
+	float mPitch, mYaw;
 private:
 
 	float mSpeed;
-	float mPitch, mYaw;
+	
 	float m_acceleration;
 	float m_maxSpeed;
 	float m_gravity;

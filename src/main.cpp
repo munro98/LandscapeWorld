@@ -21,11 +21,15 @@
 #include "ModelRenderer.hpp"
 #include "SkydomeRenderer.hpp"
 #include "TerrainRenderer.hpp"
-#include "WaterRenderer.hpp"
 #include "World.hpp"
+
 #include "GrassRenderer.hpp"
 
+#include "MousePicker.hpp"
+
+
 #include "Frustum.hpp"
+#include "WaterRenderer.hpp"
 
 using namespace std;
 
@@ -40,8 +44,16 @@ bool leftMouseDown = false;
 glm::vec2 mousePosition = glm::vec2(0.0, 0.0);
 glm::vec2 lastMousePosition = glm::vec2(0.0, 0.0);
 
+glm::vec2 currentWaterTexturePoint = glm::vec2(0.0, 0.0);
+
 bool hasWindowFocus = true;
 Camera camera;
+
+// Water related fields
+WaterRenderer* _waterRendere;
+float _dropSize = 0.5;
+float _rainIntensity = 0.6;
+glm::vec3 _waterPosition;
 
 bool showMenu = true;
 bool isFlying = false;
@@ -72,7 +84,9 @@ void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
 	lastMousePosition = mousePosition;
 
 	if (leftMouseDown)
+	{
 		camera.rotate(xoffset, -yoffset);
+	}
 }
 
 
@@ -85,7 +99,13 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 	SimpleGUI::mouseButtonCallback(win, button, action, mods);
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
+	{
 		leftMouseDown = (action == GLFW_PRESS);
+		if (action == 0)
+		{
+			_waterRendere->addDrop(currentWaterTexturePoint.x, currentWaterTexturePoint.y, _dropSize);
+		}
+	}
 }
 
 
@@ -118,6 +138,41 @@ void charCallback(GLFWwindow *win, unsigned int c) {
 
 float deltaFrame = 0.0;
 float lastFrame = 0.0;
+
+void relocateWater(float centerX, float centerZ, World& world)
+{
+	const int initWidth = 201;
+	const int scaleFactor = 2;
+	float x = 0;
+	float z = 0;
+	float height = 0;
+
+	// Expanding search for a good location for the tub
+	for (int i = 1; i < 10; i++)
+	{
+		for(int j = 0; j < i*100; j++)
+		{
+			x = ((rand() % initWidth) - initWidth / 2) + centerX;
+			z = ((rand() % initWidth) - initWidth / 2) + centerZ;
+			height = world.heightAt(x, z);
+
+			// Check the height difference between the 4 edges of the tub. if bigger than 0.5, look for another place
+			float diff = abs(height - world.heightAt(x - scaleFactor, z - scaleFactor));
+			diff = max(diff, abs(height - world.heightAt(x, z - scaleFactor)));
+			diff = max(diff, abs(height - world.heightAt(x - scaleFactor, z)));
+			if(diff < 0.5)
+			{
+				i = 11;
+				j = 1000000;
+			}
+		}
+	}
+
+	// set the actual position
+	_waterPosition.x = x;
+	_waterPosition.y = 0.0f;//height;
+	_waterPosition.z = z;
+}
 
 int main(int argc, char **argv) {
 	//Initialize the GLFW library
@@ -193,6 +248,7 @@ int main(int argc, char **argv) {
 	bool updateFrustum = true;
 	float showBlendMap = 0.0f;
 	float snowCoverage = 0.99f;
+	bool showColour = true;
 
 	World world;
 	
@@ -201,8 +257,13 @@ int main(int argc, char **argv) {
 	ModelRenderer modelRenderer(projection);
 	TerrainRenderer terrainRenderer(projection, world);
 	SkydomeRenderer skydomeRenderer(projection);
+
+	MousePicker mousePicker(world, *world.findTerrainAt(0,0));
 	
-	WaterRenderer waterRenderer(projection);
+	//WaterRenderer_Old waterRenderer(projection);
+	glm::vec3 lightDir = glm::vec3(0, 1, 0);
+	_waterRendere = new WaterRenderer(projection, lightDir);
+	_waterPosition = glm::vec3(40, 0, 40);
 
 	Mesh *mesh = OBJLoader::loadObjModel("box");
 	
@@ -289,61 +350,41 @@ int main(int argc, char **argv) {
 
 
 		}
-		
-
-		if (glfwGetKey(window, GLFW_KEY_F))
-		{
-			camera.left(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_H))
-		{
-			camera.right(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_T))
-		{
-			camera.forward(deltaFrame);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_G))
-		{
-			camera.backward(deltaFrame);
-		}
 
 
 		glm::vec3 cameraPos = camera.getPosition();
 
 		world.update(cameraPos.x, cameraPos.z);
 
-		glClearColor(0.564f, 0.682f, 0.831f, 1.0f); // Blueish sky colour
+		glClearColor(0.75f, 0.86f, 1.00f, 1.0f); // Blueish sky colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(90.0f, (float)width / (float)height, 0.5f, 2000.0f);
 
 
-		//glDisable(GL_CULL_FACE);
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-
-
-		
-
 		//////////////////////////////////////////////////////
 		glm::mat4 view;
 		view = glm::lookAt(camera.getPosition(), camera.getPosition() + camera.getFront(), camera.getUp());
+
+		mousePicker.update(width, height, mousePosition.x, mousePosition.y, projection, view, cameraPos);
+		currentWaterTexturePoint = mousePicker.m_currentWaterTexturePoint;
+		//glm::vec3 ray = mousePicker.getCurrentRay();
+		//std::cout << ray.x << " " << ray.y << " " << ray.z << "\n";
 
 		Frustum frustum(view, projection);
 
 		if (updateFrustum) {
 			world.checkTerrainInFrustum(frustum);
 		}
-		
 
 		glm::mat4 model(1);
+
+		glm::mat4 boxModel(1);
 		
-		//skyboxRenderer.render(view, model);
 		//glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
 		
 		skydomeRenderer.render(view, model);
 		glClear(GL_DEPTH_BUFFER_BIT); // Everything goes on top of sky
@@ -354,23 +395,33 @@ int main(int argc, char **argv) {
 		//float heightAt = world.heightAt(camera.getPosition().x, camera.getPosition().z);
 		//model = glm::translate(model, glm::vec3(camera.getPosition().x, heightAt, camera.getPosition().z));
 
-		float heightAt = world.heightAt(50, 50);
-		model = glm::translate(model, glm::vec3(50, heightAt, 50));
+		if(_waterPosition.y == 0)
+		{
+			_waterPosition.y = world.heightAt(_waterPosition.x, _waterPosition.z);
+			mousePicker.SetWaterPosition(_waterPosition);
+		}
+
+		model = glm::translate(model, _waterPosition);
 		Terrain *t = world.findTerrainAt(0, 0);
 		glm::vec3 v;
 		if (t != nullptr) {
 			v = t->getNormal(camera.getPosition().x, camera.getPosition().y);
 		}
 
-		modelRenderer.render(view, model, projection, mesh);
+		boxModel = glm::translate(boxModel, mousePicker.getCurrentTerrainPoint());
+		boxModel = glm::scale(boxModel, glm::vec3(0.2, 0.2, 0.2));
+		modelRenderer.render(view, boxModel, projection, mesh);
 
-		glEnable(GL_BLEND); // Water can be transparent
-		waterRenderer.render(view, model, projection, cameraPos);
-		glDisable(GL_BLEND);
 
 		//triangleRenderer.render();
 		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
 		grassRenderer.render(view, grassModel, projection, cameraPos);
+
+		//glEnable(GL_BLEND); // Water can be transparent
+		glDisable(GL_CULL_FACE);
+		_waterRendere->render(view, model, projection, cameraPos, _dropSize, _rainIntensity);
+		glEnable(GL_CULL_FACE);
+		//glDisable(GL_BLEND);
 
 		// Render GUI on top
 		/*
@@ -379,8 +430,6 @@ int main(int argc, char **argv) {
 			ImGui::ShowTestWindow(&showMenu);
 		}
 		*/
-
-		
 
 		//SimpleGUI::render();
 		if (showMenu) {
@@ -436,10 +485,12 @@ int main(int argc, char **argv) {
 				//ImGui::Text("hello.");
 
 				static int seedValue = 0;
+				static bool interpolateNoise = true;
 				ImGui::InputInt("Terrain seed int", &seedValue);
+				ImGui::Checkbox("Cosine Interp Noise", &interpolateNoise);
 				static bool a = false;
 				if (ImGui::Button("Apply Seed(lots of memory allocation)")) { 
-					world.applyNewSeed(seedValue);
+					world.applyNewSeed(seedValue, interpolateNoise);
 					cout << "Applying seed\n"; 
 					a ^= 1; 
 				}
@@ -448,6 +499,21 @@ int main(int argc, char **argv) {
 				ImGui::SliderFloat("Terrain blendMap", &showBlendMap, 0.0f, 1.0f, "%.3f");
 				ImGui::SliderFloat("Snow coverage", &snowCoverage, 0.0f, 1.0f, "%.3f");
 				ImGui::Checkbox("Update frustum", &updateFrustum);
+
+				// Water settings
+				ImGui::Text("Water Settings");
+				ImGui::SliderFloat("Rain intensity", &_rainIntensity, 0.0f, 1.0f, "%.3f");
+				ImGui::SliderFloat("Drop size", &_dropSize, 0.4f, 1.0f, "%.3f");
+				if (ImGui::Button("Relocate Water"))
+				{
+					auto camPos = camera.getPosition();
+					relocateWater(camPos.x, camPos.z, world);
+				}
+
+				if(ImGui::Checkbox("Show Colour", &showColour))
+				{
+					_waterRendere->showColor(showColour);
+				}
 			}
 
 			ImGui::End();
@@ -457,12 +523,8 @@ int main(int argc, char **argv) {
 			ImGui::Render();
 		}
 
-		
-
 		//Swap front and back buffers
 		glfwSwapBuffers(window);
-
-		
 	}
 
 	glfwTerminate();

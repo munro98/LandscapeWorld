@@ -9,9 +9,8 @@ out vec4 color;
 
 uniform sampler2D ourTexture1;
 
-const vec3 fogColour = vec3(1,0,0);
-const float lowerLimit = -600.0;
-const float upperLimit = 400.0;
+const float lowerLimit = 0.0;
+const float upperLimit = 500.0;
 
 void main()
 {

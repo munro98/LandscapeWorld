@@ -1,7 +1,11 @@
 #include "Shader.hpp"
 
 
-Shader::Shader(std::string name)
+Shader::Shader(std::string name) : Shader(name, name)
+{
+}
+
+Shader::Shader(std::string name, std::string fragmentName)
 {
 	//flag to use the optional geometry shader
 	bool useGeometryShader = false;
@@ -14,7 +18,7 @@ Shader::Shader(std::string name)
 	const char *vertexShaderSource = output.c_str();
 	//std::cout << vertexShaderSource;
 
-	std::string output2 = loadShader("./LandscapeWorld/res/" + name + ".frag.c");
+	std::string output2 = loadShader("./LandscapeWorld/res/" + fragmentName + ".frag.c");
 	const char *fragmentShaderSource = output2.c_str();
 	//std::cout << fragmentShaderSource;
 
@@ -118,6 +122,10 @@ void Shader::loadFloat(int location, float value) {
 
 void Shader::loadInt(int location, int value) {
 	glUniform1i(location, value);
+}
+
+void Shader::loadVector(int location, glm::vec4 vector) {
+	glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
 }
 
 void Shader::loadVector(int location, glm::vec3 vector) {

@@ -18,7 +18,7 @@ TerrainRenderer::TerrainRenderer(glm::mat4 projectionMatrix, World &world) : m_s
 
 
 	m_shader.stop();
-//For fast loading
+//0 For fast loading
 #if 1
 	m_grass = Loader::loadTexture("ground2048");
 	m_rock = Loader::loadTexture("rock");
@@ -41,7 +41,7 @@ TerrainRenderer::~TerrainRenderer()
 	delete m_snow;
 }
 
-void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projection, glm::vec3 camPos, float showBlendMap, float snowCoverage)
+void TerrainRenderer::render(glm::mat4 & view, glm::mat4 & model, glm::mat4 & projection, glm::vec3 camPos, float showBlendMap, float snowCoverage)
 {
 	m_shader.use();
 	//Update uniforms
@@ -56,8 +56,8 @@ void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projecti
 	m_shader.loadTextures();
 
 	//Bind textures
-    //glActiveTexture(GL_TEXTURE0);
-    //m_grass->bind();
+	//glActiveTexture(GL_TEXTURE0);
+	//m_grass->bind();
 
 	glActiveTexture(GL_TEXTURE1);
 	m_grass->bind();
@@ -68,7 +68,7 @@ void TerrainRenderer::render(glm::mat4 view, glm::mat4 model, glm::mat4 projecti
 	glActiveTexture(GL_TEXTURE4);
 	m_snow->bind();
 
-	m_world.render(0,0);
+	m_world.render();
 	Texture::unbind();
 
 	glBindVertexArray(0);

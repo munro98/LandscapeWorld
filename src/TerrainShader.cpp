@@ -54,17 +54,17 @@ void TerrainShader::loadTextures()
 }
 
 
-void TerrainShader::loadModelMatrix(glm::mat4 mat)
+void TerrainShader::loadModelMatrix(glm::mat4 & mat)
 {
 	Shader::loadMatrix(m_location_model, mat);
 }
 
-void TerrainShader::loadViewMatrix(glm::mat4 mat)
+void TerrainShader::loadViewMatrix(glm::mat4 & mat)
 {
 	Shader::loadMatrix(m_location_view, mat);
 }
 
-void TerrainShader::loadProjectionMatrix(glm::mat4 mat)
+void TerrainShader::loadProjectionMatrix(glm::mat4 & mat)
 {
 	Shader::loadMatrix(m_location_projection, mat);
 }
