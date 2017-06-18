@@ -14,37 +14,17 @@ MousePicker::~MousePicker()
 
 
 void MousePicker::update(int width, int height, int mouseX, int mouseY, glm::mat4 & projectionMatrix, glm::mat4 & viewMatrix, glm::vec3 cameraPosition) {
-	//glm::mat4 m = createViewMatrix();
 	m_currentRay = calculateMouseRay(width, height, mouseX, mouseY, projectionMatrix, viewMatrix);//
-	//if (intersectionInRange(0, RAY_RANGE, m_currentRay)) {
-		m_currentTerrainPoint = binarySearch(0, 0, RAY_RANGE, m_currentRay, cameraPosition);
-		m_currentWaterPoint = binarySearchWater(0, 0, RAY_RANGE, m_currentRay, cameraPosition);
+	m_currentTerrainPoint = binarySearch(0, 0, RAY_RANGE, m_currentRay, cameraPosition);
+	m_currentWaterPoint = binarySearchWater(0, 0, RAY_RANGE, m_currentRay, cameraPosition);
 
-		// substract the scale factor from the position to get the starting position
-		m_currentWaterTexturePoint.x = m_currentWaterPoint.x - (m_waterPosition.x - m_waterScaleFactor);
-		m_currentWaterTexturePoint.y = m_currentWaterPoint.z - (m_waterPosition.z - m_waterScaleFactor);
+	// substract the scale factor from the position to get the starting position
+	m_currentWaterTexturePoint.x = m_currentWaterPoint.x - (m_waterPosition.x - m_waterScaleFactor);
+	m_currentWaterTexturePoint.y = m_currentWaterPoint.z - (m_waterPosition.z - m_waterScaleFactor);
 
-		m_currentWaterTexturePoint.x /= 4.0f;
-		m_currentWaterTexturePoint.y /= 4.0f;
-
-		//std::cout << m_currentWaterTexturePoint.x << " " << m_currentWaterTexturePoint.y << "\n";
-
-		//m_currentTerrainPoint = stepSearch(m_currentRay);
-	//m_currentTerrainPoint = getPointOnRay(m_currentRay, 10.0f, cameraPosition);
-	//} else {
-		//m_currentTerrainPoint = glm::vec3(0, 0, 0);
-	//}
+	m_currentWaterTexturePoint.x /= 4.0f;
+	m_currentWaterTexturePoint.y /= 4.0f;
 }
-
-/*
-glm::mat4 MousePicker::createViewMatrix() {
-	glm::mat4 matrix(1);
-	matrix = glm::rotate(matrix, m_camera.mPitch, glm::vec3(1.0f, 0.0f, 0.0f));
-	matrix = glm::rotate(matrix, m_camera.mYaw, glm::vec3(0.0f, 1.0f, 0.0f));
-	matrix = glm::translate(matrix, -m_camera.getPosition());
-	return matrix;
-}
-*/
 
 glm::vec3 MousePicker::calculateMouseRay(int width, int height, int mouseX, int mouseY, glm::mat4 & projectionMatrix, glm::mat4 & viewMatrix) {
 	glm::vec2 mousePositionNormalized = getNormalisedDeviceCoordinates(width, height, mouseX, mouseY);////
@@ -111,10 +91,6 @@ bool MousePicker::intersectionInRange(float start, float finish, glm::vec3 ray, 
 
 bool MousePicker::isUnderGround(glm::vec3 testPoint) {
 	float height = m_world.heightAt(testPoint.x, testPoint.z);
-	//Terrain * t = m_world.findTerrainAt(testPoint.x, testPoint.z);
-	//if (t != nullptr) {
-		//height = t->getInterpHeight(testPoint.x, testPoint.z);
-	//}
 	
 	if (testPoint.y < height) {
 		return true;
@@ -155,7 +131,7 @@ bool MousePicker::intersectionInRangeWater(float start, float finish, glm::vec3 
 
 bool MousePicker::isUnderWater(glm::vec3 testPoint) {
 	// Plus 1 because it will be translated by one
-	if (testPoint.y < m_waterPosition.y + 1) {
+	if (testPoint.y < m_waterPosition.y + 1.5) {
 		return true;
 	}
 	else {

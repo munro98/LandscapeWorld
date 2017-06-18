@@ -9,7 +9,6 @@
 class WaterRenderer
 {
 public:
-	void initWaterBuffer();
 	// Constructor
 	WaterRenderer(glm::mat4& projection, glm::vec3& lightPosition);
 	// Destructor
