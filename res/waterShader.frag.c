@@ -13,23 +13,16 @@ out vec4 vFragColor;
 
 void main()
 {
-	// lighting
-	vec3 ambient  = vec3(0.1);
-	vec3 diffuse  = vec3(0.0);
-	vec3 specular = vec3(0.0);
-
 	vec3 Normal = normalize(texture(WaterNormalMap, TexCoord.st).rgb);
 
-	vec3 eye = normalize(CameraPosition - Position);
-	vec3 light = normalize(LightPosition.xyz);
-	vec3 halfVec = normalize(eye + light);
 	// diffuse
-	float diff = max(0.0, dot(Normal, light));
-	diffuse += vec3(diff);
-	// specular
-	float spec = pow(max(0.0, dot(Normal, halfVec)), 64);
-	specular += vec3(spec);
+	vec3 lightDirection = normalize(LightPosition);
+	vec3 diffuse = vec3(max(dot(Normal, lightDirection), 0.0));
 
-	vFragColor.rgb = waterColour.rgb * (ambient + diffuse) + specular;
-	vFragColor.a = 1;
+	// specular
+	vec3 viewDirection = normalize(CameraPosition - Position);
+	vec3 halfVec = normalize(viewDirection + lightDirection);
+	vec3 specular = vec3(pow(max(0.0, dot(Normal, halfVec)), 64));
+
+	vFragColor = vec4(waterColour.rgb * (vec3(0.1) + diffuse) + specular, 1);
 }

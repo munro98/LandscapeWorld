@@ -6,7 +6,7 @@ using namespace std;
 
 FrameBufObj *FrameBufObj::CurentBinding = nullptr;
 
-FrameBufObj::FrameBufObj()
+FrameBufObj::FrameBufObj(): _colorBuff(0), _drawBuff(0)
 {
 }
 
@@ -40,17 +40,6 @@ void FrameBufObj::resetBinding()
 
 bool FrameBufObj::createAndBind()
 {
-	// get the amount of color attachments
-	//int maxColAtt = 0;
-	//glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColAtt);
-
-	//// add mx num of draw buffers to targets array
-	//_targets.clear();
-	//for (GLuint i = 0; i < maxColAtt; ++i)
-	//{
-	//	_targets.push_back(0);
-	//}
-
 	if (CurentBinding != nullptr && CurentBinding != this)
 	{
 		CurentBinding->unbind();
