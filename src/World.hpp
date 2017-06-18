@@ -1,7 +1,7 @@
 #pragma once
 
-#define WORLD_UPDATE_RADIUS 12//12
-#define WORLD_DELETE_RADIUS 16
+#define WORLD_UPDATE_RADIUS 12
+#define WORLD_DELETE_RADIUS 18
 #define THREADS 2
 
 #include <mutex>

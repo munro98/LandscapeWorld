@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
 		abort();
 	}
 
-	//glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
+	glfwWindowHint(GLFW_SAMPLES, 2); // MSAA X 2
 	//We want this version of gl
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
 	glfwGetVersion(&glfwMajor, &glfwMinor, &glfwRevision);
 
 	//Create a windowed mode window and its OpenGL context
-	window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+	window = glfwCreateWindow(640, 480, "Landscape Demo", nullptr, nullptr);
 
 	if (!window) {
 		cerr << "Error: Could not create GLFW window" << endl;
@@ -332,7 +332,6 @@ int main(int argc, char **argv) {
 		currentWaterTexturePoint = mousePicker.m_currentWaterTexturePoint;
 		//glm::vec3 ray = mousePicker.getCurrentRay();
 		//std::cout << ray.x << " " << ray.y << " " << ray.z << "\n";
-		std::cout << camera.mPitch << " " << camera.mYaw << " " << cameraPos.z << "\n";
 		Frustum frustum(view, projection);
 
 		if (updateFrustum) {
@@ -389,7 +388,7 @@ int main(int argc, char **argv) {
 		if (no_collapse)  window_flags |= ImGuiWindowFlags_NoCollapse;
 		if (!no_menu)     window_flags |= ImGuiWindowFlags_MenuBar;
 		ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiSetCond_FirstUseEver);
-		if (ImGui::Begin("LandScape Demo", &showMenu, window_flags))
+		if (ImGui::Begin("Landscape Demo", &showMenu, window_flags))
 		{
 			ImGui::PushItemWidth(-140);// Right align, keep 140 pixels for labels
 
