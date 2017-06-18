@@ -63,11 +63,11 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
 			translation.y = world.heightAt(x,z);//and take the coordinates to be used as a translation vector for the grass instances
 			//translation.y = 0.0f;
 			//translations[index++]=translation;
-			translations[index++] = translation.x;//Nigel:  since where store all x y z in single array
+			translations[index++] = translation.x;
 			translations[index++] = translation.y;
 			translations[index++] = translation.z;
-			glm::vec3 normal =  world.normalAt(x, z);// Nigel: could be useful for lighting
-			translations[index++] = normal.x;//Nigel:  since where store all x y z in single array
+			glm::vec3 normal =  world.normalAt(x, z);
+			translations[index++] = normal.x;
 			translations[index++] = normal.y;
 			translations[index++] = normal.z;
 		}
@@ -87,8 +87,7 @@ void GrassRenderer::render(glm::mat4& view, glm::mat4& model, glm::mat4& project
     	//create the instance offset VBO
     	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
     	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 10000, &translations[0], GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 6, translations.data(), GL_DYNAMIC_DRAW); //Nigel: now using data contained in vector
-													//sizeof(GLfloat) * 10000 * 3
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 10000 * 6, translations.data(), GL_DYNAMIC_DRAW);
 
     	glBindBuffer(GL_ARRAY_BUFFER, 0);
 

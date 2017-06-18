@@ -51,7 +51,7 @@ float _rainIntensity = 0.6;
 glm::vec3 _waterPosition;
 
 bool showMenu = true;
-bool isFlying = false;
+bool isFlying = true;
 
 void windowFocusCallback(GLFWwindow* win, int focused) {
 	if (focused)
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
 		abort();
 	}
 
-	glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
+	//glfwWindowHint(GLFW_SAMPLES, 4); // MSAA X 4
 	//We want this version of gl
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -332,7 +332,7 @@ int main(int argc, char **argv) {
 		currentWaterTexturePoint = mousePicker.m_currentWaterTexturePoint;
 		//glm::vec3 ray = mousePicker.getCurrentRay();
 		//std::cout << ray.x << " " << ray.y << " " << ray.z << "\n";
-
+		std::cout << camera.mPitch << " " << camera.mYaw << " " << cameraPos.z << "\n";
 		Frustum frustum(view, projection);
 
 		if (updateFrustum) {

@@ -22,7 +22,7 @@ void main() {
 	Time = time;
 	isVisible = 1;
 
-        if(offset.y < -60 || offset.y > 10){ //grass should only be rendered within 10 > y > -60
+        if(offset.y < -80 || offset.y > 10){ //grass should only be rendered within 10 > y > -60
           isVisible = 0;
         }
 }

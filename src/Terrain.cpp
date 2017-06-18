@@ -170,8 +170,6 @@ glm::vec3 Terrain::calculateNormal(int x, int z) {
 }
 
 float Terrain::getHeight(int x, int z) {
-	//std::cout << "getHieght: " << (m_tileX * TERRAIN_GRID_SIZE) + x << " " << (m_tileZ * TERRAIN_GRID_SIZE) + z << "\n";
-	//return HeightGenerator::generateHeight((m_tileX * TERRAIN_GRID_SIZE) + x - m_tileX, (m_tileZ * TERRAIN_GRID_SIZE) + z - m_tileZ);
 	return HeightGenerator::generateHeight((m_tileX * TERRAIN_GRID_SIZE) + x, (m_tileZ * TERRAIN_GRID_SIZE) + z);
 }
 
@@ -198,16 +196,8 @@ glm::vec3 Terrain::getNormal(float x, float z) {
 	if (gridX >= TERRAIN_GRID_SIZE || gridZ >= TERRAIN_GRID_SIZE || gridX < 0 || gridZ < 0) {
 		return glm::vec3(0,0,0);
 	}
-
-	float xCoord = ((int)x % (int)gridSquareSize) / gridSquareSize;
-	float zCoord = ((int)z % (int)gridSquareSize) / gridSquareSize;
 	glm::vec3 result;
-
 	result = calculateNormal(gridX, gridZ);
-
-	//std::cout << gridX << " " << gridZ << " , " << xCoord << " " << zCoord << " " << "\n";
-	//std::cout << xCoord << " " << zCoord << " " << "\n";
-	//std::cout << result.x << " " << result.y << " " << result.z << "\n";
 
 	return result;
 }
@@ -219,7 +209,6 @@ float Terrain::getInterpHeight(float x, float z) {
 	int gridZ = (int)std::floor(z / gridSquareSize);
 
 	
-
 	if (gridX >= TERRAIN_GRID_SIZE || gridZ >= TERRAIN_GRID_SIZE || gridX < 0 || gridZ < 0) {
 		return 0;
 	}

@@ -4,7 +4,7 @@
 
 Camera::Camera()
 {
-	mPosition = glm::vec3(0.0f, 0.0f, 2.0f);
+	mPosition = glm::vec3(32.0f, 15.6f, 38.5f);
 
 	mTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	mDirection = glm::normalize(mPosition - mTarget);
@@ -21,8 +21,8 @@ Camera::Camera()
 	m_gravity = 100.0f;
 	m_maxSpeed = 50.0f;
 
-	mYaw = -90.0f;
-	mPitch = 0.0f;
+	mYaw = 0.0f;
+	mPitch = -10.0f;
 
 	rotate(0.0f, 0.0f);
 }

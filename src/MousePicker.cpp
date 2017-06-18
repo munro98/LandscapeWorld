@@ -26,6 +26,7 @@ void MousePicker::update(int width, int height, int mouseX, int mouseY, glm::mat
 	m_currentWaterTexturePoint.y /= 4.0f;
 }
 
+// Convert mouse position into world space
 glm::vec3 MousePicker::calculateMouseRay(int width, int height, int mouseX, int mouseY, glm::mat4 & projectionMatrix, glm::mat4 & viewMatrix) {
 	glm::vec2 mousePositionNormalized = getNormalisedDeviceCoordinates(width, height, mouseX, mouseY);////
 	glm::vec4 mouseClipSpace = glm::vec4(mousePositionNormalized.x, mousePositionNormalized.y, -1.0f, 1.0f);

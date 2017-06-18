@@ -55,7 +55,7 @@ World::~World()
 	//*/
 }
 
-//Delete all terrain and start over
+//Delete all terrain and start over with new seeded value
 void World::applyNewSeed(int newSeed, bool interpolateNoise) {
 	m_isRunning = false;
 
@@ -122,6 +122,7 @@ void World::update(float playerX, float playerZ)
 	//std::cout << x << ", " << z << std::endl;
 
 	updateTile(x, z);
+	//Out ward spiral grid alogorithm for queued terrains
 	///*
 #if 1
 	int di = 1;
@@ -174,38 +175,9 @@ void World::update(float playerX, float playerZ)
 	}
 	//*/
 
-	/*
-	if (!m_terrainsToGenerate.empty())
-	{
-		TerrainPosition terrainPos = m_terrainsToGenerate.front();
-		m_terrainsToGenerate.pop();
-		Terrain* terrain = new Terrain(terrainPos.x, terrainPos.z);
 
-		terrain->sendToGPU();
-
-		m_terrains.insert({ terrainPos,  terrain });
-	}
-	*/
-	/*
-	m_terrainsToGenerateMutex.lock();
-	if (!m_terrainsToGenerate.empty())
-	{
-		TerrainPosition terrainPos = m_terrainsToGenerate.front();
-		m_terrainsToGenerate.pop();
-		m_terrainsToGenerateMutex.unlock();
-
-		Terrain* terrain = new Terrain(terrainPos.x, terrainPos.z);
-
-		m_terrainsGeneratedMutex.lock();
-		m_terrainsGenerated.push(terrain);
-		m_terrainsGeneratedMutex.unlock();
-	}
-	else
-	{
-		m_terrainsToGenerateMutex.unlock();
-	}
-	*/
-	// Take 1 newly generated
+	// Take 1 newly generated generated terrain and sends its data to gpu
+	// and place in hash map
 	m_terrainsGeneratedMutex.lock();
 	if (!m_terrainsGenerated.empty())
 	{
@@ -225,53 +197,9 @@ void World::update(float playerX, float playerZ)
 		m_terrainsGeneratedMutex.unlock();
 
 	}
-
-	/* Implement if terrain deformation is added
-	if(!m_chunksGenerated.empty())
-	{
-		Terrain* terrain = m_chunksGenerated.front();
-		m_chunksGenerated.pop();
-		//TerrainPosition chunkPos(terrain->getX(), terrain->getZ());
-		auto chunkIt = m_terrains.find(terrainPos);
-
-		
-		Terrain* frontTerrain = findChunkAt(chunkPos.x, chunkPos.z - 1);
-		Terrain* backTerrain = findChunkAt(chunkPos.x, chunkPos.z + 1);
-		Terrain* leftTerrain = findChunkAt(chunkPos.x - 1, chunkPos.z);
-		Terrain* rightTerrain = findChunkAt(chunkPos.x + 1, chunkPos.z);
-
-		//terrain->updateSideFaces(frontTerrain, backTerrain, leftTerrain, rightTerrain);
-		//terrain->updateMesh();
-
-		if (frontTerrain != nullptr)
-		{
-		frontTerrain->updateBack(terrain);
-		}
-
-		if (backTerrain != nullptr)
-		{
-
-		backTerrain->updateFront(terrain);
-		}
-
-		if (leftTerrain != nullptr)
-		{
-		leftTerrain->updateRight(terrain);
-		}
-
-		if (rightTerrain != nullptr)
-		{
-		rightTerrain->updateLeft(terrain);
-		}
-		
-
-		m_terrains.insert({ terrainPos,  terrain });
-		m_chunksToAddToMap.erase(terrainPos);
-	}
-	*/
 	
 }
-// Queue if not in hash map and not all ready queued
+// Queue terrain if not in hash map and not all ready queued
 void World::updateTile(int x, int z) {
 	TerrainPosition terrainPos(x, z);
 	auto TileIt = m_terrains.find(terrainPos);
@@ -289,7 +217,7 @@ void World::updateTile(int x, int z) {
 
 }
 
-
+// Worker pool runs in this function and makes terrains for the main thread
 void World::threadUpdateTerrains() {
 
 	while (m_isRunning) {
@@ -378,6 +306,7 @@ void World::rayCastTerrain(glm::vec3& start, glm::vec3& forward)
 
 }
 
+//Finds terrain at specific world coordinates if it exists
 Terrain* World::findTerrainAt(float worldX, float worldZ)
 {
 	int x = (int)std::floor(worldX / TERRAIN_SIZE);
@@ -390,7 +319,7 @@ Terrain* World::findTerrainAt(float worldX, float worldZ)
 	}
 	return chunkIt->second;
 }
-
+//Finds terrain tile given its x and z grid position if it exists
 Terrain* World::findTerrainAt(int x , int z)
 {
 	TerrainPosition terrainPos(x, z);
@@ -401,7 +330,7 @@ Terrain* World::findTerrainAt(int x , int z)
 	}
 	return chunkIt->second;
 }
-
+//Returns terrain height at a given world position if terrain exists there
 float World::heightAt(float worldX, float worldZ)
 {
 	int x = (int)std::floor(worldX / TERRAIN_SIZE);
