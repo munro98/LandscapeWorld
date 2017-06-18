@@ -382,10 +382,8 @@ GLuint WaterRenderer::createEmptyTexture(GLuint w, GLuint h)
 
 void WaterRenderer::initSquareGeometry(GLuint* buffId)
 {
-	assert(buffId && "vao cannot be null");
-
 	// Triangle strip
-	static const float quadData[] =
+	static const float squareData[] =
 	{
 		-1.0f, -1.0f, 0.0f, // position
 		0.0f, 0.0f,         // texture coordinates
@@ -402,15 +400,15 @@ void WaterRenderer::initSquareGeometry(GLuint* buffId)
 
 	// Fill the apropriate buffers
 	const GLsizei STRIDE = sizeof(float) * 5;
-	GLuint vbo = 0;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadData), quadData, GL_STATIC_DRAW);
+	GLuint id = 0;
+	glGenBuffers(1, &id);
+	glBindBuffer(GL_ARRAY_BUFFER, id);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(squareData), squareData, GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, buffId);
 	glBindVertexArray(*buffId);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, id);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE, nullptr);
 	glEnableVertexAttribArray(1);
