@@ -17,7 +17,7 @@ uniform vec3 camPos;
 uniform float time;
 
 void main() {
-	Position = position+vec4(offset,0.0)+vec4(sin(time),0,0,0);
+	Position = position+vec4(offset,0.0);
 	Normal = normalize(normal);
 	Time = time;
 	isVisible = 1;
