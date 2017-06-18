@@ -23,9 +23,12 @@ public:
 
 	void loadCameraPosition(glm::vec3 & p);
 
+	void loadTime(float t);
+
 private:
 	GLuint m_location_model;
 	GLuint m_location_view;
 	GLuint m_location_projection;
 	GLuint m_location_cameraPosition;
+	GLuint m_time;
 }; 

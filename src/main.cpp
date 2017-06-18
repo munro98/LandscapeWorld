@@ -362,7 +362,7 @@ int main(int argc, char **argv) {
 		}
 
 		glm::mat4 grassModel(1); // Identity matrix for the grass renderer
-		grassRenderer.render(view, grassModel, projection, cameraPos);
+		grassRenderer.render(view, grassModel, projection, cameraPos, currentFrame);
 
 		glDisable(GL_CULL_FACE);
 		_waterRendere->render(view, model, projection, cameraPos, _dropSize, _rainIntensity);
