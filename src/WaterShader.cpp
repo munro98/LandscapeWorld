@@ -30,11 +30,11 @@ void WaterShader::getAllUniformLocations()
 	m_location_view = getUniformLocation("view");
 	m_location_projection = getUniformLocation("projection");
 	m_location_cameraPosition = getUniformLocation("cameraPosition");
-	m_location_WaterHeightMap = getUniformLocation("WaterHeightMap");
-	m_location_WaterNormalMap = getUniformLocation("WaterNormalMap");
-	m_location_LightPosition = getUniformLocation("LightPosition");
+	m_location_WaterHeightMap = getUniformLocation("waterHeightMap");
+	m_location_WaterNormalMap = getUniformLocation("waterNormalMap");
+	m_location_LightPosition = getUniformLocation("lightPosition");
 	m_location_WaterColour = getUniformLocation("waterColour");
-	m_location_ShowColour = getUniformLocation("useColour");
+//	m_location_ShowColour = getUniformLocation("useColour");
 }
 
 void WaterShader::loadModelMatrix(mat4 & mat)
@@ -76,9 +76,9 @@ void WaterShader::loadWaterColour(vec4 &p)
 {
 	loadVector(m_location_WaterColour, p);
 }
-
-void WaterShader::loadShowColour(bool showColor)
-{
-	//loadBool(m_location_WaterColour, showColor);
-	loadInt(m_location_WaterColour, showColor ? 1: 0);
-}
+//
+//void WaterShader::loadShowColour(bool showColor)
+//{
+//	//loadBool(m_location_WaterColour, showColor);
+//	loadInt(m_location_WaterColour, showColor ? 1: 0);
+//}

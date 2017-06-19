@@ -6,7 +6,7 @@ layout(location = 1) in vec2 textureCoords;
 uniform mat4 model;
 uniform mat4 view; 
 uniform mat4 projection;
-uniform sampler2D WaterHeightMap;
+uniform sampler2D waterHeightMap;
 
 out vec2 TexCoord; 
 out vec3 Position;
@@ -15,6 +15,6 @@ void main()
 {
 	TexCoord.st = vec2(position.x * 0.5 + 0.5, 0.5 - position.z * 0.5);
 	Position = position.xyz;
-	Position.y += texture(WaterHeightMap, TexCoord.st).r;
+	Position.y += texture(waterHeightMap, TexCoord.st).r;
 	gl_Position = projection * view * model * vec4(Position, 1.0);
 }

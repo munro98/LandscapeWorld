@@ -292,7 +292,7 @@ void WaterRenderer::initWaterShader(WaterShader& shader, mat4& projection, vec3&
 	shader.loadProjectionMatrix(projection);
 	vec4 waterColor = vec4(112.0 / 255.0, 143.0 / 255.0, 184.0 / 255.0, 1);
 	shader.loadWaterColour(waterColor);
-	shader.loadShowColour(true);
+//	shader.loadShowColour(true);
 	shader.stop();
 }
 
