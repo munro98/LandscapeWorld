@@ -15,6 +15,6 @@ void main()
 {
 	TexCoord.st = vec2(position.x * 0.5 + 0.5, 0.5 - position.z * 0.5);
 	Position = position.xyz;
-	Position.y += texture(WaterHeightMap, TexCoord.st).g;
+	Position.y += texture(WaterHeightMap, TexCoord.st).r;
 	gl_Position = projection * view * model * vec4(Position, 1.0);
 }
