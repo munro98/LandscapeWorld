@@ -18,26 +18,8 @@ void WaterAddDropShader::bindAttributes()
 
 void WaterAddDropShader::getAllUniformLocations()
 {
-	m_location_model = getUniformLocation("model");
-	m_location_view = getUniformLocation("view");
-	m_location_projection = getUniformLocation("projection");
-	m_location_dropRadius = getUniformLocation("DropRadius");
-	m_location_dropPosition = getUniformLocation("DropPosition");
-}
-
-void WaterAddDropShader::loadModelMatrix(glm::mat4 mat)
-{
-	loadMatrix(m_location_model, mat);
-}
-
-void WaterAddDropShader::loadViewMatrix(glm::mat4 mat)
-{
-	loadMatrix(m_location_view, mat);
-}
-
-void WaterAddDropShader::loadProjectionMatrix(glm::mat4 mat)
-{
-	loadMatrix(m_location_projection, mat);
+	m_location_dropRadius = getUniformLocation("dropRadius");
+	m_location_dropPosition = getUniformLocation("dropPosition");
 }
 
 void WaterAddDropShader::loadDropRadius(float radius)
