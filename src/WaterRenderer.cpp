@@ -61,7 +61,7 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		addDrop(x, y, dropSize);
 	}
 
-	if (_updateDiff > 0.016)
+	if (_updateDiff > 0.04)
 	{
 		_updateDiff = 0;
 
@@ -72,6 +72,8 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 		
+		// Update Height map twice make the ripples move faster
+		updateWaterHeightMap();
 		updateWaterHeightMap();
 
 		updateWaterNormalMap();
@@ -83,7 +85,6 @@ void WaterRenderer::render(mat4& view, mat4& model, mat4& projection, vec3& came
 	}
 
 	// Actual rendering
-	// use the water shader and pass in the appropriate matrices
 	renderWaterPlain(_waterShaders[_waterShaderID], view, projection, cameraPosition, waterModel);
 
 	waterModel = translate(waterModel, vec3(0, -1.1, 0));
@@ -291,7 +292,7 @@ void WaterRenderer::initWaterShader(WaterShader& shader, mat4& projection, vec3&
 	shader.loadProjectionMatrix(projection);
 	vec4 waterColor = vec4(112.0 / 255.0, 143.0 / 255.0, 184.0 / 255.0, 1);
 	shader.loadWaterColour(waterColor);
-	shader.loadShowColour(true);
+//	shader.loadShowColour(true);
 	shader.stop();
 }
 
@@ -414,6 +415,7 @@ void WaterRenderer::drawSquare(GLuint buffId)
 
 void WaterRenderer::renderWaterPlain(WaterShader& shader, mat4& view, mat4& projection, vec3& cameraPosition, mat4 waterModel)
 {
+	// use the water shader and pass in the appropriate matrices
 	shader.use();
 	shader.loadProjectionMatrix(projection);
 	shader.loadModelMatrix(waterModel);

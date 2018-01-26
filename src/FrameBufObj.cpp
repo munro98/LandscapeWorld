@@ -4,7 +4,7 @@
 using namespace std;
 
 
-FrameBufObj *FrameBufObj::CurentBinding = nullptr;
+FrameBufObj *FrameBufObj::_curentBinding = nullptr;
 
 FrameBufObj::FrameBufObj(): _colorBuff(0), _drawBuff(0)
 {
@@ -17,6 +17,7 @@ FrameBufObj::~FrameBufObj()
 
 void FrameBufObj::destroy()
 {
+	// Cleanup
 	if (_frameBuffObjId != 0)
 	{
 		glDeleteFramebuffers(1, &_frameBuffObjId);
@@ -26,13 +27,15 @@ void FrameBufObj::destroy()
 
 void FrameBufObj::resetBinding()
 {
-	if (CurentBinding != nullptr)
+	// unbind current bindings
+	if (_curentBinding != nullptr)
 	{
-		CurentBinding->unbind();
+		_curentBinding->unbind();
 	}
 
-	CurentBinding = nullptr;
+	_curentBinding = nullptr;
 
+	// set the framebuffer and texture to the default (0)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDrawBuffer(GL_BACK);
@@ -40,16 +43,18 @@ void FrameBufObj::resetBinding()
 
 bool FrameBufObj::createAndBind()
 {
-	if (CurentBinding != nullptr && CurentBinding != this)
+	// unbind current bindings it is not bound to this object
+	if (_curentBinding != nullptr && _curentBinding != this)
 	{
-		CurentBinding->unbind();
+		_curentBinding->unbind();
 	}
 
+	// generate and bind Framebuffer 
 	glGenFramebuffers(1, &_frameBuffObjId);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffObjId);
 	_isBound = true;
-	CurentBinding = this;
+	_curentBinding = this;
 
 	return true;
 }
@@ -63,17 +68,22 @@ bool FrameBufObj::createAndBind(GLuint texId)
 
 bool FrameBufObj::bind()
 {
-	if (_isBound) return true;
-
-	if (CurentBinding != nullptr && CurentBinding != this)
+	// if already bound, there is nothing to do
+	if (_isBound)
 	{
-		CurentBinding->unbind();
+		return true;
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffObjId);
+	// unbind current bindings it is not bound to this object
+	if (_curentBinding != nullptr && _curentBinding != this)
+	{
+		_curentBinding->unbind();
+	}
 
+	// bind the framebuffer and set the current binding to this object
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffObjId);
 	_isBound = true;
-	CurentBinding = this;
+	_curentBinding = this;
 
 	return true;
 }
@@ -86,7 +96,6 @@ void FrameBufObj::bindColourTarget() const
 void FrameBufObj::attachTexture(GLuint texId)
 {
 	_drawBuff = GL_COLOR_ATTACHMENT0;
-
 	_colorBuff = texId;
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0);
@@ -131,7 +140,7 @@ bool FrameBufObj::check()
 
 void FrameBufObj::unbind()
 {
-	if (CurentBinding == this)
+	if (_curentBinding == this)
 	{
 		_isBound = false;
 	}

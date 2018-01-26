@@ -16,7 +16,7 @@ private:
 
 	void unbind();
 
-	static FrameBufObj *CurentBinding;
+	static FrameBufObj *_curentBinding;
 
 public:
 	FrameBufObj();
@@ -28,8 +28,10 @@ public:
 	// resets all the bindings 
 	static void resetBinding();
 
-	// creates Frame Buffer object
+	// creates framebuffer object
 	bool createAndBind();
+
+	// creats a framebuffer object, attaches the texture and checks if it is working correctely
 	bool createAndBind(GLuint);
 
 	// bind framebuffer

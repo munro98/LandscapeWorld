@@ -25,7 +25,7 @@ public:
 	void loadWaterHeightMap(GLuint);
 	void loadWaterNormalMap(GLuint);
 	void loadWaterColour(glm::vec4 &p);
-	void loadShowColour(bool showColor);
+//	void loadShowColour(bool showColor);
 
 private:
 	GLuint m_location_model;
@@ -36,6 +36,6 @@ private:
 	GLuint m_location_WaterHeightMap;
 	GLuint m_location_WaterNormalMap;
 	GLuint m_location_WaterColour;
-	GLuint m_location_ShowColour;
+//	GLuint m_location_ShowColour;
 };
 
